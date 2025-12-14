@@ -7,9 +7,10 @@
 }
 
 .cartText {
-  font-size: 0.55rem;
+  font-size: 0.75rem;
   display: block;
   line-height: 1rem;
+  font-weight: bold;
 }
 
 .container {
