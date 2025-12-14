@@ -4,6 +4,8 @@ import AuthModal from "../AuthModal/AuthModal";
 import styles from "./Navbar.module.css";
 import { useAuth } from "../context/AuthContext";
 
+const logo = "/ochacho.PNG";
+
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
@@ -13,7 +15,7 @@ const Navbar = () => {
       <nav className={styles.navbar}>
         <div className={styles.container}>
           <Link to="/" className={styles.logo}>
-            🛍️
+            <img src={logo} alt="Mall Logo" className={styles.logoImage} />
           </Link>
 
           <div className={styles.navLinks}>
