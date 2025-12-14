@@ -6,6 +6,7 @@ import Home from "./components/pages/Home/Home";
 import ProductDetails from "./components/pages/ProductDetails/ProductDetails";
 import CartPage from "./components/pages/Cart/CartPage";
 import VendorDashboard from "./components/pages/VendorDashboard/VendorDashboard";
+import Profile from "./components/pages/Profile/Profile";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
       </BrowserRouter>

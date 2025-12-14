@@ -38,7 +38,11 @@ const Navbar = () => {
             {user ? (
               <>
                 <span className={styles.userName}>
-                  👤 {user.name}
+                  {user && (
+                    <Link to="/profile" className={styles.link}>
+                      👤 Profile
+                    </Link>
+                  )}
                   <span className={styles.badge}>{user.role}</span>
                 </span>
                 <button onClick={logout} className={styles.logoutBtn}>
