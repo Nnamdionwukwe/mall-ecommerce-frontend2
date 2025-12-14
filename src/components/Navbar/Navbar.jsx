@@ -13,13 +13,13 @@ const Navbar = () => {
       <nav className={styles.navbar}>
         <div className={styles.container}>
           <Link to="/" className={styles.logo}>
-            🛍️ Mall Store
+            🛍️
           </Link>
 
           <div className={styles.navLinks}>
-            <Link to="/" className={styles.link}>
+            {/* <Link to="/" className={styles.link}>
               Home
-            </Link>
+            </Link> */}
             {user && (
               <>
                 <Link to="/cart" className={styles.link}>
@@ -40,7 +40,7 @@ const Navbar = () => {
                 <span className={styles.userName}>
                   {user && (
                     <Link to="/profile" className={styles.link}>
-                      👤 Profile
+                      👤
                     </Link>
                   )}
                   <span className={styles.badge}>{user.role}</span>
