@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { productAPI } from "../../services/api";
-import ProductForm from "../../components/ProductForm/ProductForm";
-import ProductCard from "../../components/ProductCard/ProductCard";
 import styles from "./VendorDashboard.module.css";
+import ProductForm from "../../ProductForm/ProductForm";
+import ProductCard from "../../ProductCard/ProductCard";
 
 const VendorDashboard = () => {
   const { user, token } = useAuth();

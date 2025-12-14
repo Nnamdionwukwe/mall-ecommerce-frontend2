@@ -1,43 +1,43 @@
-import { useState, useEffect } from 'react';
-import { productAPI } from '../../services/api';
-import styles from './ProductForm.module.css';
+import { useState, useEffect } from "react";
+import styles from "./ProductForm.module.css";
+import { productAPI } from "../services/api";
 
 const ProductForm = ({ product, token, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    stock: '',
-    category: '',
-    vendorId: '',
-    vendorName: '',
-    images: ['']
+    name: "",
+    description: "",
+    price: "",
+    stock: "",
+    category: "",
+    vendorId: "",
+    vendorName: "",
+    images: [""],
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const categories = [
-    'Electronics',
-    'Sports',
-    'Home & Kitchen',
-    'Clothing',
-    'Books',
-    'Toys',
-    'Beauty',
-    'Food'
+    "Electronics",
+    "Sports",
+    "Home & Kitchen",
+    "Clothing",
+    "Books",
+    "Toys",
+    "Beauty",
+    "Food",
   ];
 
   useEffect(() => {
     if (product) {
       setFormData({
         name: product.name,
-        description: product.description || '',
+        description: product.description || "",
         price: product.price,
         stock: product.stock,
         category: product.category,
         vendorId: product.vendorId,
         vendorName: product.vendorName,
-        images: product.images?.length > 0 ? product.images : ['']
+        images: product.images?.length > 0 ? product.images : [""],
       });
     }
   }, [product]);
@@ -45,14 +45,14 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       const cleanedData = {
         ...formData,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
-        images: formData.images.filter(img => img.trim())
+        images: formData.images.filter((img) => img.trim()),
       };
 
       if (product) {
@@ -63,7 +63,7 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
 
       onSuccess();
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to save product');
+      setError(err.response?.data?.error || "Failed to save product");
     } finally {
       setLoading(false);
     }
@@ -76,23 +76,24 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
   };
 
   const addImageField = () => {
-    setFormData({ ...formData, images: [...formData.images, ''] });
+    setFormData({ ...formData, images: [...formData.images, ""] });
   };
 
   const removeImageField = (index) => {
     const newImages = formData.images.filter((_, i) => i !== index);
-    setFormData({ ...formData, images: newImages.length > 0 ? newImages : [''] });
+    setFormData({
+      ...formData,
+      images: newImages.length > 0 ? newImages : [""],
+    });
   };
 
   return (
     <div className={styles.formContainer}>
       <h2 className={styles.title}>
-        {product ? '✏️ Edit Product' : '➕ Add New Product'}
+        {product ? "✏️ Edit Product" : "➕ Add New Product"}
       </h2>
 
-      {error && (
-        <div className={styles.error}>{error}</div>
-      )}
+      {error && <div className={styles.error}>{error}</div>}
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
@@ -110,7 +111,9 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
           <label>Description</label>
           <textarea
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             placeholder="Product description..."
             rows="4"
           />
@@ -125,7 +128,9 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
               min="0"
               required
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, price: e.target.value })
+              }
               placeholder="29.99"
             />
           </div>
@@ -137,7 +142,9 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
               min="0"
               required
               value={formData.stock}
-              onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, stock: e.target.value })
+              }
               placeholder="100"
             />
           </div>
@@ -148,11 +155,15 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
           <select
             required
             value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
           >
             <option value="">Select Category</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
@@ -164,7 +175,9 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
               type="text"
               required
               value={formData.vendorId}
-              onChange={(e) => setFormData({ ...formData, vendorId: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, vendorId: e.target.value })
+              }
               placeholder="vendor_001"
             />
           </div>
@@ -175,7 +188,9 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
               type="text"
               required
               value={formData.vendorName}
-              onChange={(e) => setFormData({ ...formData, vendorName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, vendorName: e.target.value })
+              }
               placeholder="Tech Store"
             />
           </div>
@@ -210,3 +225,18 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
             + Add Image URL
           </button>
         </div>
+
+        <div className={styles.actions}>
+          <button type="submit" disabled={loading} className={styles.submitBtn}>
+            {loading ? "Saving..." : product ? "Update Product" : "Add Product"}
+          </button>
+          <button type="button" onClick={onCancel} className={styles.cancelBtn}>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default ProductForm;
