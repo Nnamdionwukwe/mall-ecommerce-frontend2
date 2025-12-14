@@ -23,7 +23,10 @@ const Navbar = () => {
             {user && (
               <>
                 <Link to="/cart" className={styles.link}>
-                  <span className={styles.cartText}>🛒Cart</span>
+                  <div className={styles.cartTextDiv}>
+                    <div className={styles.cartTextEmoji}>🛒</div>
+                    <div className={styles.cartText}>Cart</div>
+                  </div>
                 </Link>
                 {(user.role === "vendor" || user.role === "admin") && (
                   <Link to="/vendor/dashboard" className={styles.link}>
