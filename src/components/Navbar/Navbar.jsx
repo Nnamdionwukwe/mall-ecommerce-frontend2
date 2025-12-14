@@ -44,7 +44,7 @@ const Navbar = () => {
                       👤
                     </Link>
                   )}
-                  <br />
+
                   <span className={styles.badge}>{user.role}</span>
                 </span>
                 <button onClick={logout} className={styles.logoutBtn}>
