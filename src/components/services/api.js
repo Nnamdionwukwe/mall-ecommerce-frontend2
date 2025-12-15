@@ -58,7 +58,7 @@ export const productAPI = {
 
 // Support APIs
 export const supportAPI = {
-  createTicket: (data) => api.post("/support", data),
+  createTicket: (data) => api.post("/api/support", data),
   getMyTickets: () => api.get("/support/my-tickets"),
   getTicket: (id) => api.get(`/support/${id}`),
 
