@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Support.module.css";
+import { supportAPI } from "../../services/api";
 
 const Support = () => {
   const { user } = useAuth();
@@ -13,6 +14,8 @@ const Support = () => {
   });
   const [submitted, setSubmitted] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
 
   const faqs = [
     {
@@ -47,22 +50,58 @@ const Support = () => {
     },
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In production, send to backend
-    console.log("Support ticket:", formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: user?.name || "",
-        email: user?.email || "",
-        subject: "",
-        category: "general",
-        message: "",
+    setLoading(true);
+    setMessage({ text: "", type: "" });
+
+    try {
+      const response = await supportAPI.createTicket(formData);
+
+      setMessage({
+        text: `Ticket created! Reference: ${response.data.data.ticketId}`,
+        type: "success",
       });
-    }, 3000);
+      setSubmitted(true);
+
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({
+          name: user?.name || "",
+          email: user?.email || "",
+          subject: "",
+          category: "general",
+          message: "",
+        });
+      }, 5000);
+    } catch (error) {
+      setMessage({
+        text:
+          error.response?.data?.error ||
+          "Failed to submit ticket. Please try again.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   // In production, send to backend
+  //   console.log("Support ticket:", formData);
+  //   setSubmitted(true);
+  //   setTimeout(() => {
+  //     setSubmitted(false);
+  //     setFormData({
+  //       name: user?.name || "",
+  //       email: user?.email || "",
+  //       subject: "",
+  //       category: "general",
+  //       message: "",
+  //     });
+  //   }, 3000);
+  // };
 
   return (
     <div className={styles.container}>
@@ -78,6 +117,11 @@ const Support = () => {
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>📧 Contact Us</h2>
 
+              {message.text && (
+                <div className={`${styles.message} ${styles[message.type]}`}>
+                  {message.text}
+                </div>
+              )}
               {submitted ? (
                 <div className={styles.successMessage}>
                   <div className={styles.successIcon}>✓</div>
@@ -155,9 +199,17 @@ const Support = () => {
                     />
                   </div>
 
-                  <button type="submit" className={styles.submitBtn}>
-                    Send Message
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={styles.submitBtn}
+                  >
+                    {loading ? "Sending..." : "Send Message"}
                   </button>
+
+                  {/* <button type="submit" className={styles.submitBtn}>
+                    Send Message
+                  </button> */}
                 </form>
               )}
             </div>

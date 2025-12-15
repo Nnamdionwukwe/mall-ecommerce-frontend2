@@ -13,6 +13,7 @@ import Checkout from "./components/pages/Checkout/Checkout";
 import OrderSuccess from "./components/pages/OrderSuccess/OrderSuccess";
 import BottomNav from "./components/BottomNav/BottomNav";
 import Support from "./components/pages/Support/Support";
+import MyTickets from "./components/pages/MyTickets/MyTickets";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/vendor/dashboard" element={<VendorDashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/my-tickets" element={<MyTickets />} />
           </Routes>
         </div>
         <BottomNav />

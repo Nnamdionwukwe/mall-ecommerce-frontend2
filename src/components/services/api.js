@@ -56,4 +56,17 @@ export const productAPI = {
   updateStock: (id, data) => api.patch(`/products/${id}/stock`, data),
 };
 
+// Support APIs
+export const supportAPI = {
+  createTicket: (data) => api.post("/support", data),
+  getMyTickets: () => api.get("/support/my-tickets"),
+  getTicket: (id) => api.get(`/support/${id}`),
+
+  // Admin only
+  getAllTickets: (params) => api.get("/support/admin/all", { params }),
+  updateTicketStatus: (id, data) => api.put(`/support/${id}/status`, data),
+  addResponse: (id, data) => api.post(`/support/${id}/response`, data),
+  deleteTicket: (id) => api.delete(`/support/${id}`),
+};
+
 export default api;
