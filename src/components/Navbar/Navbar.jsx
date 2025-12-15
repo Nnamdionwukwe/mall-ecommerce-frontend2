@@ -21,7 +21,7 @@ const Navbar = () => {
           <div className={styles.navLinks}>
             {/* <Link to="/" className={styles.link}>
               Home
-            </Link> */}
+        </Link> */}
             {user && (
               <>
                 {/* <Link to="/cart" className={styles.link}>
