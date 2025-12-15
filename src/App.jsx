@@ -7,6 +7,9 @@ import ProductDetails from "./components/pages/ProductDetails/ProductDetails";
 import CartPage from "./components/pages/Cart/CartPage";
 import VendorDashboard from "./components/pages/VendorDashboard/VendorDashboard";
 import Profile from "./components/pages/Profile/Profile";
+import TrackOrder from "./components/pages/TrackOrder/TrackOrder";
+import Orders from "./components/pages/Orders/Orders";
+import Checkout from "./components/pages/Checkout/Checkout";
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/track-order/:orderId" element={<TrackOrder />} />
             <Route path="/vendor/dashboard" element={<VendorDashboard />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>
