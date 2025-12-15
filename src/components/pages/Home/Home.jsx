@@ -175,6 +175,7 @@ const Home = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className={styles.searchInput}
         />
+
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
@@ -187,6 +188,7 @@ const Home = () => {
             </option>
           ))}
         </select>
+
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
