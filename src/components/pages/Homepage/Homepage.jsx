@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { productAPI } from "../../services/api";
-import styles from "./Homepage.module.css";
+import styles from "./HomePage.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
 import Footer from "../Footer/Footer";
 
