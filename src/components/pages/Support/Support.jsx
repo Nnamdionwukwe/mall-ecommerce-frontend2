@@ -56,7 +56,9 @@ const Support = () => {
     setMessage({ text: "", type: "" });
 
     try {
+      console.log("Sending support ticket:", formData); // ADD THIS
       const response = await supportAPI.createTicket(formData);
+      console.log("Response:", response.data); // ADD THIS
 
       setMessage({
         text: `Ticket created! Reference: ${response.data.data.ticketId}`,
@@ -75,9 +77,12 @@ const Support = () => {
         });
       }, 5000);
     } catch (error) {
+      console.error("Full error:", error); // ADD THIS
+      console.error("Error response:", error.response); // ADD THIS
       setMessage({
         text:
           error.response?.data?.error ||
+          error.response?.data?.errors?.[0]?.msg ||
           "Failed to submit ticket. Please try again.",
         type: "error",
       });
@@ -85,6 +90,42 @@ const Support = () => {
       setLoading(false);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setMessage({ text: "", type: "" });
+
+  //   try {
+  //     const response = await supportAPI.createTicket(formData);
+
+  //     setMessage({
+  //       text: `Ticket created! Reference: ${response.data.data.ticketId}`,
+  //       type: "success",
+  //     });
+  //     setSubmitted(true);
+
+  //     setTimeout(() => {
+  //       setSubmitted(false);
+  //       setFormData({
+  //         name: user?.name || "",
+  //         email: user?.email || "",
+  //         subject: "",
+  //         category: "general",
+  //         message: "",
+  //       });
+  //     }, 5000);
+  //   } catch (error) {
+  //     setMessage({
+  //       text:
+  //         error.response?.data?.error ||
+  //         "Failed to submit ticket. Please try again.",
+  //       type: "error",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // const handleSubmit = (e) => {
   //   e.preventDefault();
