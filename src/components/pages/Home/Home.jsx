@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { productAPI } from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
 import styles from "./Home.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
+import { useAuth } from "../../context/AuthContext";
 
 const Home = () => {
   const { user } = useAuth();
@@ -131,36 +131,40 @@ const Home = () => {
     <div className={styles.container}>
       {/* Hero Section */}
       <div className={styles.hero}>
-        <h1 className={styles.heroTitle}>Welcome to Mall Store</h1>
+        <h1 className={styles.heroTitle}>
+          Welcome to Ochacho Pharmacy/Supermarket
+        </h1>
         <p className={styles.heroSubtitle}>
-          Discover amazing products from your favorite stores
+          Discover your favorite amazing products from our stores
         </p>
       </div>
 
       {/* Stats */}
-      <div className={styles.stats}>
-        <div className={styles.statCard}>
-          <div className={styles.statIcon}>📦</div>
-          <div className={styles.statContent}>
-            <h3>Total Products</h3>
-            <p className={styles.statValue}>{stats.total}</p>
+      {/* {user.role === "vendor" && (
+        <div className={styles.stats}>
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>📦</div>
+            <div className={styles.statContent}>
+              <h3>Total Products</h3>
+              <p className={styles.statValue}>{stats.total}</p>
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>🏷️</div>
+            <div className={styles.statContent}>
+              <h3>Categories</h3>
+              <p className={styles.statValue}>{stats.categories}</p>
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>🏪</div>
+            <div className={styles.statContent}>
+              <h3>Vendors</h3>
+              <p className={styles.statValue}>{stats.vendors}</p>
+            </div>
           </div>
         </div>
-        <div className={styles.statCard}>
-          <div className={styles.statIcon}>🏷️</div>
-          <div className={styles.statContent}>
-            <h3>Categories</h3>
-            <p className={styles.statValue}>{stats.categories}</p>
-          </div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statIcon}>🏪</div>
-          <div className={styles.statContent}>
-            <h3>Vendors</h3>
-            <p className={styles.statValue}>{stats.vendors}</p>
-          </div>
-        </div>
-      </div>
+      )} */}
 
       {/* Filters */}
       <div className={styles.filters}>
