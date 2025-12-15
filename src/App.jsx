@@ -10,6 +10,7 @@ import Profile from "./components/pages/Profile/Profile";
 import TrackOrder from "./components/pages/TrackOrder/TrackOrder";
 import Orders from "./components/pages/Orders/Orders";
 import Checkout from "./components/pages/Checkout/Checkout";
+import OrderSuccess from "./components/pages/OrderSuccess/OrderSuccess";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success/:orderId" element={<OrderSuccess />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/track-order/:orderId" element={<TrackOrder />} />
             <Route path="/vendor/dashboard" element={<VendorDashboard />} />

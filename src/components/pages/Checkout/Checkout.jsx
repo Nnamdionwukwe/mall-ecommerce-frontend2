@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-// import { PaystackButton } from "react-paystack";
 import styles from "./Checkout.module.css";
 
 const Checkout = () => {
@@ -19,6 +18,7 @@ const Checkout = () => {
   });
   const [orderNote, setOrderNote] = useState("");
   const [loading, setLoading] = useState(false);
+  const [paystackLoaded, setPaystackLoaded] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -26,7 +26,21 @@ const Checkout = () => {
       return;
     }
     loadCart();
+    loadPaystackScript();
   }, [user, navigate]);
+
+  const loadPaystackScript = () => {
+    if (window.PaystackPop) {
+      setPaystackLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+    script.onload = () => setPaystackLoaded(true);
+    document.body.appendChild(script);
+  };
 
   const loadCart = () => {
     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -52,27 +66,65 @@ const Checkout = () => {
     return `ORD-${timestamp}-${random}`;
   };
 
-  const paystackConfig = {
-    reference: generateOrderId(),
-    email: formData.email,
-    amount: Math.round(total * 100), // Paystack expects amount in kobo (smallest currency unit)
-    publicKey: "pk_test_xxxxxxxxxxxxxxxxxxxx", // Replace with your Paystack public key
+  const handlePayment = () => {
+    if (!paystackLoaded) {
+      alert("Payment system is loading. Please try again.");
+      return;
+    }
+
+    if (!isFormValid()) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    const orderId = generateOrderId();
+
+    const handler = window.PaystackPop.setup({
+      key: "pk_test_xxxxxxxxxxxxxxxxxxxx", // Replace with your Paystack public key
+      email: formData.email,
+      amount: Math.round(total * 100), // Amount in kobo (smallest currency unit)
+      currency: "NGN", // Change to your currency
+      ref: orderId,
+      metadata: {
+        custom_fields: [
+          {
+            display_name: "Customer Name",
+            variable_name: "customer_name",
+            value: formData.fullName,
+          },
+          {
+            display_name: "Phone",
+            variable_name: "phone",
+            value: formData.phone,
+          },
+        ],
+      },
+      callback: function (response) {
+        handlePaymentSuccess(response);
+      },
+      onClose: function () {
+        alert("Payment cancelled");
+      },
+    });
+
+    handler.openIframe();
   };
 
-  const handlePaystackSuccess = async (reference) => {
+  const handlePaymentSuccess = async (response) => {
     setLoading(true);
     try {
-      // Create order in backend
+      // Create order
       const orderData = {
-        orderId: reference.reference,
+        orderId: response.reference,
         userId: user._id,
         items: cart,
         shippingInfo: formData,
         orderNote,
         paymentInfo: {
           method: "paystack",
-          transactionId: reference.transaction,
+          transactionId: response.transaction,
           status: "paid",
+          reference: response.reference,
         },
         subtotal,
         shipping,
@@ -91,17 +143,16 @@ const Checkout = () => {
       localStorage.removeItem("cart");
 
       // Navigate to success page
-      navigate(`/order-success/${reference.reference}`);
+      navigate(`/order-success/${response.reference}`);
     } catch (error) {
       console.error("Error creating order:", error);
-      alert("Order failed. Please contact support.");
+      alert(
+        "Order failed. Please contact support with reference: " +
+          response.reference
+      );
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePaystackClose = () => {
-    alert("Payment cancelled");
   };
 
   const isFormValid = () => {
@@ -127,7 +178,10 @@ const Checkout = () => {
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>📦 Shipping Information</h2>
 
-              <form className={styles.form}>
+              <form
+                className={styles.form}
+                onSubmit={(e) => e.preventDefault()}
+              >
                 <div className={styles.formGroup}>
                   <label>Full Name *</label>
                   <input
@@ -248,6 +302,9 @@ const Checkout = () => {
                       src={item.images?.[0] || "https://via.placeholder.com/60"}
                       alt={item.name}
                       className={styles.itemImage}
+                      onError={(e) =>
+                        (e.target.src = "https://via.placeholder.com/60")
+                      }
                     />
                     <div className={styles.itemInfo}>
                       <h4>{item.name}</h4>
@@ -284,20 +341,21 @@ const Checkout = () => {
                 <span>${total.toFixed(2)}</span>
               </div>
 
-              {isFormValid() ? (
-                <PaystackButton
-                  {...paystackConfig}
-                  text="Pay with Paystack"
-                  onSuccess={handlePaystackSuccess}
-                  onClose={handlePaystackClose}
-                  className={styles.paystackBtn}
-                  disabled={loading}
-                />
-              ) : (
-                <button disabled className={styles.paystackBtnDisabled}>
-                  Complete shipping info to pay
-                </button>
-              )}
+              <button
+                onClick={handlePayment}
+                disabled={!isFormValid() || loading || !paystackLoaded}
+                className={
+                  isFormValid() && paystackLoaded
+                    ? styles.paystackBtn
+                    : styles.paystackBtnDisabled
+                }
+              >
+                {loading
+                  ? "Processing..."
+                  : paystackLoaded
+                  ? "💳 Pay with Paystack"
+                  : "Loading payment..."}
+              </button>
 
               <div className={styles.paymentInfo}>
                 <p>🔒 Secure payment with Paystack</p>
