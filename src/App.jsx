@@ -11,6 +11,8 @@ import TrackOrder from "./components/pages/TrackOrder/TrackOrder";
 import Orders from "./components/pages/Orders/Orders";
 import Checkout from "./components/pages/Checkout/Checkout";
 import OrderSuccess from "./components/pages/OrderSuccess/OrderSuccess";
+import BottomNav from "./components/BottomNav/BottomNav";
+import Support from "./components/pages/Support/Support";
 
 function App() {
   return (
@@ -28,8 +30,10 @@ function App() {
             <Route path="/track-order/:orderId" element={<TrackOrder />} />
             <Route path="/vendor/dashboard" element={<VendorDashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/support" element={<Support />} />
           </Routes>
         </div>
+        <BottomNav />
       </BrowserRouter>
     </AuthProvider>
   );
