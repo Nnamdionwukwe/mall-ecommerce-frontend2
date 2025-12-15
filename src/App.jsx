@@ -14,6 +14,7 @@ import OrderSuccess from "./components/pages/OrderSuccess/OrderSuccess";
 import BottomNav from "./components/BottomNav/BottomNav";
 import Support from "./components/pages/Support/Support";
 import MyTickets from "./components/pages/MyTickets/MyTickets";
+import Homepage from "./components/pages/Homepage/Homepage";
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
         <div className="app">
           <Navbar />
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Homepage />} />
+            <Route path="/shop" element={<Home />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<Checkout />} />
