@@ -4,7 +4,7 @@ import styles from "./Home.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
 import { useAuth } from "../../context/AuthContext";
 
-const Home = () => {
+const Home = ({ addToCart }) => {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -13,7 +13,6 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sortBy, setSortBy] = useState("createdAt-desc");
-  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     fetchProducts();
@@ -76,25 +75,25 @@ const Home = () => {
     setFilteredProducts(filtered);
   };
 
-  const addToCart = (product) => {
-    const existingItem = cart.find((item) => item._id === product._id);
-    if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item._id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
-    }
-    // Store in localStorage
-    localStorage.setItem(
-      "cart",
-      JSON.stringify([...cart, { ...product, quantity: 1 }])
-    );
-  };
+  // const addToCart = (product) => {
+  //   const existingItem = cart.find((item) => item._id === product._id);
+  //   if (existingItem) {
+  //     setCart(
+  //       cart.map((item) =>
+  //         item._id === product._id
+  //           ? { ...item, quantity: item.quantity + 1 }
+  //           : item
+  //       )
+  //     );
+  //   } else {
+  //     setCart([...cart, { ...product, quantity: 1 }]);
+  //   }
+  //   // Store in localStorage
+  //   localStorage.setItem(
+  //     "cart",
+  //     JSON.stringify([...cart, { ...product, quantity: 1 }])
+  //   );
+  // };
 
   const categories = [...new Set(products.map((p) => p.category))];
   const stats = {

@@ -5,7 +5,7 @@ import styles from "./HomePage.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
 import Footer from "../Footer/Footer";
 
-const Homepage = () => {
+const Homepage = ({ addToCart }) => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [bestSellers, setBestSellers] = useState([]);
@@ -101,20 +101,20 @@ const Homepage = () => {
     }
   };
 
-  const addToCart = (product) => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingItem = cart.find((item) => item._id === product._id);
+  // const addToCart = (product) => {
+  //   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  //   const existingItem = cart.find((item) => item._id === product._id);
 
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({ ...product, quantity: 1 });
-    }
+  //   if (existingItem) {
+  //     existingItem.quantity += 1;
+  //   } else {
+  //     cart.push({ ...product, quantity: 1 });
+  //   }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
-    alert(`${product.name} added to cart!`);
-  };
+  //   localStorage.setItem("cart", JSON.stringify(cart));
+  //   window.dispatchEvent(new Event("cartUpdated"));
+  //   alert(`${product.name} added to cart!`);
+  // };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % banners.length);

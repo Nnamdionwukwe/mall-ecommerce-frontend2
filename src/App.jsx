@@ -15,16 +15,39 @@ import BottomNav from "./components/BottomNav/BottomNav";
 import Support from "./components/pages/Support/Support";
 import MyTickets from "./components/pages/MyTickets/MyTickets";
 import Homepage from "./components/pages/Homepage/Homepage";
+import { useState } from "react";
 
 function App() {
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (product) => {
+    const existingItem = cart.find((item) => item._id === product._id);
+    if (existingItem) {
+      setCart(
+        cart.map((item) =>
+          item._id === product._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+    } else {
+      setCart([...cart, { ...product, quantity: 1 }]);
+    }
+    // Store in localStorage
+    localStorage.setItem(
+      "cart",
+      JSON.stringify([...cart, { ...product, quantity: 1 }])
+    );
+  };
+
   return (
     <AuthProvider>
       <BrowserRouter>
         <div className="app">
           <Navbar />
           <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/shop" element={<Home />} />
+            <Route path="/" element={<Homepage addToCart={addToCart} />} />
+            <Route path="/shop" element={<Home addToCart={addToCart} />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<Checkout />} />
