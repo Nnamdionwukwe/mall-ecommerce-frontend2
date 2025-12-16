@@ -10,6 +10,7 @@ const ProductCard = ({
   onDelete,
 }) => {
   const [imageError, setImageError] = useState(false);
+
   const hasImage =
     product.images && product.images.length > 0 && product.images[0];
 

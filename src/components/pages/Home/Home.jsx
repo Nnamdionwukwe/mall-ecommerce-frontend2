@@ -3,8 +3,9 @@ import { productAPI } from "../../services/api";
 import styles from "./Home.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
-const Home = ({ addToCart }) => {
+const Home = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -13,6 +14,8 @@ const Home = ({ addToCart }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sortBy, setSortBy] = useState("createdAt-desc");
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchProducts();

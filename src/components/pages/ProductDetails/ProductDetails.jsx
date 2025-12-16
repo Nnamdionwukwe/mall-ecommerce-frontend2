@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { productAPI } from "../../services/api";
 import styles from "./ProductDetails.module.css";
+import { useCart } from "../../context/CartContext";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -11,6 +12,15 @@ const ProductDetails = () => {
   const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+
+  const {
+    removeFromCart,
+    cart,
+    updateQuantity,
+    clearCart,
+    addToCart,
+    isLoading,
+  } = useCart();
 
   useEffect(() => {
     fetchProduct();
@@ -28,22 +38,6 @@ const ProductDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const addToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingItem = cart.find((item) => item._id === product._id);
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } else {
-      cart.push({ ...product, quantity });
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
-
-    alert(`Added ${quantity} ${product.name} to cart!`);
-    navigate("/cart");
   };
 
   const getEmoji = (category) => {
@@ -152,27 +146,36 @@ const ProductDetails = () => {
             </p>
 
             <div className={styles.actions}>
-              <div className={styles.quantitySelector}>
+              {/* <div className={styles.quantitySelector}>
                 <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  onClick={() => setQuantity(quantity - 1)}
                   className={styles.quantityBtn}
                 >
                   −
                 </button>
-                <span className={styles.quantity}>{quantity}</span>
-                <button
-                  onClick={() =>
-                    setQuantity(Math.min(product.stock, quantity + 1))
+
+                <input
+                  type="number"
+                  value={product.quantity}
+                  onChange={(e) =>
+                    updateQuantity(product._id, parseInt(e.target.value) || 1)
                   }
+                  className={styles.quantityInput}
+                  min="1"
+                />
+                <span className={styles.quantity}>{quantity}</span>
+
+                <button
+                  onClick={() => updateQuantity(product._id, cart.quantity + 1)}
                   className={styles.quantityBtn}
-                  disabled={quantity >= product.stock}
+                  disabled={product.quantity >= product.stock}
                 >
                   +
                 </button>
-              </div>
+              </div> */}
 
               <button
-                onClick={addToCart}
+                onClick={() => addToCart(product)}
                 className={styles.addToCartBtn}
                 disabled={product.stock === 0}
               >

@@ -4,12 +4,15 @@ import { productAPI } from "../../services/api";
 import styles from "./HomePage.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
 import Footer from "../Footer/Footer";
+import { useCart } from "../../context/CartContext";
 
-const Homepage = ({ addToCart }) => {
+const Homepage = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { addToCart, isLoading } = useCart();
 
   const banners = [
     {
@@ -193,7 +196,7 @@ const Homepage = ({ addToCart }) => {
             <p>Top picks from our customers</p>
           </div>
 
-          {loading ? (
+          {isLoading ? (
             <div className={styles.loading}>
               <div className={styles.spinner}></div>
               <p>Loading products...</p>

@@ -3,12 +3,15 @@ import { useState, useEffect } from "react";
 useAuth;
 import styles from "./BottomNav.module.css";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const [cartCount, setCartCount] = useState(0);
+
+  const { cart } = useCart();
 
   useEffect(() => {
     updateCartCount();
@@ -43,7 +46,7 @@ const BottomNav = () => {
       label: "Cart",
       path: "/cart",
       requiresAuth: false,
-      badge: cartCount,
+      badge: cart.length,
     },
     {
       id: "orders",
