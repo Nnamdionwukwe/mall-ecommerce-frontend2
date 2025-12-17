@@ -1,17 +1,21 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-useAuth;
-import styles from "./BottomNav.module.css";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+// import LoginRequiredModal from "./LoginRequiredModal/LoginRequiredModal";
+import styles from "./BottomNav.module.css";
+import LoginRequiredModal from "../LoginRequiredModal/LoginRequiredModal";
+import AuthModal from "../AuthModal/AuthModal";
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const [cartCount, setCartCount] = useState(0);
-
   const { cart } = useCart();
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState("");
+  const [showAuth, setShowAuth] = useState(false);
 
   useEffect(() => {
     updateCartCount();
@@ -19,7 +23,6 @@ const BottomNav = () => {
     window.addEventListener("storage", updateCartCount);
     // Custom event for same-tab updates
     window.addEventListener("cartUpdated", updateCartCount);
-
     return () => {
       window.removeEventListener("storage", updateCartCount);
       window.removeEventListener("cartUpdated", updateCartCount);
@@ -73,10 +76,17 @@ const BottomNav = () => {
 
   const handleNavClick = (item) => {
     if (item.requiresAuth && !user) {
-      alert("Please login to access this feature");
+      setSelectedFeature(item.label);
+      setLoginModalOpen(true);
       return;
     }
     navigate(item.path);
+  };
+
+  const handleLoginRedirect = () => {
+    setLoginModalOpen(false);
+    // navigate("/");
+    setShowAuth(true);
   };
 
   const isActive = (path) => {
@@ -84,29 +94,40 @@ const BottomNav = () => {
   };
 
   return (
-    <nav className={styles.bottomNav}>
-      <div className={styles.navContainer}>
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => handleNavClick(item)}
-            className={`${styles.navItem} ${
-              isActive(item.path) ? styles.active : ""
-            }`}
-          >
-            <div className={styles.iconWrapper}>
-              <span className={styles.icon}>{item.icon}</span>
-              {item.badge > 0 && (
-                <span className={styles.badge}>
-                  {item.badge > 99 ? "99+" : item.badge}
-                </span>
-              )}
-            </div>
-            <span className={styles.label}>{item.label}</span>
-          </button>
-        ))}
-      </div>
-    </nav>
+    <>
+      <nav className={styles.bottomNav}>
+        <div className={styles.navContainer}>
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleNavClick(item)}
+              className={`${styles.navItem} ${
+                isActive(item.path) ? styles.active : ""
+              }`}
+            >
+              <div className={styles.iconWrapper}>
+                <span className={styles.icon}>{item.icon}</span>
+                {item.badge > 0 && (
+                  <span className={styles.badge}>
+                    {item.badge > 99 ? "99+" : item.badge}
+                  </span>
+                )}
+              </div>
+              <span className={styles.label}>{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      <LoginRequiredModal
+        isOpen={loginModalOpen}
+        feature={selectedFeature}
+        onClose={() => setLoginModalOpen(false)}
+        onLogin={handleLoginRedirect}
+      />
+
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+    </>
   );
 };
 
