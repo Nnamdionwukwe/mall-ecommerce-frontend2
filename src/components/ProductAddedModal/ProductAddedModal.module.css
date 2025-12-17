@@ -35,17 +35,19 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .titleSection {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex: 1;
 }
 
 .icon {
   color: #10b981;
+  flex-shrink: 0;
 }
 
 .title {
@@ -64,7 +66,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
 }
 
 .closeBtn:hover {
@@ -81,6 +84,7 @@
   padding: 1rem;
   background-color: #f9fafb;
   border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
 }
 
 .productImage {
@@ -88,29 +92,35 @@
   height: 5rem;
   object-fit: cover;
   border-radius: 0.375rem;
+  flex-shrink: 0;
 }
 
 .productInfo {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .productName {
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .productQty {
   font-size: 0.875rem;
   color: #6b7280;
-  margin: 0;
+  margin: 0 0 0.25rem 0;
 }
 
 .productPrice {
   font-size: 1.125rem;
-  font-weight: bold;
-  color: #1f2937;
-  margin: 0.25rem 0 0 0;
+  font-weight: 700;
+  color: #10b981;
+  margin: 0.5rem 0 0 0;
 }
 
 .buttonGroup {
@@ -121,13 +131,13 @@
 .primaryBtn,
 .secondaryBtn {
   flex: 1;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   font-weight: 600;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 1rem;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
 }
 
 .primaryBtn {
@@ -137,14 +147,59 @@
 
 .primaryBtn:hover {
   background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.primaryBtn:active {
+  transform: translateY(0);
 }
 
 .secondaryBtn {
   background-color: white;
   color: #374151;
-  border: 1px solid #d1d5db;
+  border: 1.5px solid #d1d5db;
 }
 
 .secondaryBtn:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.secondaryBtn:active {
   background-color: #f3f4f6;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .modal {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .productBox {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .productImage {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .productName {
+    font-size: 0.875rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+  }
 }
