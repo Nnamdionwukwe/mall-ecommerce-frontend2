@@ -148,7 +148,7 @@ const CartPage = () => {
                 onMouseLeave={(e) =>
                   (e.target.style.backgroundColor = "#4f46e5")
                 }
-                onClick={() => navigate("/checkeout")}
+                onClick={() => navigate("/checkout")}
               >
                 Proceed to Checkout
               </button>

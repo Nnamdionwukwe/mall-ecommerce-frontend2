@@ -22,6 +22,11 @@ const ProductDetails = () => {
     isLoading,
   } = useCart();
 
+  const handleAddToCart = () => {
+    addToCart(product);
+    navigate("/cart");
+  };
+
   useEffect(() => {
     fetchProduct();
   }, [id]);
@@ -175,7 +180,7 @@ const ProductDetails = () => {
               </div> */}
 
               <button
-                onClick={() => addToCart(product)}
+                onClick={handleAddToCart}
                 className={styles.addToCartBtn}
                 disabled={product.stock === 0}
               >
