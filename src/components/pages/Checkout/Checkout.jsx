@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Checkout.module.css";
+import { useCart } from "../../context/CartContext";
 
 const Checkout = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [cart, setCart] = useState([]);
+  // const [cart, setCart] = useState([]);
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
     email: user?.email || "",
@@ -16,6 +17,9 @@ const Checkout = () => {
     state: "",
     zipCode: "",
   });
+
+  const { totalPrice, cart } = useCart();
+
   const [orderNote, setOrderNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [paystackLoaded, setPaystackLoaded] = useState(false);
@@ -25,7 +29,7 @@ const Checkout = () => {
       navigate("/");
       return;
     }
-    loadCart();
+    // loadCart();
     loadPaystackScript();
   }, [user, navigate]);
 
@@ -42,14 +46,14 @@ const Checkout = () => {
     document.body.appendChild(script);
   };
 
-  const loadCart = () => {
-    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    if (savedCart.length === 0) {
-      navigate("/cart");
-      return;
-    }
-    setCart(savedCart);
-  };
+  // const loadCart = () => {
+  //   const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+  //   if (savedCart.length === 0) {
+  //     navigate("/cart");
+  //     return;
+  //   }
+  //   setCart(savedCart);
+  // };
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -338,7 +342,9 @@ const Checkout = () => {
 
               <div className={styles.summaryTotal}>
                 <span>Total:</span>
-                <span>${total.toFixed(2)}</span>
+                {/* <span>${totalPrice.toFixed(2)}</span>
+                 */}
+                ${(totalPrice + totalPrice * 0.1).toFixed(2)}
               </div>
 
               <button

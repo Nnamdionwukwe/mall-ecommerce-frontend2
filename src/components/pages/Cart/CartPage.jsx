@@ -128,7 +128,7 @@ const CartPage = () => {
                   <span className={styles.freeShipping}>Free</span>
                 </div>
                 <div className={styles.summaryRow}>
-                  <span>Tax</span>
+                  <span>Tax (10%):</span>
                   <span>${(totalPrice * 0.1).toFixed(2)}</span>
                 </div>
               </div>
