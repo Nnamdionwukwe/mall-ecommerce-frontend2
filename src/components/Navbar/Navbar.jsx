@@ -3,12 +3,26 @@ import { useState } from "react";
 import AuthModal from "../AuthModal/AuthModal";
 import styles from "./Navbar.module.css";
 import { useAuth } from "../context/AuthContext";
+import LogoutModal from "../LogoutModal/LogoutModal";
 
 const logo = "/ochacho.PNG";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+
+  const handleLogoutClick = () => {
+    setLogoutOpen(true);
+  };
+
+  // Your logout function from context or auth hook
+  const logout1 = () => {
+    // Clear auth tokens, user data, etc.
+    logout();
+    localStorage.removeItem("authToken");
+    // or your auth service logout method
+  };
 
   return (
     <>
@@ -51,17 +65,28 @@ const Navbar = () => {
 
                   <span className={styles.badge}>{user.role}</span>
                 </span>
-                <button onClick={logout} className={styles.logoutBtn}>
+                <button
+                  onClick={handleLogoutClick}
+                  className={styles.logoutBtn}
+                >
                   Logout
                 </button>
+
+                <LogoutModal
+                  isOpen={logoutOpen}
+                  onCancel={() => setLogoutOpen(false)}
+                  logout={logout1}
+                />
               </>
             ) : (
-              <button
-                onClick={() => setShowAuth(true)}
-                className={styles.loginBtn}
-              >
-                Login / Register
-              </button>
+              <>
+                <button
+                  onClick={() => setShowAuth(true)}
+                  className={styles.loginBtn}
+                >
+                  Login / Register
+                </button>
+              </>
             )}
           </div>
         </div>
