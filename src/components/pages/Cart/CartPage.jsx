@@ -1,13 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import styles from "./CartPage.module.css";
 import { useCart } from "../../context/CartContext";
-import { Trash2, Plus, Minus, ShoppingCart, LogOut } from "lucide-react";
+// import LoginRequiredModal from "../LoginRequiredModal/LoginRequiredModal";
+import styles from "./CartPage.module.css";
+import { Trash2, Plus, Minus, ShoppingCart } from "lucide-react";
+import LoginRequiredModal from "../../LoginRequiredModal/LoginRequiredModal";
+import AuthModal from "../../AuthModal/AuthModal";
 
 const CartPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-
   const {
     removeFromCart,
     updateQuantity,
@@ -17,12 +20,21 @@ const CartPage = () => {
     cart,
   } = useCart();
 
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+
   const handleCheckout = () => {
     if (!user) {
-      alert("Please login to checkout");
+      setLoginModalOpen(true);
       return;
     }
-    alert("Checkout feature coming soon!");
+    navigate("/checkout");
+  };
+
+  const handleLoginRedirect = () => {
+    setLoginModalOpen(false);
+    // navigate("/login");
+    setShowAuth(true);
   };
 
   return (
@@ -31,7 +43,6 @@ const CartPage = () => {
         <header className={styles.header}>
           <h1 className={styles.title}>Shopping Cart</h1>
         </header>
-
         {cart.length === 0 ? (
           <div className={styles.emptyCart}>
             <ShoppingCart className={styles.emptyIcon} />
@@ -47,11 +58,9 @@ const CartPage = () => {
                     alt={item.name}
                     className={styles.itemImage}
                   />
-
                   <div className={styles.itemDetails}>
                     <h3 className={styles.itemName}>{item.name}</h3>
                     <p className={styles.itemPrice}>${item.price}</p>
-
                     <div className={styles.quantityControl}>
                       <button
                         onClick={() =>
@@ -67,7 +76,6 @@ const CartPage = () => {
                       >
                         <Minus size={16} />
                       </button>
-
                       <input
                         type="number"
                         value={item.quantity}
@@ -80,7 +88,6 @@ const CartPage = () => {
                         className={styles.quantityInput}
                         min="1"
                       />
-
                       <button
                         onClick={() =>
                           updateQuantity(item._id, item.quantity + 1)
@@ -95,16 +102,13 @@ const CartPage = () => {
                       >
                         <Plus size={16} />
                       </button>
-
                       <span className={styles.subtotal}>
                         Subtotal: ${(item.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   </div>
-
                   <button
                     onClick={() => removeFromCart(item._id)}
-                    s
                     className={styles.removeBtn}
                     onMouseEnter={(e) => (e.target.style.color = "#b91c1c")}
                     onMouseLeave={(e) => (e.target.style.color = "#dc2626")}
@@ -114,10 +118,8 @@ const CartPage = () => {
                 </div>
               ))}
             </div>
-
             <div className={styles.orderSummary}>
               <h2 className={styles.summaryTitle}>Order Summary</h2>
-
               <div className={styles.summaryDetails}>
                 <div className={styles.summaryRow}>
                   <span>Items ({totalItems})</span>
@@ -132,14 +134,12 @@ const CartPage = () => {
                   <span>${(totalPrice * 0.1).toFixed(2)}</span>
                 </div>
               </div>
-
               <div className={styles.totalSection}>
                 <span>Total</span>
                 <span className={styles.totalAmount}>
                   ${(totalPrice + totalPrice * 0.1).toFixed(2)}
                 </span>
               </div>
-
               <button
                 className={styles.checkoutBtn}
                 onMouseEnter={(e) =>
@@ -148,11 +148,10 @@ const CartPage = () => {
                 onMouseLeave={(e) =>
                   (e.target.style.backgroundColor = "#4f46e5")
                 }
-                onClick={() => navigate("/checkout")}
+                onClick={handleCheckout}
               >
                 Proceed to Checkout
               </button>
-
               <button
                 className={styles.continueBtn}
                 onMouseEnter={(e) =>
@@ -169,172 +168,17 @@ const CartPage = () => {
           </div>
         )}
       </div>
+
+      <LoginRequiredModal
+        isOpen={loginModalOpen}
+        feature="Checkout"
+        onClose={() => setLoginModalOpen(false)}
+        onLogin={handleLoginRedirect}
+      />
+
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </div>
   );
 };
 
 export default CartPage;
-
-// useEffect(() => {
-//   loadCart();
-// }, []);
-
-//   const loadCart = () => {
-//     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-//     setCart(savedCart);
-//   };
-
-//   const updateQuantity = (productId, newQuantity) => {
-//     if (newQuantity < 1) return;
-
-//     const updatedCart = cart.map((item) =>
-//       item._id === productId ? { ...item, quantity: newQuantity } : item
-//     );
-//     setCart(updatedCart);
-//     localStorage.setItem("cart", JSON.stringify(updatedCart));
-//   };
-
-//   const removeItem = (productId) => {
-//     const updatedCart = cart.filter((item) => item._id !== productId);
-//     setCart(updatedCart);
-//     localStorage.setItem("cart", JSON.stringify(updatedCart));
-//   };
-
-//   const clearCart = () => {
-//     setCart([]);
-//     localStorage.removeItem("cart");
-//   };
-
-//   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-//   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-//   const handleCheckout = () => {
-//     if (!user) {
-//       alert("Please login to checkout");
-//       return;
-//     }
-//     alert("Checkout feature coming soon!");
-//   };
-
-//   if (cart.length === 0) {
-//     return (
-//       <div className={styles.container}>
-//         <div className={styles.empty}>
-//           <div className={styles.emptyIcon}>🛒</div>
-//           <h2>Your cart is empty</h2>
-//           <p>Add some products to get started!</p>
-//           <button onClick={() => navigate("/")} className={styles.shopBtn}>
-//             Start Shopping
-//           </button>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className={styles.container}>
-//       <div className={styles.content}>
-//         <div className={styles.header}>
-//           <h1>Shopping Cart</h1>
-//           <button onClick={clearCart} className={styles.clearBtn}>
-//             Clear Cart
-//           </button>
-//         </div>
-
-//         <div className={styles.cartLayout}>
-//           <div className={styles.itemsSection}>
-//             {cart.map((item) => (
-//               <div key={item._id} className={styles.cartItem}>
-//                 <img
-//                   src={item.images?.[0] || "https://via.placeholder.com/100"}
-//                   alt={item.name}
-//                   className={styles.itemImage}
-//                   onError={(e) =>
-//                     (e.target.src = "https://via.placeholder.com/100")
-//                   }
-//                 />
-
-//                 <div className={styles.itemInfo}>
-//                   <h3 className={styles.itemName}>{item.name}</h3>
-//                   <p className={styles.itemVendor}>{item.vendorName}</p>
-//                   <p className={styles.itemPrice}>${item.price.toFixed(2)}</p>
-//                 </div>
-
-//                 <div className={styles.quantityControl}>
-//                   <button
-//                     onClick={() => updateQuantity(item._id, item.quantity - 1)}
-//                     className={styles.quantityBtn}
-//                   >
-//                     −
-//                   </button>
-//                   <span className={styles.quantity}>{item.quantity}</span>
-//                   <button
-//                     onClick={() => updateQuantity(item._id, item.quantity + 1)}
-//                     className={styles.quantityBtn}
-//                   >
-//                     +
-//                   </button>
-//                 </div>
-
-//                 <div className={styles.itemTotal}>
-//                   ${(item.price * item.quantity).toFixed(2)}
-//                 </div>
-
-//                 <button
-//                   onClick={() => removeItem(item._id)}
-//                   className={styles.removeBtn}
-//                 >
-//                   🗑️
-//                 </button>
-//               </div>
-//             ))}
-//           </div>
-
-//           <div className={styles.summarySection}>
-//             <div className={styles.summary}>
-//               <h2>Order Summary</h2>
-
-//               <div className={styles.summaryRow}>
-//                 <span>Items ({itemCount}):</span>
-//                 <span>${total.toFixed(2)}</span>
-//               </div>
-
-//               <div className={styles.summaryRow}>
-//                 <span>Shipping:</span>
-//                 <span>Free</span>
-//               </div>
-
-//               <div className={styles.summaryRow}>
-//                 <span>Tax:</span>
-//                 <span>${(total * 0.1).toFixed(2)}</span>
-//               </div>
-
-//               <div className={styles.summaryDivider}></div>
-
-//               <div className={styles.summaryTotal}>
-//                 <span>Total:</span>
-//                 <span>${(total * 1.1).toFixed(2)}</span>
-//               </div>
-
-//               <button
-//                 onClick={() => navigate("/checkout")}
-//                 className={styles.checkoutBtn}
-//               >
-//                 Proceed to Checkout
-//               </button>
-
-//               <button
-//                 onClick={() => navigate("/")}
-//                 className={styles.continueBtn}
-//               >
-//                 Continue Shopping
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CartPage;
