@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { authAPI } from "../../services/api";
 import styles from "./Profile.module.css";
+import LogoutModal from "../../LogoutModal/LogoutModal";
+// import LogoutModal from "../../LogoutModal/LogoutModal";
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -22,6 +24,19 @@ const Profile = () => {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [logoutOpen, setLogoutOpen] = useState(false);
+
+  const handleLogoutClick = () => {
+    setLogoutOpen(true);
+  };
+
+  // Your logout function from context or auth hook
+  const logout1 = () => {
+    // Clear auth tokens, user data, etc.
+    logout();
+    localStorage.removeItem("authToken");
+    // or your auth service logout method
+  };
 
   useEffect(() => {
     if (!user) {
@@ -177,9 +192,15 @@ const Profile = () => {
       <div className={styles.content}>
         <div className={styles.header}>
           <h1>My Profile</h1>
-          <button onClick={handleLogout} className={styles.logoutBtn}>
+          <button onClick={handleLogoutClick} className={styles.logoutBtn}>
             🚪 Logout
           </button>
+
+          <LogoutModal
+            isOpen={logoutOpen}
+            onCancel={() => setLogoutOpen(false)}
+            logout={logout1}
+          />
         </div>
 
         {message.text && (

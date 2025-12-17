@@ -1,0 +1,97 @@
+.loginOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.loginModal {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 28rem;
+  width: 100%;
+  margin: 1rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+.loginHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.loginIconBox {
+  padding: 0.75rem;
+  background-color: #fef3c7;
+  border-radius: 50%;
+}
+
+.loginIcon {
+  color: #b45309;
+}
+
+.loginTitleSection {
+  flex: 1;
+}
+
+.loginTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.loginSubtitle {
+  color: #4b5563;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0 0;
+}
+
+.loginDescription {
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.loginButtonGroup {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.loginCancelBtn,
+.loginConfirmBtn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.loginCancelBtn {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.loginCancelBtn:hover {
+  background-color: #f3f4f6;
+}
+
+.loginConfirmBtn {
+  background-color: #2563eb;
+  color: white;
+}
+
+.loginConfirmBtn:hover {
+  background-color: #1d4ed8;
+}
