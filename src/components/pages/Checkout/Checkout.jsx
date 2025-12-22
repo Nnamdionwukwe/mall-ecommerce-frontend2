@@ -7,6 +7,10 @@ import { useCart } from "../../context/CartContext";
 import axios from "axios";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
+fetch("https://mall-ecommerce-api-production.up.railway.app/api/health")
+  .then((r) => r.json())
+  .then(console.log)
+  .catch(console.error);
 
 const Checkout = () => {
   const { user } = useAuth();
