@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
-// import LoginRequiredModal from "../LoginRequiredModal/LoginRequiredModal";
+import { useCurrency } from "../../context/CurrencyContext"; // Import currency context
 import styles from "./CartPage.module.css";
 import { Trash2, Plus, Minus, ShoppingCart } from "lucide-react";
 import LoginRequiredModal from "../../LoginRequiredModal/LoginRequiredModal";
@@ -19,6 +19,7 @@ const CartPage = () => {
     totalItems,
     cart,
   } = useCart();
+  const { formatPrice } = useCurrency(); // Use currency context hook
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
@@ -36,6 +37,9 @@ const CartPage = () => {
     // navigate("/login");
     setShowAuth(true);
   };
+
+  const tax = totalPrice * 0.1;
+  const total = totalPrice + tax;
 
   return (
     <div className={styles.container}>
@@ -60,7 +64,9 @@ const CartPage = () => {
                   />
                   <div className={styles.itemDetails}>
                     <h3 className={styles.itemName}>{item.name}</h3>
-                    <p className={styles.itemPrice}>${item.price}</p>
+                    <p className={styles.itemPrice}>
+                      {formatPrice(item.price)}
+                    </p>
                     <div className={styles.quantityControl}>
                       <button
                         onClick={() =>
@@ -103,7 +109,7 @@ const CartPage = () => {
                         <Plus size={16} />
                       </button>
                       <span className={styles.subtotal}>
-                        Subtotal: ${(item.price * item.quantity).toFixed(2)}
+                        Subtotal: {formatPrice(item.price * item.quantity)}
                       </span>
                     </div>
                   </div>
@@ -123,7 +129,7 @@ const CartPage = () => {
               <div className={styles.summaryDetails}>
                 <div className={styles.summaryRow}>
                   <span>Items ({totalItems})</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <span>{formatPrice(totalPrice)}</span>
                 </div>
                 <div className={styles.summaryRow}>
                   <span>Shipping</span>
@@ -131,14 +137,12 @@ const CartPage = () => {
                 </div>
                 <div className={styles.summaryRow}>
                   <span>Tax (10%):</span>
-                  <span>${(totalPrice * 0.1).toFixed(2)}</span>
+                  <span>{formatPrice(tax)}</span>
                 </div>
               </div>
               <div className={styles.totalSection}>
                 <span>Total</span>
-                <span className={styles.totalAmount}>
-                  ${(totalPrice + totalPrice * 0.1).toFixed(2)}
-                </span>
+                <span className={styles.totalAmount}>{formatPrice(total)}</span>
               </div>
               <button
                 className={styles.checkoutBtn}

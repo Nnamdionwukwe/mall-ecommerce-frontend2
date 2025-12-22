@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState } from "react"; // Import the hook
 import styles from "./ProductCard.module.css";
 import ProductAddedModal from "../ProductAddedModal/ProductAddedModal";
-// import ProductAddedModal from "../ProductAddedModal/ProductAddedModal";
+import { useCurrency } from "../context/CurrencyContext";
 
 const ProductCard = ({
   product,
@@ -12,6 +12,7 @@ const ProductCard = ({
   onDelete,
 }) => {
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency(); // Use the currency context
   const [imageError, setImageError] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [addedProduct, setAddedProduct] = useState(null);
@@ -36,7 +37,6 @@ const ProductCard = ({
   const handleAddToCart = () => {
     // Call the parent's onAddToCart function
     onAddToCart(product);
-
     // Show the ProductAddedModal
     setAddedProduct({
       name: product.name,
@@ -79,7 +79,8 @@ const ProductCard = ({
             {product.description || "No description"}
           </p>
           <div className={styles.meta}>
-            <span className={styles.price}>${product.price.toFixed(2)}</span>
+            {/* Display formatted price with Naira symbol */}
+            <span className={styles.price}>{formatPrice(product.price)}</span>
             <span
               className={`${styles.stock} ${
                 product.stock < 20 ? styles.lowStock : ""
@@ -108,13 +109,16 @@ const ProductCard = ({
               </button>
             </div>
           ) : (
-            <button onClick={handleAddToCart} className={styles.addToCartBtn}>
+            <button
+              disabled={product.stock === 0}
+              onClick={handleAddToCart}
+              className={styles.addToCartBtn}
+            >
               🛒 Add to Cart
             </button>
           )}
         </div>
       </div>
-
       <ProductAddedModal
         isOpen={modalOpen}
         product={addedProduct}

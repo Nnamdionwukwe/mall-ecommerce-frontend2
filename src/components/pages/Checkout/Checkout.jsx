@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useCurrency } from "../../context/CurrencyContext"; // Import currency context
 import styles from "./Checkout.module.css";
 import { useCart } from "../../context/CartContext";
 
 const Checkout = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  // const [cart, setCart] = useState([]);
+  const { formatPrice } = useCurrency(); // Use currency context hook
+
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
     email: user?.email || "",
@@ -16,6 +18,13 @@ const Checkout = () => {
     city: "",
     state: "",
     zipCode: "",
+  });
+
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: "",
+    cardName: "",
+    expiryDate: "",
+    cvv: "",
   });
 
   const { totalPrice, cart } = useCart();
@@ -29,7 +38,6 @@ const Checkout = () => {
       navigate("/");
       return;
     }
-    // loadCart();
     loadPaystackScript();
   }, [user, navigate]);
 
@@ -45,15 +53,6 @@ const Checkout = () => {
     script.onload = () => setPaystackLoaded(true);
     document.body.appendChild(script);
   };
-
-  // const loadCart = () => {
-  //   const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-  //   if (savedCart.length === 0) {
-  //     navigate("/cart");
-  //     return;
-  //   }
-  //   setCart(savedCart);
-  // };
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -167,7 +166,11 @@ const Checkout = () => {
       formData.address &&
       formData.city &&
       formData.state &&
-      formData.zipCode
+      formData.zipCode &&
+      cardDetails.cardNumber &&
+      cardDetails.cardName &&
+      cardDetails.expiryDate &&
+      cardDetails.cvv
     );
   };
 
@@ -292,6 +295,95 @@ const Checkout = () => {
                 </div>
               </form>
             </div>
+
+            {/* Card Details Section */}
+            <div className={styles.card}>
+              <h2 className={styles.cardTitle}>💳 Payment Details</h2>
+
+              <form
+                className={styles.form}
+                onSubmit={(e) => e.preventDefault()}
+              >
+                <div className={styles.formGroup}>
+                  <label>Cardholder Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={cardDetails.cardName}
+                    onChange={(e) =>
+                      setCardDetails({
+                        ...cardDetails,
+                        cardName: e.target.value,
+                      })
+                    }
+                    placeholder="John Doe"
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Card Number *</label>
+                  <input
+                    type="text"
+                    required
+                    value={cardDetails.cardNumber}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\s/g, "");
+                      const formatted = value.replace(/(\d{4})/g, "$1 ").trim();
+                      setCardDetails({
+                        ...cardDetails,
+                        cardNumber: formatted.slice(0, 19),
+                      });
+                    }}
+                    placeholder="1234 5678 9012 3456"
+                    maxLength="19"
+                  />
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label>Expiry Date (MM/YY) *</label>
+                    <input
+                      type="text"
+                      required
+                      value={cardDetails.expiryDate}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        if (value.length <= 4) {
+                          const formatted =
+                            value.length > 2
+                              ? `${value.slice(0, 2)}/${value.slice(2)}`
+                              : value;
+                          setCardDetails({
+                            ...cardDetails,
+                            expiryDate: formatted,
+                          });
+                        }
+                      }}
+                      placeholder="MM/YY"
+                      maxLength="5"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>CVV *</label>
+                    <input
+                      type="password"
+                      required
+                      value={cardDetails.cvv}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        setCardDetails({
+                          ...cardDetails,
+                          cvv: value.slice(0, 3),
+                        });
+                      }}
+                      placeholder="123"
+                      maxLength="3"
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
 
           {/* Order Summary */}
@@ -315,7 +407,7 @@ const Checkout = () => {
                       <p>Qty: {item.quantity}</p>
                     </div>
                     <div className={styles.itemPrice}>
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {formatPrice(item.price * item.quantity)}
                     </div>
                   </div>
                 ))}
@@ -325,26 +417,22 @@ const Checkout = () => {
 
               <div className={styles.summaryRow}>
                 <span>Subtotal:</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
               <div className={styles.summaryRow}>
                 <span>Shipping:</span>
-                <span>
-                  {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
-                </span>
+                <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
               </div>
               <div className={styles.summaryRow}>
                 <span>Tax (10%):</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>{formatPrice(tax)}</span>
               </div>
 
               <div className={styles.divider}></div>
 
               <div className={styles.summaryTotal}>
                 <span>Total:</span>
-                {/* <span>${totalPrice.toFixed(2)}</span>
-                 */}
-                ${(totalPrice + totalPrice * 0.1).toFixed(2)}
+                <span>{formatPrice(total)}</span>
               </div>
 
               <button

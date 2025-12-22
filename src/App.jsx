@@ -16,6 +16,7 @@ import Support from "./components/pages/Support/Support";
 import MyTickets from "./components/pages/MyTickets/MyTickets";
 import Homepage from "./components/pages/Homepage/Homepage";
 import { CartProvider } from "./components/context/CartContext";
+import { CurrencyProvider } from "./components/context/CurrencyContext";
 // import { useState } from "react";
 
 function App() {
@@ -42,33 +43,35 @@ function App() {
   // };
 
   return (
-    <CartProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <div className="app">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/shop" element={<Home />} />
-              <Route path="/product/:id" element={<ProductDetails />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route
-                path="/order-success/:orderId"
-                element={<OrderSuccess />}
-              />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/track-order/:orderId" element={<TrackOrder />} />
-              <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/my-tickets" element={<MyTickets />} />
-            </Routes>
-          </div>
-          <BottomNav />
-        </BrowserRouter>
-      </AuthProvider>
-    </CartProvider>
+    <CurrencyProvider>
+      <CartProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <div className="app">
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/shop" element={<Home />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route
+                  path="/order-success/:orderId"
+                  element={<OrderSuccess />}
+                />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/track-order/:orderId" element={<TrackOrder />} />
+                <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/my-tickets" element={<MyTickets />} />
+              </Routes>
+            </div>
+            <BottomNav />
+          </BrowserRouter>
+        </AuthProvider>
+      </CartProvider>
+    </CurrencyProvider>
   );
 }
 

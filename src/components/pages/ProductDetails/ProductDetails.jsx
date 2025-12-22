@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { productAPI } from "../../services/api";
+import { useCurrency } from "../../context/CurrencyContext"; // Import currency context
 import styles from "./ProductDetails.module.css";
 import { useCart } from "../../context/CartContext";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency(); // Use currency context hook
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -132,7 +134,7 @@ const ProductDetails = () => {
             <h1 className={styles.title}>{product.name}</h1>
             <p className={styles.vendor}>by {product.vendorName}</p>
 
-            <div className={styles.price}>${product.price.toFixed(2)}</div>
+            <div className={styles.price}>{formatPrice(product.price)}</div>
 
             <div className={styles.stockInfo}>
               <span
@@ -151,34 +153,6 @@ const ProductDetails = () => {
             </p>
 
             <div className={styles.actions}>
-              {/* <div className={styles.quantitySelector}>
-                <button
-                  onClick={() => setQuantity(quantity - 1)}
-                  className={styles.quantityBtn}
-                >
-                  −
-                </button>
-
-                <input
-                  type="number"
-                  value={product.quantity}
-                  onChange={(e) =>
-                    updateQuantity(product._id, parseInt(e.target.value) || 1)
-                  }
-                  className={styles.quantityInput}
-                  min="1"
-                />
-                <span className={styles.quantity}>{quantity}</span>
-
-                <button
-                  onClick={() => updateQuantity(product._id, cart.quantity + 1)}
-                  className={styles.quantityBtn}
-                  disabled={product.quantity >= product.stock}
-                >
-                  +
-                </button>
-              </div> */}
-
               <button
                 onClick={handleAddToCart}
                 className={styles.addToCartBtn}
