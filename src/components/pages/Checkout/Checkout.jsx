@@ -152,7 +152,7 @@ const Checkout = () => {
     const handler = window.PaystackPop.setup({
       key:
         process.env.REACT_APP_PAYSTACK_PUBLIC_KEY ||
-        "pk_test_xxxxxxxxxxxxxxxxxxxx", // Replace with your public key
+        "pk_test_4e10038792017cd67e2aecf9233f68bd6fe07d6d", // Replace with your public key
       email: formData.email,
       amount: Math.round(total * 100), // Amount in kobo (smallest currency unit)
       currency: "NGN", // Change to your currency
