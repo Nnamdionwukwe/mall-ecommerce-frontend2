@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useCurrency } from "../../context/CurrencyContext"; // Import currency context
+import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./Checkout.module.css";
 import { useCart } from "../../context/CartContext";
+import axios from "axios";
+
+const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
 const Checkout = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { formatPrice } = useCurrency(); // Use currency context hook
+  const { formatPrice } = useCurrency();
 
   const [formData, setFormData] = useState({
     fullName: user?.name || "",
@@ -27,7 +30,7 @@ const Checkout = () => {
     cvv: "",
   });
 
-  const { totalPrice, cart } = useCart();
+  const { totalPrice, cart, clearCart } = useCart();
 
   const [orderNote, setOrderNote] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,6 +54,10 @@ const Checkout = () => {
     script.src = "https://js.paystack.co/v1/inline.js";
     script.async = true;
     script.onload = () => setPaystackLoaded(true);
+    script.onerror = () => {
+      console.error("Failed to load Paystack script");
+      alert("Failed to load payment system. Please refresh the page.");
+    };
     document.body.appendChild(script);
   };
 
@@ -69,6 +76,66 @@ const Checkout = () => {
     return `ORD-${timestamp}-${random}`;
   };
 
+  const verifyPaymentAndCreateOrder = async (reference, orderId) => {
+    try {
+      const token = localStorage.getItem("token") || user?.token;
+
+      const response = await axios.post(
+        `${API_BASE}/checkout/verify-payment`,
+        {
+          reference,
+          orderId,
+          shippingInfo: formData,
+          items: cart,
+          subtotal,
+          shipping,
+          tax,
+          total,
+          orderNote,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        // Clear cart after successful order
+        if (clearCart) {
+          clearCart();
+        } else {
+          localStorage.removeItem("cart");
+        }
+
+        // Navigate to success page
+        navigate(`/order-success/${orderId}`, {
+          state: {
+            orderData: response.data.data,
+          },
+        });
+      } else {
+        throw new Error(response.data.message || "Order creation failed");
+      }
+    } catch (error) {
+      console.error("Order verification error:", error);
+
+      // Show detailed error message
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to create order";
+
+      alert(
+        `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${reference}`
+      );
+
+      // Navigate to orders page or home
+      navigate("/orders");
+    }
+  };
+
   const handlePayment = () => {
     if (!paystackLoaded) {
       alert("Payment system is loading. Please try again.");
@@ -83,7 +150,9 @@ const Checkout = () => {
     const orderId = generateOrderId();
 
     const handler = window.PaystackPop.setup({
-      key: "pk_test_xxxxxxxxxxxxxxxxxxxx", // Replace with your Paystack public key
+      key:
+        process.env.REACT_APP_PAYSTACK_PUBLIC_KEY ||
+        "pk_test_xxxxxxxxxxxxxxxxxxxx", // Replace with your public key
       email: formData.email,
       amount: Math.round(total * 100), // Amount in kobo (smallest currency unit)
       currency: "NGN", // Change to your currency
@@ -100,57 +169,37 @@ const Checkout = () => {
             variable_name: "phone",
             value: formData.phone,
           },
+          {
+            display_name: "Address",
+            variable_name: "address",
+            value: `${formData.address}, ${formData.city}, ${formData.state}`,
+          },
         ],
       },
       callback: function (response) {
-        handlePaymentSuccess(response);
+        handlePaymentSuccess(response, orderId);
       },
       onClose: function () {
-        alert("Payment cancelled");
+        console.log("Payment cancelled");
+        alert("Payment cancelled. Your cart is still saved.");
       },
     });
 
     handler.openIframe();
   };
 
-  const handlePaymentSuccess = async (response) => {
+  const handlePaymentSuccess = async (response, orderId) => {
     setLoading(true);
+
     try {
-      // Create order
-      const orderData = {
-        orderId: response.reference,
-        userId: user._id,
-        items: cart,
-        shippingInfo: formData,
-        orderNote,
-        paymentInfo: {
-          method: "paystack",
-          transactionId: response.transaction,
-          status: "paid",
-          reference: response.reference,
-        },
-        subtotal,
-        shipping,
-        tax,
-        total,
-        status: "processing",
-        createdAt: new Date(),
-      };
+      console.log("Payment successful:", response);
 
-      // Save order to localStorage (In production, save to backend)
-      const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-      existingOrders.push(orderData);
-      localStorage.setItem("orders", JSON.stringify(existingOrders));
-
-      // Clear cart
-      localStorage.removeItem("cart");
-
-      // Navigate to success page
-      navigate(`/order-success/${response.reference}`);
+      // Verify payment with backend and create order
+      await verifyPaymentAndCreateOrder(response.reference, orderId);
     } catch (error) {
-      console.error("Error creating order:", error);
+      console.error("Error processing payment:", error);
       alert(
-        "Order failed. Please contact support with reference: " +
+        "Payment successful but order creation failed. Please contact support with reference: " +
           response.reference
       );
     } finally {
@@ -439,7 +488,7 @@ const Checkout = () => {
                 onClick={handlePayment}
                 disabled={!isFormValid() || loading || !paystackLoaded}
                 className={
-                  isFormValid() && paystackLoaded
+                  isFormValid() && paystackLoaded && !loading
                     ? styles.paystackBtn
                     : styles.paystackBtnDisabled
                 }

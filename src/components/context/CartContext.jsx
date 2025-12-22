@@ -91,6 +91,11 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   }, []);
 
+  //   const clearCart = () => {
+  //   setCart([]);
+  //   localStorage.removeItem('cart');
+  // };
+
   // Calculate total price
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
