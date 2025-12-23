@@ -82,15 +82,23 @@ const VendorDashboard = () => {
             <h1>Vendor Dashboard</h1>
             <p className={styles.welcome}>Welcome, {user?.name}!</p>
           </div>
-          <button
-            onClick={() => {
-              setEditingProduct(null);
-              setShowForm(true);
-            }}
-            className={styles.addBtn}
-          >
-            ➕ Add New Product
-          </button>
+          <div className={styles.headerActions}>
+            {/* Admin Orders Link - Only visible to admins */}
+            {user?.role === "admin" && (
+              <Link to="/admin/orders" className={styles.adminLink}>
+                🔧 Admin Orders
+              </Link>
+            )}
+            <button
+              onClick={() => {
+                setEditingProduct(null);
+                setShowForm(true);
+              }}
+              className={styles.addBtn}
+            >
+              ➕ Add New Product
+            </button>
+          </div>
         </div>
 
         <div className={styles.stats}>
