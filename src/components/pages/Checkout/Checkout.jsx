@@ -85,7 +85,7 @@ const Checkout = () => {
       const token = localStorage.getItem("token") || user?.token;
 
       const response = await axios.post(
-        `${API_BASE}/checkout/verify-payment`,
+        `${API_BASE}/orders/verify-payment`,
         {
           reference,
           orderId,
