@@ -39,11 +39,11 @@ api.interceptors.response.use(
 
 // Auth APIs
 export const authAPI = {
-  register: (data) => api.post("/auth/register", data),
-  login: (data) => api.post("/auth/login", data),
-  getProfile: () => api.get("/auth/me"),
-  updateProfile: (data) => api.put("/auth/me", data),
-  changePassword: (data) => api.put("/auth/password", data),
+  register: (data) => api.post("/api/register", data),
+  login: (data) => api.post("/api/login", data),
+  getProfile: () => api.get("/api/me"),
+  updateProfile: (data) => api.put("/api/me", data),
+  changePassword: (data) => api.put("/api/password", data),
 };
 
 // Product APIs
