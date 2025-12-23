@@ -17,6 +17,7 @@ import MyTickets from "./components/pages/MyTickets/MyTickets";
 import Homepage from "./components/pages/Homepage/Homepage";
 import { CartProvider } from "./components/context/CartContext";
 import { CurrencyProvider } from "./components/context/CurrencyContext";
+import AdminOrders from "./components/admin/AdminOrders";
 // import { useState } from "react";
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/track-order/:orderId" element={<TrackOrder />} />
                 <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+                <Route path="/admin/orders" element={<AdminOrders />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/my-tickets" element={<MyTickets />} />
