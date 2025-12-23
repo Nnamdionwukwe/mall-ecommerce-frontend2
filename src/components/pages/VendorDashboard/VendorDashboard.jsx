@@ -94,10 +94,9 @@ const VendorDashboard = () => {
         </div>
 
         {/* Only show to admin users */}
-        {user ||
-          (user.role !== "vendor" && user.role !== "admin" && (
-            <Link to="/admin/orders">🔧 Admin Orders</Link>
-          ))}
+        {user && user.role === "admin" && (
+          <Link to="/admin/orders">🔧 Admin Orders</Link>
+        )}
 
         <div className={styles.stats}>
           <div className={styles.statCard}>
