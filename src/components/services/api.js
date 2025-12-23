@@ -56,17 +56,40 @@ export const productAPI = {
   updateStock: (id, data) => api.patch(`/products/${id}/stock`, data),
 };
 
+// Cart APIs
+export const cartAPI = {
+  getCart: () => api.get("/cart"),
+  addItem: (data) => api.post("/cart/add", data),
+  removeItem: (productId) => api.delete(`/cart/remove/${productId}`),
+  updateQuantity: (productId, data) =>
+    api.patch(`/cart/update/${productId}`, data),
+  clearCart: () => api.delete("/cart/clear"),
+  getCartSummary: () => api.get("/cart/summary"),
+};
+
+// Order APIs
+export const orderAPI = {
+  verifyPayment: (data) => api.post("/orders/verify-payment", data),
+  getOrders: () => api.get("/orders"),
+  getOrder: (id) => api.get(`/orders/${id}`),
+  cancelOrder: (id) => api.post(`/orders/${id}/cancel`),
+};
+
 // Support APIs
 export const supportAPI = {
   createTicket: (data) => api.post("/support", data),
   getMyTickets: () => api.get("/support/my-tickets"),
   getTicket: (id) => api.get(`/support/${id}`),
-
   // Admin only
   getAllTickets: (params) => api.get("/support/admin/all", { params }),
   updateTicketStatus: (id, data) => api.put(`/support/${id}/status`, data),
   addResponse: (id, data) => api.post(`/support/${id}/response`, data),
   deleteTicket: (id) => api.delete(`/support/${id}`),
+};
+
+// Checkout APIs
+export const checkoutAPI = {
+  processCheckout: (data) => api.post("/checkout", data),
 };
 
 export default api;
