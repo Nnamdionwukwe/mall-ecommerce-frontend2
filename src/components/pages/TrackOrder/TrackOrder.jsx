@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./TrackOrder.module.css";
+import axios from "axios";
+
+const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
 const TrackOrder = () => {
   const { orderId } = useParams();
@@ -9,6 +12,7 @@ const TrackOrder = () => {
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -18,19 +22,48 @@ const TrackOrder = () => {
     loadOrder();
   }, [orderId, user, navigate]);
 
-  const loadOrder = () => {
-    const allOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-    const foundOrder = allOrders.find(
-      (o) => o.orderId === orderId && o.userId === user._id
-    );
+  // ✅ FIXED: Fetch order from API instead of localStorage
+  const loadOrder = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-    if (!foundOrder) {
-      navigate("/orders");
-      return;
+      const token = localStorage.getItem("token") || user?.token;
+
+      console.log("🔄 Fetching order details...");
+      console.log("Order ID:", orderId);
+
+      const response = await axios.get(`${API_BASE}/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("✅ Order fetched successfully!");
+      console.log("Order data:", response.data.data);
+
+      if (response.data.success && response.data.data) {
+        setOrder(response.data.data);
+      } else {
+        setError("Order not found");
+        navigate("/orders");
+      }
+    } catch (err) {
+      console.error("❌ Error loading order:", err);
+
+      if (err.response?.status === 401) {
+        setError("Unauthorized. Please log in again.");
+        navigate("/login");
+      } else if (err.response?.status === 404) {
+        setError("Order not found");
+        navigate("/orders");
+      } else {
+        setError(err.response?.data?.message || "Failed to load order");
+      }
+    } finally {
+      setLoading(false);
     }
-
-    setOrder(foundOrder);
-    setLoading(false);
   };
 
   const getTrackingSteps = (status) => {
@@ -54,15 +87,14 @@ const TrackOrder = () => {
         label: "Shipped",
         icon: "🚚",
         completed: ["shipped", "delivered"].includes(status),
-        date:
-          status === "shipped" || status === "delivered" ? new Date() : null,
+        date: order?.createdAt,
       },
       {
         id: "delivered",
         label: "Delivered",
         icon: "✅",
         completed: status === "delivered",
-        date: status === "delivered" ? new Date() : null,
+        date: order?.deliveredAt || null,
       },
     ];
 
@@ -80,12 +112,28 @@ const TrackOrder = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.errorState}>
+          <h2>❌ Error</h2>
+          <p>{error}</p>
+          <button
+            onClick={() => navigate("/orders")}
+            className={styles.backBtn}
+          >
+            ← Back to Orders
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!order) {
     return null;
   }
 
   const trackingSteps = getTrackingSteps(order.status);
-  const currentStep = trackingSteps.findIndex((step) => !step.completed);
 
   return (
     <div className={styles.container}>
@@ -149,7 +197,6 @@ const TrackOrder = () => {
 
             {order.status === "delivered" && (
               <div className={styles.deliveredBanner}>
-                {" "}
                 <span className={styles.deliveredIcon}>🎉</span>
                 <div>
                   <h4>Order Delivered!</h4>
@@ -167,24 +214,26 @@ const TrackOrder = () => {
               <div className={styles.detailSection}>
                 <h4>Items Ordered</h4>
                 <div className={styles.itemsList}>
-                  {order.items.map((item, index) => (
-                    <div key={index} className={styles.item}>
-                      <img
-                        src={
-                          item.images?.[0] || "https://via.placeholder.com/50"
-                        }
-                        alt={item.name}
-                        className={styles.itemImage}
-                      />
-                      <div className={styles.itemInfo}>
-                        <h5>{item.name}</h5>
-                        <p>Qty: {item.quantity}</p>
+                  {order.items &&
+                    order.items.map((item, index) => (
+                      <div key={index} className={styles.item}>
+                        <img
+                          src={item.image || "https://via.placeholder.com/50"}
+                          alt={item.name}
+                          className={styles.itemImage}
+                          onError={(e) =>
+                            (e.target.src = "https://via.placeholder.com/50")
+                          }
+                        />
+                        <div className={styles.itemInfo}>
+                          <h5>{item.name}</h5>
+                          <p>Qty: {item.quantity}</p>
+                        </div>
+                        <span className={styles.itemPrice}>
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </span>
                       </div>
-                      <span className={styles.itemPrice}>
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
 
@@ -192,59 +241,103 @@ const TrackOrder = () => {
 
               <div className={styles.detailSection}>
                 <h4>Shipping Address</h4>
-                <p>{order.shippingInfo.fullName}</p>
-                <p>{order.shippingInfo.address}</p>
-                <p>
-                  {order.shippingInfo.city}, {order.shippingInfo.state}{" "}
-                  {order.shippingInfo.zipCode}
-                </p>
-                <p>{order.shippingInfo.phone}</p>
+                {order.shippingInfo && (
+                  <>
+                    <p>{order.shippingInfo.fullName}</p>
+                    <p>{order.shippingInfo.address}</p>
+                    <p>
+                      {order.shippingInfo.city}, {order.shippingInfo.state}{" "}
+                      {order.shippingInfo.zipCode}
+                    </p>
+                    <p>{order.shippingInfo.phone}</p>
+                  </>
+                )}
               </div>
 
               <div className={styles.divider}></div>
 
               <div className={styles.detailSection}>
                 <h4>Payment Information</h4>
-                <div className={styles.paymentInfo}>
-                  <div className={styles.paymentRow}>
-                    <span>Method:</span>
-                    <span className={styles.paymentMethod}>
-                      💳 {order.paymentInfo.method.toUpperCase()}
-                    </span>
+                {order.paymentInfo && (
+                  <div className={styles.paymentInfo}>
+                    <div className={styles.paymentRow}>
+                      <span>Method:</span>
+                      <span className={styles.paymentMethod}>
+                        💳 {order.paymentInfo.method.toUpperCase()}
+                      </span>
+                    </div>
+                    <div className={styles.paymentRow}>
+                      <span>Transaction ID:</span>
+                      <span className={styles.transactionId}>
+                        {order.paymentInfo.transactionId ||
+                          order.paymentInfo.reference}
+                      </span>
+                    </div>
+                    <div className={styles.paymentRow}>
+                      <span>Status:</span>
+                      <span className={styles.paidBadge}>
+                        ✓ {order.paymentInfo.status.toUpperCase()}
+                      </span>
+                    </div>
                   </div>
-                  <div className={styles.paymentRow}>
-                    <span>Transaction ID:</span>
-                    <span className={styles.transactionId}>
-                      {order.paymentInfo.transactionId}
-                    </span>
-                  </div>
-                  <div className={styles.paymentRow}>
-                    <span>Status:</span>
-                    <span className={styles.paidBadge}>✓ PAID</span>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className={styles.divider}></div>
 
               <div className={styles.orderSummary}>
-                <div className={styles.summaryRow}>
-                  <span>Subtotal:</span>
-                  <span>${order.subtotal.toFixed(2)}</span>
-                </div>
-                <div className={styles.summaryRow}>
-                  <span>Shipping:</span>
-                  <span>${order.shipping.toFixed(2)}</span>
-                </div>
-                <div className={styles.summaryRow}>
-                  <span>Tax:</span>
-                  <span>${order.tax.toFixed(2)}</span>
-                </div>
-                <div className={styles.summaryTotal}>
-                  <span>Total:</span>
-                  <span>${order.total.toFixed(2)}</span>
-                </div>
+                {order.pricing && (
+                  <>
+                    <div className={styles.summaryRow}>
+                      <span>Subtotal:</span>
+                      <span>${order.pricing.subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className={styles.summaryRow}>
+                      <span>Shipping:</span>
+                      <span>${order.pricing.shipping.toFixed(2)}</span>
+                    </div>
+                    <div className={styles.summaryRow}>
+                      <span>Tax:</span>
+                      <span>${order.pricing.tax.toFixed(2)}</span>
+                    </div>
+                    <div className={styles.summaryTotal}>
+                      <span>Total:</span>
+                      <span>${order.pricing.total.toFixed(2)}</span>
+                    </div>
+                  </>
+                )}
               </div>
+
+              {order.trackingNumber && (
+                <>
+                  <div className={styles.divider}></div>
+                  <div className={styles.detailSection}>
+                    <h4>Tracking Number</h4>
+                    <p className={styles.trackingNumber}>
+                      {order.trackingNumber}
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {order.estimatedDelivery && (
+                <>
+                  <div className={styles.divider}></div>
+                  <div className={styles.detailSection}>
+                    <h4>Estimated Delivery</h4>
+                    <p>
+                      {new Date(order.estimatedDelivery).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        }
+                      )}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
