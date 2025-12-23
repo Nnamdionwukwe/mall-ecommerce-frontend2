@@ -59,7 +59,7 @@ const OrderSuccess = () => {
   );
 };
 
-// export default OrderSuccess;
+export default OrderSuccess;
 
 // import { useParams, useNavigate, useLocation } from "react-router-dom";
 // import styles from "./OrderSuccess.module.css";
