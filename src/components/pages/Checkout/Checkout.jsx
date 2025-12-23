@@ -7,10 +7,12 @@ import { useCart } from "../../context/CartContext";
 import axios from "axios";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
+
+// Health check
 fetch("https://mall-ecommerce-api-production.up.railway.app/api/health")
   .then((r) => r.json())
-  .then(console.log)
-  .catch(console.error);
+  .then((data) => console.log("✅ Server health:", data))
+  .catch((err) => console.error("❌ Server health check failed:", err));
 
 const Checkout = () => {
   const { user } = useAuth();
@@ -48,6 +50,7 @@ const Checkout = () => {
     loadPaystackScript();
   }, [user, navigate]);
 
+  // Load Paystack script
   const loadPaystackScript = () => {
     if (window.PaystackPop) {
       setPaystackLoaded(true);
@@ -57,14 +60,18 @@ const Checkout = () => {
     const script = document.createElement("script");
     script.src = "https://js.paystack.co/v1/inline.js";
     script.async = true;
-    script.onload = () => setPaystackLoaded(true);
+    script.onload = () => {
+      console.log("✅ Paystack script loaded");
+      setPaystackLoaded(true);
+    };
     script.onerror = () => {
-      console.error("Failed to load Paystack script");
+      console.error("❌ Failed to load Paystack script");
       alert("Failed to load payment system. Please refresh the page.");
     };
     document.body.appendChild(script);
   };
 
+  // Calculate totals
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -73,21 +80,26 @@ const Checkout = () => {
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
 
-  // Generate unique order ID
+  // Generate unique order ID (for internal use)
   const generateOrderId = () => {
     const timestamp = Date.now();
     const random = Math.floor(Math.random() * 10000);
     return `ORD-${timestamp}-${random}`;
   };
 
-  const verifyPaymentAndCreateOrder = async (reference, orderId) => {
+  // ✅ FIXED: Verify payment with Paystack reference
+  const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
     try {
       const token = localStorage.getItem("token") || user?.token;
+
+      console.log("🔄 Verifying payment with backend...");
+      console.log("Paystack Reference:", paystackReference);
+      console.log("Order ID:", orderId);
 
       const response = await axios.post(
         `${API_BASE}/orders/verify-payment`,
         {
-          reference,
+          reference: paystackReference, // ✅ Send Paystack's actual transaction reference
           orderId,
           shippingInfo: formData,
           items: cart,
@@ -106,6 +118,8 @@ const Checkout = () => {
       );
 
       if (response.data.success) {
+        console.log("✅ Order created successfully!");
+
         // Clear cart after successful order
         if (clearCart) {
           clearCart();
@@ -125,21 +139,44 @@ const Checkout = () => {
     } catch (error) {
       console.error("Order verification error:", error);
 
-      // Show detailed error message
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
         "Failed to create order";
 
       alert(
-        `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${reference}`
+        `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${paystackReference}`
       );
 
-      // Navigate to orders page or home
       navigate("/orders");
     }
   };
 
+  // ✅ FIXED: Handle payment success with Paystack reference
+  const handlePaymentSuccess = async (paystackResponse, orderId) => {
+    setLoading(true);
+
+    try {
+      console.log("💳 Payment successful from Paystack");
+      console.log("Paystack Response:", paystackResponse);
+      console.log("Paystack Reference:", paystackResponse.reference);
+
+      // ✅ IMPORTANT: Extract reference from Paystack response
+      const paystackReference = paystackResponse.reference;
+
+      await verifyPaymentAndCreateOrder(paystackReference, orderId);
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      alert(
+        "Payment successful but order creation failed. Please contact support with reference: " +
+          paystackResponse.reference
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ FIXED: Handle payment initiation
   const handlePayment = () => {
     if (!paystackLoaded) {
       alert("Payment system is loading. Please try again.");
@@ -152,15 +189,16 @@ const Checkout = () => {
     }
 
     const orderId = generateOrderId();
+    console.log("🛒 Starting payment for order:", orderId);
 
     const handler = window.PaystackPop.setup({
       key:
         process.env.REACT_APP_PAYSTACK_PUBLIC_KEY ||
-        "pk_test_4e10038792017cd67e2aecf9233f68bd6fe07d6d", // Replace with your public key
+        "pk_test_4e10038792017cd67e2aecf9233f68bd6fe07d6d",
       email: formData.email,
-      amount: Math.round(total * 100), // Amount in kobo (smallest currency unit)
-      currency: "NGN", // Change to your currency
-      ref: orderId,
+      amount: Math.round(total * 100), // Amount in kobo
+      currency: "NGN",
+      ref: orderId, // Your internal order ID for reference
       metadata: {
         custom_fields: [
           {
@@ -181,10 +219,15 @@ const Checkout = () => {
         ],
       },
       callback: function (response) {
+        // ✅ IMPORTANT: response.reference is Paystack's transaction reference
+        console.log("✅ Payment callback triggered");
+        console.log("Response from Paystack:", response);
+        console.log("Paystack Transaction Reference:", response.reference);
+
         handlePaymentSuccess(response, orderId);
       },
       onClose: function () {
-        console.log("Payment cancelled");
+        console.log("Payment modal closed by user");
         alert("Payment cancelled. Your cart is still saved.");
       },
     });
@@ -192,25 +235,7 @@ const Checkout = () => {
     handler.openIframe();
   };
 
-  const handlePaymentSuccess = async (response, orderId) => {
-    setLoading(true);
-
-    try {
-      console.log("Payment successful:", response);
-
-      // Verify payment with backend and create order
-      await verifyPaymentAndCreateOrder(response.reference, orderId);
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      alert(
-        "Payment successful but order creation failed. Please contact support with reference: " +
-          response.reference
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Validate form
   const isFormValid = () => {
     return (
       formData.fullName &&
@@ -223,7 +248,8 @@ const Checkout = () => {
       cardDetails.cardNumber &&
       cardDetails.cardName &&
       cardDetails.expiryDate &&
-      cardDetails.cvv
+      cardDetails.cvv &&
+      cart.length > 0
     );
   };
 
@@ -233,8 +259,9 @@ const Checkout = () => {
         <h1 className={styles.title}>Checkout</h1>
 
         <div className={styles.grid}>
-          {/* Shipping Form */}
+          {/* Left Section: Forms */}
           <div className={styles.section}>
+            {/* Shipping Information */}
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>📦 Shipping Information</h2>
 
@@ -342,14 +369,14 @@ const Checkout = () => {
                   <textarea
                     value={orderNote}
                     onChange={(e) => setOrderNote(e.target.value)}
-                    placeholder="Any special instructions?"
+                    placeholder="Any special instructions for your order?"
                     rows="3"
                   />
                 </div>
               </form>
             </div>
 
-            {/* Card Details Section */}
+            {/* Payment Details */}
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>💳 Payment Details</h2>
 
@@ -435,39 +462,51 @@ const Checkout = () => {
                     />
                   </div>
                 </div>
+
+                <p className={styles.cardNote}>
+                  💳 Your card information is securely processed by Paystack
+                </p>
               </form>
             </div>
           </div>
 
-          {/* Order Summary */}
+          {/* Right Section: Order Summary */}
           <div className={styles.section}>
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>🛒 Order Summary</h2>
 
+              {/* Order Items */}
               <div className={styles.orderItems}>
-                {cart.map((item) => (
-                  <div key={item._id} className={styles.orderItem}>
-                    <img
-                      src={item.images?.[0] || "https://via.placeholder.com/60"}
-                      alt={item.name}
-                      className={styles.itemImage}
-                      onError={(e) =>
-                        (e.target.src = "https://via.placeholder.com/60")
-                      }
-                    />
-                    <div className={styles.itemInfo}>
-                      <h4>{item.name}</h4>
-                      <p>Qty: {item.quantity}</p>
+                {cart.length > 0 ? (
+                  cart.map((item) => (
+                    <div key={item._id} className={styles.orderItem}>
+                      <img
+                        src={
+                          item.images?.[0] || "https://via.placeholder.com/60"
+                        }
+                        alt={item.name}
+                        className={styles.itemImage}
+                        onError={(e) =>
+                          (e.target.src = "https://via.placeholder.com/60")
+                        }
+                      />
+                      <div className={styles.itemInfo}>
+                        <h4>{item.name}</h4>
+                        <p>Qty: {item.quantity}</p>
+                      </div>
+                      <div className={styles.itemPrice}>
+                        {formatPrice(item.price * item.quantity)}
+                      </div>
                     </div>
-                    <div className={styles.itemPrice}>
-                      {formatPrice(item.price * item.quantity)}
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className={styles.emptyCart}>Your cart is empty</p>
+                )}
               </div>
 
               <div className={styles.divider}></div>
 
+              {/* Pricing Breakdown */}
               <div className={styles.summaryRow}>
                 <span>Subtotal:</span>
                 <span>{formatPrice(subtotal)}</span>
@@ -483,11 +522,13 @@ const Checkout = () => {
 
               <div className={styles.divider}></div>
 
+              {/* Total */}
               <div className={styles.summaryTotal}>
                 <span>Total:</span>
                 <span>{formatPrice(total)}</span>
               </div>
 
+              {/* Payment Button */}
               <button
                 onClick={handlePayment}
                 disabled={!isFormValid() || loading || !paystackLoaded}
@@ -498,16 +539,25 @@ const Checkout = () => {
                 }
               >
                 {loading
-                  ? "Processing..."
-                  : paystackLoaded
-                  ? "💳 Pay with Paystack"
-                  : "Loading payment..."}
+                  ? "⏳ Processing..."
+                  : !paystackLoaded
+                  ? "⏳ Loading payment..."
+                  : "💳 Pay with Paystack"}
               </button>
 
+              {/* Payment Info */}
               <div className={styles.paymentInfo}>
                 <p>🔒 Secure payment with Paystack</p>
-                <p>💳 We accept all major cards</p>
+                <p>💳 We accept all major cards (Visa, Mastercard, etc.)</p>
+                <p>✅ Your payment is encrypted and secure</p>
               </div>
+
+              {/* Form Validation Message */}
+              {!isFormValid() && cart.length > 0 && (
+                <div className={styles.validationMessage}>
+                  ⚠️ Please fill in all required fields to proceed
+                </div>
+              )}
             </div>
           </div>
         </div>
