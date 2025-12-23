@@ -93,6 +93,11 @@ const VendorDashboard = () => {
           </button>
         </div>
 
+        {/* Only show to admin users */}
+        {user && user.role === "admin" && (
+          <Link to="/admin/orders">🔧 Admin Orders</Link>
+        )}
+
         <div className={styles.stats}>
           <div className={styles.statCard}>
             <div className={styles.statIcon}>📦</div>
