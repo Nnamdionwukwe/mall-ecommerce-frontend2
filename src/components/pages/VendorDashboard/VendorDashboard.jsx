@@ -94,7 +94,7 @@ const VendorDashboard = () => {
         </div>
 
         {/* Only show to admin users */}
-        {user && user.role === "admin" && (
+        {user && user.role === "vendor" && (
           <Link to="/admin/orders">🔧 Admin Orders</Link>
         )}
 
