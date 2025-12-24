@@ -21,8 +21,8 @@ const AdminOrders = () => {
   const [deliveredAt, setDeliveredAt] = useState("");
 
   useEffect(() => {
-    // Check if user is admin
-    if (!user || user.role !== "admin") {
+    // Check if user is admin or vendor
+    if (!user || (user.role !== "admin" && user.role !== "vendor")) {
       navigate("/");
       return;
     }
@@ -216,7 +216,7 @@ const AdminOrders = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>
-          <h1>🔧 Admin - Orders Management</h1>
+          <h1>🔧 Orders Management</h1>
           <p className={styles.subtitle}>
             Update order status and delivery information
           </p>
