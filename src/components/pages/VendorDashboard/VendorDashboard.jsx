@@ -84,6 +84,8 @@ const VendorDashboard = () => {
           </div>
           <div className={styles.headerActions}>
             {/* Admin Cart Dashboard Link - Visible to admins only */}
+            {/* {user?.role === "admin" && ( */}
+
             {(user?.role === "admin" || user?.role === "vendor") && (
               <Link to="/admin/user-cart" className={styles.cartLink}>
                 🛒 Cart Management
