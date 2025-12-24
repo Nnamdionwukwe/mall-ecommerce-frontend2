@@ -23,7 +23,7 @@ const AdminOrders = () => {
   useEffect(() => {
     // Check if user is admin
     if (!user || user.role !== "admin") {
-      navigate("/");
+      navigate("/admin/orders");
       return;
     }
     loadOrders();
