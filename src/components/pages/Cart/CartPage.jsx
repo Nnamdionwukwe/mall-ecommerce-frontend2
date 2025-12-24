@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useCart } from "../../context/CartContext";
 import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./CartPage.module.css";
 import { Trash2, Plus, Minus, ShoppingCart, Loader } from "lucide-react";
@@ -10,32 +9,153 @@ import AuthModal from "../../AuthModal/AuthModal";
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { formatPrice } = useCurrency();
 
-  // ✅ Use cart context instead of local state
-  const {
-    cart,
-    isLoading,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    getCartTotals,
-    fetchCart,
-  } = useCart();
-
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
 
-  // Fetch cart when component mounts
+  const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
+
+  // Fetch cart from backend
+  const fetchCart = async () => {
+    if (!user || !token) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/carts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      console.log("📦 Cart fetched:", data);
+
+      if (data.success) {
+        setCart(data.data.items || []);
+      } else {
+        console.error("Error fetching cart:", data.message);
+      }
+    } catch (err) {
+      console.error("Error fetching cart:", err);
+      setError("Failed to load cart");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load cart on component mount
   useEffect(() => {
-    if (user) {
+    if (user && token) {
       fetchCart();
     }
-  }, [user]);
+  }, [user, token]);
 
-  // Calculate totals using context function
-  const { subtotal, tax, total, itemCount } = getCartTotals();
+  // Remove item from cart
+  const removeFromCart = async (productId) => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${API_BASE}/carts/remove/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      console.log("✅ Item removed:", data);
+
+      if (data.success) {
+        setCart(data.data.items || []);
+        setError("");
+      } else {
+        setError(data.message || "Failed to remove item");
+      }
+    } catch (err) {
+      console.error("Error removing from cart:", err);
+      setError("Failed to remove item");
+    }
+  };
+
+  // Update item quantity
+  const updateQuantity = async (productId, quantity) => {
+    if (!token) return;
+
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/carts/update/${productId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quantity }),
+      });
+
+      const data = await response.json();
+      console.log("✅ Quantity updated:", data);
+
+      if (data.success) {
+        setCart(data.data.items || []);
+        setError("");
+      } else {
+        setError(data.message || "Failed to update quantity");
+      }
+    } catch (err) {
+      console.error("Error updating quantity:", err);
+      setError("Failed to update quantity");
+    }
+  };
+
+  // Clear entire cart
+  const clearCart = async () => {
+    if (!window.confirm("Are you sure you want to clear your cart?")) return;
+
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${API_BASE}/carts/clear`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      console.log("✅ Cart cleared:", data);
+
+      if (data.success) {
+        setCart([]);
+        setError("");
+      } else {
+        setError(data.message || "Failed to clear cart");
+      }
+    } catch (err) {
+      console.error("Error clearing cart:", err);
+      setError("Failed to clear cart");
+    }
+  };
+
+  // Calculate totals
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const tax = totalPrice * 0.1;
+  const total = totalPrice + tax;
 
   const handleCheckout = () => {
     if (!user) {
@@ -50,12 +170,7 @@ const CartPage = () => {
     setShowAuth(true);
   };
 
-  const handleClearCart = async () => {
-    if (!window.confirm("Are you sure you want to clear your cart?")) return;
-    await clearCart();
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className={styles.container}>
         <div className={styles.loadingContainer}>
@@ -72,6 +187,13 @@ const CartPage = () => {
         <header className={styles.header}>
           <h1 className={styles.title}>Shopping Cart</h1>
         </header>
+
+        {error && (
+          <div className={styles.errorMessage}>
+            {error}
+            <button onClick={() => setError("")}>✕</button>
+          </div>
+        )}
 
         {cart.length === 0 ? (
           <div className={styles.emptyCart}>
@@ -160,8 +282,8 @@ const CartPage = () => {
               <h2 className={styles.summaryTitle}>Order Summary</h2>
               <div className={styles.summaryDetails}>
                 <div className={styles.summaryRow}>
-                  <span>Items ({itemCount})</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>Items ({totalItems})</span>
+                  <span>{formatPrice(totalPrice)}</span>
                 </div>
                 <div className={styles.summaryRow}>
                   <span>Shipping</span>
@@ -190,7 +312,7 @@ const CartPage = () => {
                 Continue Shopping
               </button>
               {cart.length > 0 && (
-                <button className={styles.clearBtn} onClick={handleClearCart}>
+                <button className={styles.clearBtn} onClick={clearCart}>
                   Clear Cart
                 </button>
               )}
