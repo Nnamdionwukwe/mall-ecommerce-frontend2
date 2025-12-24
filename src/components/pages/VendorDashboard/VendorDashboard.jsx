@@ -83,12 +83,20 @@ const VendorDashboard = () => {
             <p className={styles.welcome}>Welcome, {user?.name}!</p>
           </div>
           <div className={styles.headerActions}>
+            {/* Admin Cart Dashboard Link - Visible to admins only */}
+            {user?.role === "admin" && (
+              <Link to="/admin/user-cart" className={styles.cartLink}>
+                🛒 Cart Management
+              </Link>
+            )}
+
             {/* Admin Orders Link - Visible to both vendors and admins */}
             {(user?.role === "admin" || user?.role === "vendor") && (
               <Link to="/admin/orders" className={styles.adminLink}>
                 🔧 Manage Orders
               </Link>
             )}
+
             <button
               onClick={() => {
                 setEditingProduct(null);

@@ -1,3 +1,21 @@
+.cartLink {
+  padding: 8px 16px;
+  background-color: #10b981;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cartLink:hover {
+  background-color: #059669;
+  transform: translateY(-2px);
+}
+
 .headerActions {
   display: flex;
   gap: 1rem;

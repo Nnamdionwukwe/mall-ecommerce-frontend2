@@ -18,6 +18,7 @@ import Homepage from "./components/pages/Homepage/Homepage";
 import { CartProvider } from "./components/context/CartContext";
 import { CurrencyProvider } from "./components/context/CurrencyContext";
 import AdminOrders from "./components/admin/AdminOrders";
+import AdminCartDashboard from "./components/admin/AdminCartDashboard";
 // import { useState } from "react";
 
 function App() {
@@ -64,6 +65,10 @@ function App() {
                 <Route path="/track-order/:orderId" element={<TrackOrder />} />
                 <Route path="/vendor/dashboard" element={<VendorDashboard />} />
                 <Route path="/admin/orders" element={<AdminOrders />} />
+                <Route
+                  path="/admin/user-cart"
+                  element={<AdminCartDashboard />}
+                />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/my-tickets" element={<MyTickets />} />
