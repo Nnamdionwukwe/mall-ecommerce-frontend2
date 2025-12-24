@@ -84,7 +84,7 @@ const VendorDashboard = () => {
           </div>
           <div className={styles.headerActions}>
             {/* Admin Orders Link - Only visible to admins */}
-            {user?.role === "vendor" && (
+            {user?.role === "admin" && (
               <Link to="/admin/orders" className={styles.adminLink}>
                 🔧 Admin Orders
               </Link>
