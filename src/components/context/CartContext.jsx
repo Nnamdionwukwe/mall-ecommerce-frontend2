@@ -26,7 +26,16 @@ export const CartProvider = ({ children }) => {
         setIsLoading(true);
         setError(null);
 
-        const token = localStorage.getItem("token"); // JWT token from login
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.log("⚠️ No token found, cart will be empty");
+          setCart([]);
+          setIsLoading(false);
+          return;
+        }
+
+        console.log("🔍 Fetching cart from API...");
 
         const response = await fetch(`${API_BASE_URL}/carts`, {
           method: "GET",
@@ -36,19 +45,18 @@ export const CartProvider = ({ children }) => {
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch cart");
-        }
-
         const data = await response.json();
+        console.log("📦 Cart API Response:", data);
 
-        if (data.success && data.data.items) {
-          setCart(data.data.items);
+        if (response.ok && data.success) {
+          setCart(data.data.items || []);
+          console.log(`✅ Cart loaded: ${data.data.items?.length || 0} items`);
         } else {
+          console.error("❌ Failed to load cart:", data.message);
           setCart([]);
         }
       } catch (err) {
-        console.error("Error loading cart from MongoDB:", err);
+        console.error("❌ Error loading cart from MongoDB:", err);
         setError(err.message);
         setCart([]);
       } finally {
@@ -67,6 +75,13 @@ export const CartProvider = ({ children }) => {
 
         const token = localStorage.getItem("token");
 
+        if (!token) {
+          setError("Please login to add items to cart");
+          return;
+        }
+
+        console.log(`➕ Adding to cart:`, product.name, "Qty:", quantity);
+
         const response = await fetch(`${API_BASE_URL}/carts/add`, {
           method: "POST",
           headers: {
@@ -79,17 +94,20 @@ export const CartProvider = ({ children }) => {
           }),
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to add item to cart");
-        }
-
         const data = await response.json();
+        console.log("➕ Add to cart response:", data);
 
-        if (data.success) {
-          setCart(data.data.items);
+        if (response.ok && data.success) {
+          setCart(data.data.items || []);
+          console.log(
+            `✅ Item added. Cart now has ${data.data.items?.length || 0} items`
+          );
+        } else {
+          setError(data.message || "Failed to add item");
+          console.error("❌ Error adding to cart:", data.message);
         }
       } catch (err) {
-        console.error("Error adding to cart:", err);
+        console.error("❌ Error adding to cart:", err);
         setError(err.message);
       }
     },
@@ -104,6 +122,13 @@ export const CartProvider = ({ children }) => {
 
         const token = localStorage.getItem("token");
 
+        if (!token) {
+          setError("Please login to modify cart");
+          return;
+        }
+
+        console.log(`🗑️ Removing from cart:`, productId);
+
         const response = await fetch(
           `${API_BASE_URL}/carts/remove/${productId}`,
           {
@@ -115,17 +140,22 @@ export const CartProvider = ({ children }) => {
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to remove item from cart");
-        }
-
         const data = await response.json();
+        console.log("🗑️ Remove response:", data);
 
-        if (data.success) {
-          setCart(data.data.items);
+        if (response.ok && data.success) {
+          setCart(data.data.items || []);
+          console.log(
+            `✅ Item removed. Cart now has ${
+              data.data.items?.length || 0
+            } items`
+          );
+        } else {
+          setError(data.message || "Failed to remove item");
+          console.error("❌ Error removing from cart:", data.message);
         }
       } catch (err) {
-        console.error("Error removing from cart:", err);
+        console.error("❌ Error removing from cart:", err);
         setError(err.message);
       }
     },
@@ -145,6 +175,13 @@ export const CartProvider = ({ children }) => {
 
         const token = localStorage.getItem("token");
 
+        if (!token) {
+          setError("Please login to modify cart");
+          return;
+        }
+
+        console.log(`📝 Updating quantity:`, productId, "New qty:", quantity);
+
         const response = await fetch(
           `${API_BASE_URL}/carts/update/${productId}`,
           {
@@ -157,17 +194,22 @@ export const CartProvider = ({ children }) => {
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to update quantity");
-        }
-
         const data = await response.json();
+        console.log("📝 Update response:", data);
 
-        if (data.success) {
-          setCart(data.data.items);
+        if (response.ok && data.success) {
+          setCart(data.data.items || []);
+          console.log(
+            `✅ Quantity updated. Cart now has ${
+              data.data.items?.length || 0
+            } items`
+          );
+        } else {
+          setError(data.message || "Failed to update quantity");
+          console.error("❌ Error updating quantity:", data.message);
         }
       } catch (err) {
-        console.error("Error updating quantity:", err);
+        console.error("❌ Error updating quantity:", err);
         setError(err.message);
       }
     },
@@ -179,9 +221,16 @@ export const CartProvider = ({ children }) => {
     try {
       setError(null);
 
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("token");
 
-      const response = await fetch(`${API_BASE_URL}/cart/clear`, {
+      if (!token) {
+        setError("Please login to modify cart");
+        return;
+      }
+
+      console.log(`🗑️ Clearing entire cart`);
+
+      const response = await fetch(`${API_BASE_URL}/carts/clear`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -189,17 +238,18 @@ export const CartProvider = ({ children }) => {
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to clear cart");
-      }
-
       const data = await response.json();
+      console.log("🗑️ Clear cart response:", data);
 
-      if (data.success) {
+      if (response.ok && data.success) {
         setCart([]);
+        console.log(`✅ Cart cleared`);
+      } else {
+        setError(data.message || "Failed to clear cart");
+        console.error("❌ Error clearing cart:", data.message);
       }
     } catch (err) {
-      console.error("Error clearing cart:", err);
+      console.error("❌ Error clearing cart:", err);
       setError(err.message);
     }
   }, [API_BASE_URL]);
