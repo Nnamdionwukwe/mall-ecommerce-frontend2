@@ -28,7 +28,7 @@ export const CartProvider = ({ children }) => {
 
         const token = localStorage.getItem("token"); // JWT token from login
 
-        const response = await fetch(`${API_BASE_URL}/cart`, {
+        const response = await fetch(`${API_BASE_URL}/carts`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export const CartProvider = ({ children }) => {
 
         const token = localStorage.getItem("token");
 
-        const response = await fetch(`${API_BASE_URL}/cart/add`, {
+        const response = await fetch(`${API_BASE_URL}/carts/add`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export const CartProvider = ({ children }) => {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `${API_BASE_URL}/cart/remove/${productId}`,
+          `${API_BASE_URL}/carts/remove/${productId}`,
           {
             method: "DELETE",
             headers: {
@@ -146,7 +146,7 @@ export const CartProvider = ({ children }) => {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `${API_BASE_URL}/cart/update/${productId}`,
+          `${API_BASE_URL}/carts/update/${productId}`,
           {
             method: "PATCH",
             headers: {
