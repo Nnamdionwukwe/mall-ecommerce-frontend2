@@ -1,155 +1,247 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const mongoSanitize = require("express-mongo-sanitize");
-const helmet = require("helmet");
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
+import { useCurrency } from "../../context/CurrencyContext";
+import styles from "./CartPage.module.css";
+import { Trash2, Plus, Minus, ShoppingCart, Loader } from "lucide-react";
+import LoginRequiredModal from "../../LoginRequiredModal/LoginRequiredModal";
+import AuthModal from "../../AuthModal/AuthModal";
 
-const app = express();
+const CartPage = () => {
+  const navigate = useNavigate();
+  const { user, token } = useAuth();
+  const { formatPrice } = useCurrency();
+  const { cart, isLoading, error, removeFromCart, updateQuantity, clearCart } =
+    useCart();
 
-// ================================================
-// MIDDLEWARE
-// ================================================
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [localError, setLocalError] = useState("");
 
-// Security middleware
-app.use(helmet());
-app.use(mongoSanitize());
+  // Update local error when cart context error changes
+  useEffect(() => {
+    if (error) {
+      setLocalError(error);
+    }
+  }, [error]);
 
-// CORS
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "https://your-frontend-domain.com", // Update with your domain
-    ],
-    credentials: true,
-  })
-);
+  // Calculate totals
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+    0
+  );
+  const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const tax = totalPrice * 0.1;
+  const total = totalPrice + tax;
 
-// Body parsing with size limits to prevent memory issues
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
+  const handleCheckout = () => {
+    if (!user) {
+      setLoginModalOpen(true);
+      return;
+    }
+    navigate("/checkout");
+  };
 
-// ================================================
-// DATABASE CONNECTION
-// ================================================
+  const handleLoginRedirect = () => {
+    setLoginModalOpen(false);
+    setShowAuth(true);
+  };
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(
-      process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        maxPoolSize: 5, // Limit connections to prevent memory issues
-        serverSelectionTimeoutMS: 5000,
-      }
+  const handleRemoveItem = async (productId) => {
+    try {
+      setLocalError("");
+      // Ensure productId is a string, not an object
+      const id = typeof productId === "object" ? productId._id : productId;
+      await removeFromCart(id);
+    } catch (err) {
+      setLocalError("Failed to remove item");
+    }
+  };
+
+  const handleUpdateQuantity = async (productId, newQuantity) => {
+    try {
+      setLocalError("");
+      // Ensure productId is a string, not an object
+      const id = typeof productId === "object" ? productId._id : productId;
+      await updateQuantity(id, newQuantity);
+    } catch (err) {
+      setLocalError("Failed to update quantity");
+    }
+  };
+
+  const handleClearCart = async () => {
+    if (!window.confirm("Are you sure you want to clear your cart?")) return;
+
+    try {
+      setLocalError("");
+      await clearCart();
+    } catch (err) {
+      setLocalError("Failed to clear cart");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <Loader className={styles.spinner} size={40} />
+          <p>Loading your cart...</p>
+        </div>
+      </div>
     );
-    console.log("✅ MongoDB connected successfully");
-  } catch (error) {
-    console.error("❌ MongoDB connection failed:", error.message);
-    process.exit(1);
   }
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.wrapper}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Shopping Cart</h1>
+        </header>
+
+        {localError && (
+          <div className={styles.errorMessage}>
+            {localError}
+            <button onClick={() => setLocalError("")}>✕</button>
+          </div>
+        )}
+
+        {cart.length === 0 ? (
+          <div className={styles.emptyCart}>
+            <ShoppingCart className={styles.emptyIcon} />
+            <p className={styles.emptyText}>Your cart is empty</p>
+            <button
+              className={styles.continueBtn}
+              onClick={() => navigate("/shop")}
+            >
+              Continue Shopping
+            </button>
+          </div>
+        ) : (
+          <div className={styles.content}>
+            <div className={styles.cartItems}>
+              {cart.map((item) => (
+                <div
+                  key={item.productId || item._id}
+                  className={styles.cartItem}
+                >
+                  <img
+                    src={item.image || item.images?.[0]}
+                    alt={item.name}
+                    className={styles.itemImage}
+                    onError={(e) => (e.target.src = "/placeholder.png")}
+                  />
+                  <div className={styles.itemDetails}>
+                    <h3 className={styles.itemName}>{item.name}</h3>
+                    <p className={styles.itemPrice}>
+                      {formatPrice(item.price)}
+                    </p>
+                    <div className={styles.quantityControl}>
+                      <button
+                        onClick={() =>
+                          handleUpdateQuantity(
+                            item.productId || item._id,
+                            item.quantity - 1
+                          )
+                        }
+                        className={styles.quantityBtn}
+                        disabled={item.quantity <= 1}
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const newQuantity = parseInt(e.target.value) || 1;
+                          handleUpdateQuantity(
+                            item.productId || item._id,
+                            newQuantity
+                          );
+                        }}
+                        className={styles.quantityInput}
+                        min="1"
+                      />
+                      <button
+                        onClick={() =>
+                          handleUpdateQuantity(
+                            item.productId || item._id,
+                            item.quantity + 1
+                          )
+                        }
+                        className={styles.quantityBtn}
+                      >
+                        <Plus size={16} />
+                      </button>
+                      <span className={styles.subtotal}>
+                        Subtotal: {formatPrice(item.price * item.quantity)}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveItem(item.productId || item._id)}
+                    className={styles.removeBtn}
+                    title="Remove item"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className={styles.orderSummary}>
+              <h2 className={styles.summaryTitle}>Order Summary</h2>
+              <div className={styles.summaryDetails}>
+                <div className={styles.summaryRow}>
+                  <span>Items ({totalItems})</span>
+                  <span>{formatPrice(totalPrice)}</span>
+                </div>
+                <div className={styles.summaryRow}>
+                  <span>Shipping</span>
+                  <span className={styles.freeShipping}>Free</span>
+                </div>
+                <div className={styles.summaryRow}>
+                  <span>Tax (10%):</span>
+                  <span>{formatPrice(tax)}</span>
+                </div>
+              </div>
+              <div className={styles.totalSection}>
+                <span>Total</span>
+                <span className={styles.totalAmount}>{formatPrice(total)}</span>
+              </div>
+              <button
+                className={styles.checkoutBtn}
+                onClick={handleCheckout}
+                disabled={cart.length === 0}
+              >
+                Proceed to Checkout
+              </button>
+              <button
+                className={styles.continueBtn}
+                onClick={() => navigate("/shop")}
+              >
+                Continue Shopping
+              </button>
+              {cart.length > 0 && (
+                <button className={styles.clearBtn} onClick={handleClearCart}>
+                  Clear Cart
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <LoginRequiredModal
+        isOpen={loginModalOpen}
+        feature="Checkout"
+        onClose={() => setLoginModalOpen(false)}
+        onLogin={handleLoginRedirect}
+      />
+
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+    </div>
+  );
 };
 
-connectDB();
-
-// ================================================
-// HEALTH CHECK ROUTE
-// ================================================
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "OK",
-    message: "Server is running",
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// ================================================
-// ROUTES
-// ================================================
-
-// Import routes
-const authRoutes = require("./routes/auth");
-const productRoutes = require("./routes/products");
-const cartRoutes = require("./routes/carts");
-const orderRoutes = require("./routes/orders");
-const userRoutes = require("./routes/users");
-
-// Use routes
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/carts", cartRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/users", userRoutes);
-
-// ================================================
-// ERROR HANDLING
-// ================================================
-
-// 404 handler
-app.use((req, res) => {
-  console.log(`❌ 404 - Route not found: ${req.method} ${req.path}`);
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-    path: req.path,
-  });
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error("❌ Error:", err.message);
-
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
-  });
-});
-
-// ================================================
-// SERVER START
-// ================================================
-
-const PORT = process.env.PORT || 5000;
-
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("⚠️ SIGTERM received. Shutting down gracefully...");
-  server.close(() => {
-    console.log("✅ Server closed");
-    mongoose.connection.close(false, () => {
-      console.log("✅ MongoDB connection closed");
-      process.exit(0);
-    });
-  });
-});
-
-process.on("SIGINT", () => {
-  console.log("⚠️ SIGINT received. Shutting down gracefully...");
-  server.close(() => {
-    console.log("✅ Server closed");
-    mongoose.connection.close(false, () => {
-      console.log("✅ MongoDB connection closed");
-      process.exit(0);
-    });
-  });
-});
-
-// Start server
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 API URL: http://localhost:${PORT}/api`);
-  console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
-});
-
-// Handle unhandled promise rejections
-process.on("unhandledRejection", (err) => {
-  console.error("❌ Unhandled Rejection:", err);
-  // Don't exit on unhandled rejection - just log it
-});
-
-module.exports = app;
+export default CartPage;
