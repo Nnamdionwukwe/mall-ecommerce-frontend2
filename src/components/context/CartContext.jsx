@@ -182,6 +182,20 @@ export const CartProvider = ({ children }) => {
 
         console.log(`📝 Updating quantity:`, productId, "New qty:", quantity);
 
+        // Optimistically update the UI first
+        setCart((prevCart) =>
+          prevCart.map((item) => {
+            const itemProductId =
+              item.productId?._id || item.productId || item._id;
+            const compareId = productId.toString();
+
+            if (itemProductId.toString() === compareId) {
+              return { ...item, quantity };
+            }
+            return item;
+          })
+        );
+
         const response = await fetch(
           `${API_BASE_URL}/carts/update/${productId}`,
           {
@@ -207,6 +221,17 @@ export const CartProvider = ({ children }) => {
         } else {
           setError(data.message || "Failed to update quantity");
           console.error("❌ Error updating quantity:", data.message);
+          // Reload cart on failure
+          const reloadResponse = await fetch(`${API_BASE_URL}/carts`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          const reloadData = await reloadResponse.json();
+          if (reloadData.success) {
+            setCart(reloadData.data.items || []);
+          }
         }
       } catch (err) {
         console.error("❌ Error updating quantity:", err);
