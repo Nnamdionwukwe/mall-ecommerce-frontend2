@@ -109,8 +109,9 @@ const AdminOrders = () => {
       console.log("Order ID:", selectedOrder._id);
       console.log("New Status:", newStatus);
 
+      // ✅ FIXED: Added /admin prefix to match backend route
       const response = await axios.patch(
-        `${API_BASE}/orders/${selectedOrder._id}/status`,
+        `${API_BASE}/orders/admin/${selectedOrder._id}/status`,
         { status: newStatus },
         {
           headers: {
@@ -134,6 +135,7 @@ const AdminOrders = () => {
       }
     } catch (err) {
       console.error("❌ Error updating order status:", err);
+      console.error("❌ Error response:", err.response?.data);
       alert(err.response?.data?.message || "Failed to update order status");
     }
   };
@@ -146,8 +148,10 @@ const AdminOrders = () => {
 
       console.log("🔄 Updating delivery information...");
 
+      // Note: This endpoint might not exist in your backend yet
+      // You may need to add it to your routes file
       const response = await axios.patch(
-        `${API_BASE}/orders/${selectedOrder._id}/delivery`,
+        `${API_BASE}/orders/admin/${selectedOrder._id}/delivery`,
         {
           trackingNumber,
           estimatedDelivery: estimatedDelivery || null,
@@ -175,6 +179,7 @@ const AdminOrders = () => {
       }
     } catch (err) {
       console.error("❌ Error updating delivery info:", err);
+      console.error("❌ Error response:", err.response?.data);
       alert(err.response?.data?.message || "Failed to update delivery info");
     }
   };
