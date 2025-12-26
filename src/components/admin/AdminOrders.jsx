@@ -397,7 +397,9 @@ const AdminOrders = () => {
                   <div>
                     <strong>User ID:</strong>
                     <p style={{ fontSize: "0.85em", color: "#666" }}>
-                      {selectedOrder.userId}
+                      {typeof selectedOrder.userId === "string"
+                        ? selectedOrder.userId
+                        : selectedOrder.userId?._id || "N/A"}
                     </p>
                   </div>
                 </div>
