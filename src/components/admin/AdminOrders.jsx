@@ -70,12 +70,12 @@ const AdminOrders = () => {
     setViewModal(true);
   };
 
-  const openUpdateModal = (order) => {
-    setSelectedOrder(order);
-    setNewStatus(order.status);
-    setTrackingNumber(order.trackingNumber || "");
-    setEstimatedDelivery(order.estimatedDelivery || "");
-    setDeliveredAt(order.deliveredAt || "");
+  const openUpdateModal = (orders) => {
+    setSelectedOrder(orders);
+    setNewStatus(orders.status);
+    setTrackingNumber(orders.trackingNumber || "");
+    setEstimatedDelivery(orders.estimatedDelivery || "");
+    setDeliveredAt(orders.deliveredAt || "");
     setUpdateModal(true);
   };
 
