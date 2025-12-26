@@ -120,73 +120,69 @@ const CartPage = () => {
         ) : (
           <div className={styles.content}>
             <div className={styles.cartItems}>
-              {cart.map((item) => (
-                <div
-                  key={item.productId || item._id}
-                  className={styles.cartItem}
-                >
-                  <img
-                    src={item.image || item.images?.[0]}
-                    alt={item.name}
-                    className={styles.itemImage}
-                    onError={(e) => (e.target.src = "/placeholder.png")}
-                  />
-                  <div className={styles.itemDetails}>
-                    <h3 className={styles.itemName}>{item.name}</h3>
-                    <p className={styles.itemPrice}>
-                      {formatPrice(item.price)}
-                    </p>
-                    <div className={styles.quantityControl}>
-                      <button
-                        onClick={() =>
-                          handleUpdateQuantity(
-                            item.productId || item._id,
-                            item.quantity - 1
-                          )
-                        }
-                        className={styles.quantityBtn}
-                        disabled={item.quantity <= 1}
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) => {
-                          const newQuantity = parseInt(e.target.value) || 1;
-                          handleUpdateQuantity(
-                            item.productId || item._id,
-                            newQuantity
-                          );
-                        }}
-                        className={styles.quantityInput}
-                        min="1"
-                      />
-                      <button
-                        onClick={() =>
-                          handleUpdateQuantity(
-                            item.productId || item._id,
-                            item.quantity + 1
-                          )
-                        }
-                        className={styles.quantityBtn}
-                      >
-                        <Plus size={16} />
-                      </button>
-                      <span className={styles.subtotal}>
-                        Subtotal: {formatPrice(item.price * item.quantity)}
-                      </span>
+              {cart.map((item) => {
+                // Extract proper IDs from item
+                const productId =
+                  typeof item.productId === "object"
+                    ? item.productId._id
+                    : item.productId;
+
+                return (
+                  <div key={productId || item._id} className={styles.cartItem}>
+                    <img
+                      src={item.image || item.images?.[0]}
+                      alt={item.name}
+                      className={styles.itemImage}
+                      onError={(e) => (e.target.src = "/placeholder.png")}
+                    />
+                    <div className={styles.itemDetails}>
+                      <h3 className={styles.itemName}>{item.name}</h3>
+                      <p className={styles.itemPrice}>
+                        {formatPrice(item.price)}
+                      </p>
+                      <div className={styles.quantityControl}>
+                        <button
+                          onClick={() =>
+                            handleUpdateQuantity(productId, item.quantity - 1)
+                          }
+                          className={styles.quantityBtn}
+                          disabled={item.quantity <= 1}
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <input
+                          type="number"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const newQuantity = parseInt(e.target.value) || 1;
+                            handleUpdateQuantity(productId, newQuantity);
+                          }}
+                          className={styles.quantityInput}
+                          min="1"
+                        />
+                        <button
+                          onClick={() =>
+                            handleUpdateQuantity(productId, item.quantity + 1)
+                          }
+                          className={styles.quantityBtn}
+                        >
+                          <Plus size={16} />
+                        </button>
+                        <span className={styles.subtotal}>
+                          Subtotal: {formatPrice(item.price * item.quantity)}
+                        </span>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => handleRemoveItem(productId)}
+                      className={styles.removeBtn}
+                      title="Remove item"
+                    >
+                      <Trash2 size={20} />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleRemoveItem(item.productId || item._id)}
-                    className={styles.removeBtn}
-                    title="Remove item"
-                  >
-                    <Trash2 size={20} />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className={styles.orderSummary}>
