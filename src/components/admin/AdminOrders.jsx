@@ -65,17 +65,17 @@ const AdminOrders = () => {
     }
   };
 
-  const openViewModal = (orders) => {
-    setSelectedOrder(orders);
+  const openViewModal = (order) => {
+    setSelectedOrder(order);
     setViewModal(true);
   };
 
-  const openUpdateModal = (orders) => {
-    setSelectedOrder(orders);
-    setNewStatus(orders.status);
-    setTrackingNumber(orders.trackingNumber || "");
-    setEstimatedDelivery(orders.estimatedDelivery || "");
-    setDeliveredAt(orders.deliveredAt || "");
+  const openUpdateModal = (order) => {
+    setSelectedOrder(order);
+    setNewStatus(order.status);
+    setTrackingNumber(order.trackingNumber || "");
+    setEstimatedDelivery(order.estimatedDelivery || "");
+    setDeliveredAt(order.deliveredAt || "");
     setUpdateModal(true);
   };
 
