@@ -65,8 +65,8 @@ const AdminOrders = () => {
     }
   };
 
-  const openViewModal = (order) => {
-    setSelectedOrder(order);
+  const openViewModal = (orders) => {
+    setSelectedOrder(orders);
     setViewModal(true);
   };
 
