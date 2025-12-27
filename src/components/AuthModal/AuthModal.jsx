@@ -123,19 +123,17 @@ const AuthModal = ({ onClose }) => {
             />
           </div>
 
-          {!isLogin && (
-            <div className={styles.formGroup}>
-              <label>Admin Token</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={formData.password}
-                onChange={(e) => setAdminToken(e.target.value)}
-                placeholder="••••••••"
-              />
-            </div>
-          )}
+          <div className={styles.formGroup}>
+            <label>Admin Token</label>
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={formData.password}
+              onChange={(e) => setAdminToken(e.target.value)}
+              placeholder="••••••••"
+            />
+          </div>
 
           {!isLogin && (
             <div className={styles.formGroup}>
