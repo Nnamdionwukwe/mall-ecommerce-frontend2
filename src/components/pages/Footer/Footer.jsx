@@ -39,16 +39,7 @@ const Footer = () => {
                   className={styles.socialIcon}
                 />
               </a>
-              <a
-                href="ochachopharmacysupermarket@gmail.com"
-                className={styles.socialLink}
-              >
-                <img
-                  src="https://mailmeteor.com/logos/assets/PNG/Gmail_Logo_512px.png"
-                  alt="Gmail"
-                  className={styles.socialIcon}
-                />
-              </a>
+
               <a href="#" className={styles.socialLink}>
                 <img
                   src="https://static.vecteezy.com/system/resources/thumbnails/031/737/223/small/tiktok-logo-tiktok-app-social-media-icons-free-png.png"
@@ -93,8 +84,16 @@ const Footer = () => {
             <h4 className={styles.linkTitle}>Contact Us</h4>
             <ul className={styles.contactList}>
               <li>
-                <span className={styles.contactIcon}>📧</span>
-                <a href="mailto:support@mallstore.com">support@mallstore.com</a>
+                <span className={styles.contactIcon}>
+                  <img
+                    src="https://mailmeteor.com/logos/assets/PNG/Gmail_Logo_512px.png"
+                    alt="Gmail"
+                    className={styles.socialIcon}
+                  />
+                </span>
+                <a href="https://ochachopharmacysupermarket@gmail.com">
+                  ochachopharmacysupermarket@gmail.com
+                </a>
               </li>
               <li>
                 <span className={styles.contactIcon}>📱</span>
