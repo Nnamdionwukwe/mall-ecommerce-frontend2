@@ -264,21 +264,21 @@ const Support = () => {
 
               <div className={styles.contactMethods}>
                 <a
-                  href="mailto:support@mallstore.com"
+                  href="https://ochachopharmacysupermarket@gmail.com"
                   className={styles.contactMethod}
                 >
                   <span className={styles.contactIcon}>📧</span>
                   <div>
                     <h4>Email</h4>
-                    <p>support@mallstore.com</p>
+                    <p>ochachopharmacysupermarket@gmail.com</p>
                   </div>
                 </a>
 
-                <a href="tel:+2348000000000" className={styles.contactMethod}>
+                <a href="tel:+2347016979474" className={styles.contactMethod}>
                   <span className={styles.contactIcon}>📱</span>
                   <div>
                     <h4>Phone</h4>
-                    <p>+234 800 000 0000</p>
+                    <p>+234 903 382 2884, +234-701-697-9474</p>
                   </div>
                 </a>
 
@@ -286,7 +286,7 @@ const Support = () => {
                   <span className={styles.contactIcon}>💬</span>
                   <div>
                     <h4>Live Chat</h4>
-                    <p>Mon-Fri, 9am-5pm</p>
+                    <p>24/7 Available</p>
                   </div>
                 </div>
 

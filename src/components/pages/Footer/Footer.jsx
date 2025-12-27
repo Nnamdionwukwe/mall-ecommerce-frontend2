@@ -107,7 +107,7 @@ const Footer = () => {
               </li>
               <li>
                 <span className={styles.contactIcon}>🕐</span>
-                <span>24/7</span>
+                <span>24/7 Available</span>
               </li>
             </ul>
           </div>
