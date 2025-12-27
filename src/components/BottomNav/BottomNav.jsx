@@ -2,7 +2,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-// import LoginRequiredModal from "./LoginRequiredModal/LoginRequiredModal";
 import styles from "./BottomNav.module.css";
 import LoginRequiredModal from "../LoginRequiredModal/LoginRequiredModal";
 import AuthModal from "../AuthModal/AuthModal";
@@ -27,10 +26,9 @@ const BottomNav = () => {
       window.removeEventListener("storage", updateCartCount);
       window.removeEventListener("cartUpdated", updateCartCount);
     };
-  }, []);
+  }, [cart]);
 
   const updateCartCount = () => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     setCartCount(count);
   };
@@ -49,7 +47,7 @@ const BottomNav = () => {
       label: "Cart",
       path: "/cart",
       requiresAuth: false,
-      badge: cart.length,
+      badge: cartCount,
     },
     {
       id: "orders",
@@ -85,7 +83,6 @@ const BottomNav = () => {
 
   const handleLoginRedirect = () => {
     setLoginModalOpen(false);
-    // navigate("/");
     setShowAuth(true);
   };
 
@@ -104,6 +101,7 @@ const BottomNav = () => {
               className={`${styles.navItem} ${
                 isActive(item.path) ? styles.active : ""
               }`}
+              title={item.label}
             >
               <div className={styles.iconWrapper}>
                 <span className={styles.icon}>{item.icon}</span>

@@ -7,21 +7,24 @@
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid #e5e7eb;
 }
 
 .navContainer {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  max-width: 600px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0.5rem 0;
+  height: 60px;
 }
 
 .navItem {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.25rem;
   background: none;
   border: none;
@@ -30,19 +33,28 @@
   transition: all 0.3s ease;
   color: #6b7280;
   min-width: 70px;
+  flex: 1;
+  height: 100%;
 }
 
 .navItem:hover {
   color: #7c3aed;
   transform: translateY(-2px);
+  background-color: #f9f5ff;
 }
 
 .navItem.active {
   color: #7c3aed;
+  background-color: #faf5ff;
+  border-top: 3px solid #7c3aed;
+  border-bottom: none;
 }
 
 .iconWrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon {
@@ -101,20 +113,132 @@
 .label {
   font-size: 0.75rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-/* Add padding to main content to prevent bottom nav overlap */
-body {
-  padding-bottom: 80px;
-}
+/* ================================================
+   RESPONSIVE STYLES - NAVBAR VISIBLE ON ALL SIZES
+   ================================================ */
 
-/* Responsive adjustments */
-@media (min-width: 768px) {
+/* Mobile first (default) - navbar shown */
+@media (max-width: 640px) {
   .bottomNav {
-    display: none;
+    height: 70px;
+  }
+
+  .navContainer {
+    height: 70px;
+    padding: 0.5rem 0 env(safe-area-inset-bottom);
+  }
+
+  .navItem {
+    padding: 0.25rem 0.5rem;
+    min-width: 60px;
+  }
+
+  .label {
+    font-size: 0.65rem;
+  }
+
+  .icon {
+    font-size: 1.3rem;
+  }
+
+  /* Add padding to body to prevent content overlap */
+  body {
+    padding-bottom: 70px;
+  }
+}
+
+/* Tablets (641px - 1024px) - navbar shown with more spacing */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .bottomNav {
+    height: 75px;
+  }
+
+  .navContainer {
+    height: 75px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .navItem {
+    padding: 0.75rem 1.5rem;
+    min-width: 100px;
+  }
+
+  .label {
+    font-size: 0.8rem;
+  }
+
+  .icon {
+    font-size: 1.6rem;
+  }
+
+  body {
+    padding-bottom: 75px;
+  }
+}
+
+/* Desktop (1025px+) - navbar shown with larger sizing */
+@media (min-width: 1025px) {
+  .bottomNav {
+    height: 80px;
+  }
+
+  .navContainer {
+    height: 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .navItem {
+    padding: 1rem 2rem;
+    min-width: 120px;
+  }
+
+  .label {
+    font-size: 0.85rem;
+  }
+
+  .icon {
+    font-size: 1.8rem;
+  }
+
+  body {
+    padding-bottom: 80px;
+  }
+}
+
+/* ================================================
+   ACCESSIBILITY & ANIMATIONS
+   ================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .navItem,
+  .icon,
+  .badge {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Support for landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .bottomNav {
+    position: absolute;
+    bottom: auto;
+    top: 0;
   }
 
   body {
     padding-bottom: 0;
+    padding-top: 60px;
   }
+}
+
+/* Ensure visibility on all screen readers */
+.navItem:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: -2px;
 }
