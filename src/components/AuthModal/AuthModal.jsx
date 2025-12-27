@@ -147,7 +147,7 @@ const AuthModal = ({ onClose }) => {
                 }
               >
                 <option value="user">Customer</option>
-                {adminToken === "12345" && (
+                {adminToken === "123456" && (
                   <option value="vendor">Vendor/Store Owner</option>
                 )}
               </select>
