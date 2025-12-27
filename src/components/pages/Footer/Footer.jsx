@@ -39,8 +39,15 @@ const Footer = () => {
                   className={styles.socialIcon}
                 />
               </a>
-              <a href="#" className={styles.socialLink}>
-                🐦
+              <a
+                href="ochachopharmacysupermarket@gmail.com"
+                className={styles.socialLink}
+              >
+                <img
+                  src="https://mailmeteor.com/logos/assets/PNG/Gmail_Logo_512px.png"
+                  alt="Gmail"
+                  className={styles.socialIcon}
+                />
               </a>
               <a href="#" className={styles.socialLink}>
                 ▶️
