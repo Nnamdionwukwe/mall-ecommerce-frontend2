@@ -14,7 +14,7 @@ const AuthModal = ({ onClose }) => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [adminToken, setAdminToken] = useState("Nnamdi@12345");
+  const [adminToken, setAdminToken] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -147,7 +147,7 @@ const AuthModal = ({ onClose }) => {
                 }
               >
                 <option value="user">Customer</option>
-                {!adminToken && (
+                {!adminToken === "Nnamdi@12345" && (
                   <option value="vendor">Vendor/Store Owner</option>
                 )}
               </select>
