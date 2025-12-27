@@ -19,7 +19,10 @@ const Footer = () => {
               enjoy fast, secure delivery.
             </p>
             <div className={styles.socialLinks}>
-              <a href="#" className={styles.socialLink}>
+              <a
+                href="https://www.instagram.com/ochachopharmacysupermarket?igsh=MXFyNHQwdWlxencwMw%3D%3D&utm_source=qr"
+                className={styles.socialLink}
+              >
                 <img
                   src="https://static.vecteezy.com/system/resources/thumbnails/038/447/961/small/ai-generated-instagram-logo-free-png.png"
                   alt="Instagram"
