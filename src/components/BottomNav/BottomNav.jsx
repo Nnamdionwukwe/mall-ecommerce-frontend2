@@ -47,7 +47,7 @@ const BottomNav = () => {
       label: "Cart",
       path: "/cart",
       requiresAuth: false,
-      badge: cartCount,
+      badge: cart.length,
     },
     {
       id: "orders",
