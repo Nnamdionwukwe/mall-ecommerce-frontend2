@@ -86,17 +86,6 @@ const Footer = () => {
               <li>
                 <button onClick={() => navigate("/support")}>Support</button>
               </li>
-              <li>
-                <button onClick={() => navigate("/track-order")}>
-                  Track Order
-                </button>
-              </li>
-              <li>
-                <a href="#">Returns</a>
-              </li>
-              <li>
-                <a href="#">Shipping Info</a>
-              </li>
             </ul>
           </div>
 
