@@ -11,7 +11,9 @@ const Footer = () => {
         <div className={styles.footerGrid}>
           {/* Brand Section */}
           <div className={styles.brandSection}>
-            <h3 className={styles.brandName}>🛍️ Mall Store</h3>
+            <h3 className={styles.brandName}>
+              🛍️ Ochacho Pharmacy & Supermarket
+            </h3>
             <p className={styles.brandDescription}>
               Your one-stop shop for quality products from trusted vendors. Shop
               with confidence and enjoy fast, secure delivery.
