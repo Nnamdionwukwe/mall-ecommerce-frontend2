@@ -5,9 +5,11 @@
   right: 0;
   background: white;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom);
   border-top: 1px solid #e5e7eb;
+  width: 100%;
+  margin: 0;
 }
 
 .navContainer {
@@ -116,14 +118,12 @@
   white-space: nowrap;
 }
 
-/* ================================================
-   RESPONSIVE STYLES - NAVBAR VISIBLE ON ALL SIZES
-   ================================================ */
-
-/* Mobile first (default) - navbar shown */
+/* Mobile first (default) - navbar shown and fixed to bottom */
 @media (max-width: 640px) {
   .bottomNav {
     height: 70px;
+    bottom: 0;
+    position: fixed;
   }
 
   .navContainer {
@@ -143,22 +143,19 @@
   .icon {
     font-size: 1.3rem;
   }
-
-  /* Add padding to body to prevent content overlap */
-  body {
-    padding-bottom: 70px;
-  }
 }
 
-/* Tablets (641px - 1024px) - navbar shown with more spacing */
+/* Tablets (641px - 1024px) - navbar fixed to bottom */
 @media (min-width: 641px) and (max-width: 1024px) {
   .bottomNav {
     height: 75px;
+    bottom: 0;
+    position: fixed;
   }
 
   .navContainer {
     height: 75px;
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
   }
 
@@ -174,21 +171,19 @@
   .icon {
     font-size: 1.6rem;
   }
-
-  body {
-    padding-bottom: 75px;
-  }
 }
 
-/* Desktop (1025px+) - navbar shown with larger sizing */
+/* Desktop (1025px+) - navbar fixed to bottom */
 @media (min-width: 1025px) {
   .bottomNav {
     height: 80px;
+    bottom: 0;
+    position: fixed;
   }
 
   .navContainer {
     height: 80px;
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
   }
 
@@ -204,41 +199,31 @@
   .icon {
     font-size: 1.8rem;
   }
-
-  body {
-    padding-bottom: 80px;
-  }
 }
 
 /* ================================================
    ACCESSIBILITY & ANIMATIONS
    ================================================ */
 
-@media (prefers-reduced-motion: reduce) {
-  .navItem,
-  .icon,
-  .badge {
-    transition: none;
-    animation: none;
-  }
-}
-
-/* Support for landscape mode on mobile */
-@media (max-height: 500px) and (orientation: landscape) {
-  .bottomNav {
-    position: absolute;
-    bottom: auto;
-    top: 0;
-  }
-
-  body {
-    padding-bottom: 0;
-    padding-top: 60px;
-  }
-}
-
 /* Ensure visibility on all screen readers */
 .navItem:focus-visible {
   outline: 2px solid #7c3aed;
   outline-offset: -2px;
+}
+
+/* Global fix to ensure main content doesn't overlap with navbar */
+:global(body) {
+  padding-bottom: 70px !important;
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  :global(body) {
+    padding-bottom: 75px !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  :global(body) {
+    padding-bottom: 80px !important;
+  }
 }
