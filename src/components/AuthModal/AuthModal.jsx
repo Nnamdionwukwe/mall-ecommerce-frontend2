@@ -128,7 +128,6 @@ const AuthModal = ({ onClose }) => {
               <label>Admin Token</label>
               <input
                 type="password"
-                required
                 minLength={6}
                 value={adminToken}
                 onChange={(e) => setAdminToken(e.target.value)}
