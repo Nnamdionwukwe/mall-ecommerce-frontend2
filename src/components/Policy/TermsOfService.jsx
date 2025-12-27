@@ -122,13 +122,13 @@ const TermsOfService = () => {
             </p>
             <div className={styles.contactInfo}>
               <p>
-                <strong>Email:</strong> legal@ecommerce.com
+                <strong>Email:</strong> ochachopharmacysupermarket@gmail.com
               </p>
               <p>
-                <strong>Phone:</strong> +1-800-123-4567
+                <strong>Phone:</strong> +234-903-382-2884, +234-701-697-9474
               </p>
               <p>
-                <strong>Support Hours:</strong> Monday - Friday, 9 AM - 5 PM EST
+                <strong>Support Hours:</strong> 24/7 EST
               </p>
             </div>
           </div>

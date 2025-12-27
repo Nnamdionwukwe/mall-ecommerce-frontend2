@@ -260,7 +260,7 @@ const CookiesPolicy = () => {
             </p>
             <div className={styles.contactInfo}>
               <p>
-                <strong>Email:</strong> cookies@ecommerce.com
+                <strong>Email:</strong> ochachopharmacysupermarket@gmail.com
               </p>
               <p>
                 <strong>Privacy Policy:</strong> See our Privacy Policy for more

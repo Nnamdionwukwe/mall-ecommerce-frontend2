@@ -122,14 +122,14 @@ const PrivacyPolicy = () => {
             </p>
             <div className={styles.contactInfo}>
               <p>
-                <strong>Email:</strong> privacy@ecommerce.com
+                <strong>Email:</strong> ochachopharmacysupermarket@gmail.com
               </p>
               <p>
-                <strong>Phone:</strong> +1-800-123-4567
+                <strong>Phone:</strong> +234-903-382-2884, +234-701-697-9474
               </p>
               <p>
-                <strong>Address:</strong> 123 Commerce Street, Business City, BC
-                12345
+                <strong>Address:</strong> Ochacho Real Home 1, Idu, Gate 2 &
+                Ochacho Real Home, Life Camp
               </p>
             </div>
           </div>
