@@ -15,8 +15,8 @@ const Footer = () => {
               🛍️ Ochacho Pharmacy & Supermarket
             </h3>
             <p className={styles.brandDescription}>
-              Your one-stop shop for quality products from trusted vendors. Shop
-              with confidence and enjoy fast, secure delivery.
+              Your one-stop shop for quality products. Shop with confidence and
+              enjoy fast, secure delivery.
             </p>
             <div className={styles.socialLinks}>
               <a href="#" className={styles.socialLink}>
