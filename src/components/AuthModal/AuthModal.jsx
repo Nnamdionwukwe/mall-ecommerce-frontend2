@@ -129,7 +129,7 @@ const AuthModal = ({ onClose }) => {
               type="password"
               required
               minLength={6}
-              value={formData.password}
+              value={adminToken}
               onChange={(e) => setAdminToken(e.target.value)}
               placeholder="••••••••"
             />
