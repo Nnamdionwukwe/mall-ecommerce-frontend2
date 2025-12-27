@@ -164,7 +164,7 @@
 .contactInfo p {
   margin: 0.75rem 0;
   color: #2d3748;
-  width: fit-content;
+  width: 100%;
 }
 
 .contactInfo strong {
