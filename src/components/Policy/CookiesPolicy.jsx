@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "./CookiesPolicy.module.css";
+import styles from "./PrivacyPolicy.module.css";
 
 const CookiesPolicy = () => {
   const [expandedSection, setExpandedSection] = useState(null);

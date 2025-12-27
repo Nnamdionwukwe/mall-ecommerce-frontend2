@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./TermsOfService.module.css";
+import styles from "./PrivacyPolicy.module.css";
 
 const TermsOfService = () => {
   const [expandedSection, setExpandedSection] = useState(null);
