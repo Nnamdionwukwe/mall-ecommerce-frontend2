@@ -61,7 +61,7 @@ const Footer = () => {
                 <button onClick={() => navigate("/shop")}>Shop</button>
               </li>
               <li>
-                <button onClick={() => navigate("/orders")}>Orders</button>
+                <button onClick={() => navigate("orders")}>Orders</button>
               </li>
               <li>
                 <button onClick={() => navigate("/profile")}>Profile</button>
