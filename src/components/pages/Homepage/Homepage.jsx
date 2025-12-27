@@ -5,13 +5,14 @@ import styles from "./HomePage.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
 import Footer from "../Footer/Footer";
 import { useCart } from "../../context/CartContext";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const Homepage = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const { formatPrice } = useCurrency();
   const { addToCart, isLoading } = useCart();
 
   const banners = [
@@ -233,7 +234,7 @@ const Homepage = () => {
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>🚚</div>
               <h3>Free Delivery</h3>
-              <p>On orders over $100</p>
+              <p>On orders over {formatPrice(100000)}</p>
             </div>
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>💳</div>
