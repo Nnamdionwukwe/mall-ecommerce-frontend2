@@ -22,7 +22,7 @@ const Footer = () => {
               <a href="#" className={styles.socialLink}>
                 <img
                   src="https://static.vecteezy.com/system/resources/thumbnails/038/447/961/small/ai-generated-instagram-logo-free-png.png"
-                  alt="Facebook"
+                  alt="Instagram"
                   className={styles.socialIcon}
                 />
               </a>
