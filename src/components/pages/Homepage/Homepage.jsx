@@ -41,10 +41,10 @@ const Homepage = () => {
     },
     {
       id: 4,
-      title: "Fashion Week Special",
-      subtitle: "Trending styles for everyone",
-      discount: "40% OFF",
-      image: "👗",
+      title: "Family Week Special",
+      subtitle: "Trending produce for everyone",
+      discount: "10% OFF",
+      image: "👪",
       bg: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
     },
   ];
