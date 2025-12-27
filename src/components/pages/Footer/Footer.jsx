@@ -29,8 +29,15 @@ const Footer = () => {
                   className={styles.socialIcon}
                 />
               </a>
-              <a href="#" className={styles.socialLink}>
-                📷
+              <a
+                href="https://www.facebook.com/share/183SgyZxtW/?mibextid=wwXIfr"
+                className={styles.socialLink}
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png"
+                  alt="Facebook"
+                  className={styles.socialIcon}
+                />
               </a>
               <a href="#" className={styles.socialLink}>
                 🐦
