@@ -101,11 +101,11 @@ const Footer = () => {
               </li>
               <li>
                 <span className={styles.contactIcon}>📍</span>
-                <span>Lagos, Nigeria</span>
+                <span>Abuja, Nigeria</span>
               </li>
               <li>
                 <span className={styles.contactIcon}>🕐</span>
-                <span>Mon-Fri: 9AM - 5PM</span>
+                <span>24/7</span>
               </li>
             </ul>
           </div>
@@ -113,7 +113,9 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className={styles.bottomBar}>
-          <p>© {currentYear} Mall Store. All rights reserved.</p>
+          <p>
+            © {currentYear} Ochacho Pharmacy Supermarket. All rights reserved.
+          </p>
           <div className={styles.bottomLinks}>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
