@@ -122,7 +122,8 @@ const PrivacyPolicy = () => {
             </p>
             <div className={styles.contactInfo}>
               <p>
-                <strong>Email:</strong> ochachopharmacysupermarket@gmail.com
+                <strong>Email:</strong> ochachopharmacysupermarket<br></br>
+                @gmail.com
               </p>
               <p>
                 <strong>Phone:</strong> +234-903-382-2884, +234-701-697-9474
