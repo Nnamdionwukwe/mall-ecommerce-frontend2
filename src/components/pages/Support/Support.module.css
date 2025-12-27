@@ -26,14 +26,14 @@
 }
 
 .header h1 {
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-size: 2.5rem;
   font-weight: bold;
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
 }
 
 .subtitle {
-  font-size: clamp(1rem, 3vw, 1.125rem);
+  font-size: 1.125rem;
   opacity: 0.9;
   margin: 0;
 }
@@ -68,7 +68,7 @@
 }
 
 .cardTitle {
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-size: 1.5rem;
   font-weight: bold;
   color: #1f2937;
   margin: 0 0 1.5rem 0;
@@ -205,7 +205,7 @@
 }
 
 .successMessage h3 {
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-size: 1.75rem;
   color: #1f2937;
   margin: 0 0 0.5rem 0;
 }
@@ -213,7 +213,7 @@
 .successMessage p {
   color: #6b7280;
   margin: 0;
-  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-size: 1rem;
 }
 
 /* ================================================
@@ -246,19 +246,19 @@
 }
 
 .contactIcon {
-  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-size: 2rem;
   flex-shrink: 0;
 }
 
 .contactMethod h4 {
   color: #1f2937;
   margin: 0 0 0.25rem 0;
-  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-size: 1rem;
 }
 
 .contactMethod p {
   color: #6b7280;
-  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-size: 0.875rem;
   margin: 0;
   word-break: break-word;
 }
@@ -294,7 +294,7 @@
   background: white;
   border: none;
   cursor: pointer;
-  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-size: 1rem;
   font-weight: 600;
   color: #1f2937;
   text-align: left;
@@ -323,7 +323,7 @@
   color: #6b7280;
   line-height: 1.6;
   animation: slideDown 0.3s ease;
-  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-size: 1rem;
 }
 
 @keyframes slideDown {
@@ -369,7 +369,7 @@
 }
 
 .helpIcon {
-  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-size: 2.5rem;
   display: block;
   margin-bottom: 0.75rem;
 }
@@ -377,12 +377,12 @@
 .helpTopic h4 {
   color: #1f2937;
   margin: 0 0 0.5rem 0;
-  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-size: 1rem;
 }
 
 .helpTopic p {
   color: #6b7280;
-  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-size: 0.875rem;
   margin: 0;
 }
 
