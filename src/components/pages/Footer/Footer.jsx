@@ -50,7 +50,6 @@ const Footer = () => {
                 />
               </a>
               <a href="#" className={styles.socialLink}>
-                ▶{" "}
                 <img
                   src="https://static.vecteezy.com/system/resources/thumbnails/031/737/223/small/tiktok-logo-tiktok-app-social-media-icons-free-png.png"
                   alt="Tiktok"
