@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Support.module.css";
 import { supportAPI } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const Support = () => {
   const { user } = useAuth();
@@ -16,6 +17,8 @@ const Support = () => {
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+
+  const navigate = useNavigate();
 
   const faqs = [
     {
@@ -332,7 +335,10 @@ const Support = () => {
               <h2 className={styles.cardTitle}>📚 Help Topics</h2>
 
               <div className={styles.helpTopics}>
-                <div className={styles.helpTopic}>
+                <div
+                  onClick={() => navigate("/orders")}
+                  className={styles.helpTopic}
+                >
                   <span className={styles.helpIcon}>📦</span>
                   <h4>Orders & Shipping</h4>
                   <p>Track orders, shipping info, delivery times</p>
@@ -350,7 +356,10 @@ const Support = () => {
                   <p>Return policy, refund process</p>
                 </div>
 
-                <div className={styles.helpTopic}>
+                <div
+                  onClick={() => navigate("/profile")}
+                  className={styles.helpTopic}
+                >
                   <span className={styles.helpIcon}>👤</span>
                   <h4>Account</h4>
                   <p>Profile, password, settings</p>
