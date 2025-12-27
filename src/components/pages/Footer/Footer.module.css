@@ -4,6 +4,10 @@
   padding-top: 4rem;
 }
 
+.socialIcon {
+  width: 20px;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
