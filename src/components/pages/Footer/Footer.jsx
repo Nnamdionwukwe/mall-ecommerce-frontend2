@@ -117,9 +117,9 @@ const Footer = () => {
             © {currentYear} Ochacho Pharmacy Supermarket. All rights reserved.
           </p>
           <div className={styles.bottomLinks}>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Cookie Policy</a>
+            <a href="privacy-policy">Privacy Policy</a>
+            <a href="terms">Terms of Service</a>
+            <a href="cookies-policy">Cookie Policy</a>
           </div>
         </div>
       </div>
