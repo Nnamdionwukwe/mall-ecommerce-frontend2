@@ -7,6 +7,7 @@ import styles from "./CartPage.module.css";
 import { Trash2, Plus, Minus, ShoppingCart, Loader } from "lucide-react";
 import LoginRequiredModal from "../../LoginRequiredModal/LoginRequiredModal";
 import AuthModal from "../../AuthModal/AuthModal";
+import ClearCartModal from "../../ClearCartModal/ClearCartModal";
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const CartPage = () => {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [localError, setLocalError] = useState("");
+  const [clearCartModalOpen, setClearCartModalOpen] = useState(false);
 
   // Update local error when cart context error changes
   useEffect(() => {
@@ -70,15 +72,22 @@ const CartPage = () => {
     }
   };
 
-  const handleClearCart = async () => {
-    if (!window.confirm("Are you sure you want to clear your cart?")) return;
+  const handleClearCartClick = () => {
+    setClearCartModalOpen(true);
+  };
 
+  const handleConfirmClearCart = async () => {
     try {
       setLocalError("");
       await clearCart();
+      setClearCartModalOpen(false);
     } catch (err) {
       setLocalError("Failed to clear cart");
     }
+  };
+
+  const handleCancelClearCart = () => {
+    setClearCartModalOpen(false);
   };
 
   if (isLoading) {
@@ -219,7 +228,10 @@ const CartPage = () => {
                 Continue Shopping
               </button>
               {cart.length > 0 && (
-                <button className={styles.clearBtn} onClick={handleClearCart}>
+                <button
+                  className={styles.clearBtn}
+                  onClick={handleClearCartClick}
+                >
                   Clear Cart
                 </button>
               )}
@@ -227,6 +239,14 @@ const CartPage = () => {
           </div>
         )}
       </div>
+
+      {/* Clear Cart Modal */}
+      <ClearCartModal
+        isOpen={clearCartModalOpen}
+        onConfirm={handleConfirmClearCart}
+        onCancel={handleCancelClearCart}
+        itemCount={totalItems}
+      />
 
       <LoginRequiredModal
         isOpen={loginModalOpen}
