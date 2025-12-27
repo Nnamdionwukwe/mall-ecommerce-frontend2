@@ -97,7 +97,9 @@ const Footer = () => {
               </li>
               <li>
                 <span className={styles.contactIcon}>📱</span>
-                <a href="tel:+2349033822884">+234 903 382 2884</a>
+                <a href="tel:+2349033822884">
+                  +234 903 382 2884, +234-701-697-9474
+                </a>
               </li>
               <li>
                 <span className={styles.contactIcon}>📍</span>
