@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import styles from "./AdminChatManagement.module.css";
 import { useAuth } from "../context/AuthContext";
+// import { chatAPI } from "../services/api";
 
 const AdminChatManagement = () => {
   const { user, token } = useAuth();
@@ -78,22 +79,23 @@ const AdminChatManagement = () => {
   const fetchChats = async () => {
     try {
       setLoading(true);
-      const statusQuery = filter !== "all" ? `?status=${filter}` : "";
-      const response = await fetch(
-        `${API_URL}/api/chat/admin/all${statusQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
 
-      if (data.success) {
-        setChats(data.data);
+      // Import chatAPI
+      const { chatAPI } = await import("../services/api");
+
+      const params = {};
+      if (filter !== "all") {
+        params.status = filter;
+      }
+
+      const response = await chatAPI.getAllChats(params);
+      console.log("✅ Chats fetched:", response.data);
+
+      if (response.data.success) {
+        setChats(response.data.data);
       }
     } catch (error) {
-      console.error("Failed to fetch chats:", error);
+      console.error("❌ Failed to fetch chats:", error);
     } finally {
       setLoading(false);
     }
@@ -146,21 +148,14 @@ const AdminChatManagement = () => {
     if (!newMessage.trim() || !selectedChat) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/chat/send-message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          chatId: selectedChat._id,
-          message: newMessage.trim(),
-        }),
+      const { chatAPI } = await import("../services/api");
+
+      const response = await chatAPI.sendMessage({
+        chatId: selectedChat._id,
+        message: newMessage.trim(),
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.data.success) {
         socketRef.current?.emit("send-message", {
           chatId: selectedChat._id,
           message: newMessage.trim(),

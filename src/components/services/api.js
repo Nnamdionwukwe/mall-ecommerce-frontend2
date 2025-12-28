@@ -226,42 +226,59 @@ export const supportAPI = {
   },
 };
 
-// Chat APIs
-// export const chatAPI = {
-//   getMyChat: () => api.get("/chat/my-chat"),
-//   sendMessage: (data) => api.post("/chat/send-message", data),
-//   markAsRead: (chatId) => api.patch(`/chat/${chatId}/read`),
-//   closeChat: (chatId) => api.patch(`/chat/${chatId}/close`),
-
-//   // Admin
-//   getAllChats: (params) => api.get("/chat/admin/all", { params }),
-//   getChat: (chatId) => api.get(`/chat/${chatId}`),
-//   assignChat: (chatId) => api.patch(`/chat/${chatId}/assign`),
-// };
-
-// Chat APIs
+//Chat APIs
 export const chatAPI = {
   // User endpoints
-  getMyChat: () => api.get("/chat/my-chat"),
+  getMyChat: () => {
+    console.log("📱 Getting my chat");
+    return api.get("/chat/my-chat");
+  },
 
-  sendMessage: (data) => api.post("/chat/send-message", data),
+  sendMessage: (data) => {
+    console.log("💬 Sending message:", data);
+    return api.post("/chat/send-message", data);
+  },
 
-  markAsRead: (chatId) => api.patch(`/chat/${chatId}/read`),
+  markAsRead: (chatId) => {
+    console.log("👁️ Marking as read:", chatId);
+    return api.patch(`/chat/${chatId}/read`);
+  },
 
-  closeChat: (chatId) => api.patch(`/chat/${chatId}/close`),
+  closeChat: (chatId) => {
+    console.log("🔒 Closing chat:", chatId);
+    return api.patch(`/chat/${chatId}/close`);
+  },
 
-  getMyChatHistory: (params) => api.get("/chat/my-chats/history", { params }),
+  getMyChatHistory: (params) => {
+    console.log("📜 Getting chat history");
+    return api.get("/chat/my-chats/history", { params });
+  },
 
   // Admin/Vendor endpoints
-  getAllChats: (params) => api.get("/chat/admin/all", { params }),
+  getAllChats: (params) => {
+    console.log("📋 Admin getting all chats:", params);
+    return api.get("/chat/admin/all", { params });
+  },
 
-  getChat: (chatId) => api.get(`/chat/${chatId}`),
+  getChat: (chatId) => {
+    console.log("🔍 Getting chat:", chatId);
+    return api.get(`/chat/${chatId}`);
+  },
 
-  assignChat: (chatId) => api.patch(`/chat/${chatId}/assign`),
+  assignChat: (chatId) => {
+    console.log("👨‍💼 Assigning chat:", chatId);
+    return api.patch(`/chat/${chatId}/assign`);
+  },
 
-  deleteChat: (chatId) => api.delete(`/chat/${chatId}`),
+  deleteChat: (chatId) => {
+    console.log("🗑️ Deleting chat:", chatId);
+    return api.delete(`/chat/${chatId}`);
+  },
 
-  getChatStats: () => api.get("/chat/admin/stats"),
+  getChatStats: () => {
+    console.log("📊 Getting chat stats");
+    return api.get("/chat/admin/stats");
+  },
 };
 
 // Checkout APIs

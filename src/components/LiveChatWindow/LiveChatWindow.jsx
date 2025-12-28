@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import styles from "./LiveChatWindow.module.css";
 import { useAuth } from "../context/AuthContext";
+import { chatAPI } from "../services/api";
 
 const LiveChatWindow = ({ onClose, onNewMessage }) => {
   const { user, token } = useAuth();
@@ -14,73 +15,31 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
-  // ✅ FIXED: Correct API URL without double /api
-  const API_BASE =
-    import.meta.env.VITE_API_URL ||
-    "https://mall-ecommerce-api-production.up.railway.app/api";
-  const SOCKET_URL = API_BASE.replace("/api", ""); // Remove /api for socket connection
+  // Get base URL without /api
+  const getSocketURL = () => {
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    // Remove /api from the end if it exists
+    return apiUrl.replace(/\/api$/, "");
+  };
 
   useEffect(() => {
-    if (!user || !token) return;
+    if (!user || !token) {
+      console.log("❌ No user or token");
+      setStatus("error");
+      return;
+    }
 
     console.log("🔌 Initializing chat...");
-    console.log("API Base:", API_BASE);
-    console.log("Socket URL:", SOCKET_URL);
-
-    // Initialize chat
     initializeChat();
-
-    // Connect to Socket.IO
-    socketRef.current = io(SOCKET_URL, {
-      auth: { token },
-      transports: ["websocket", "polling"],
-    });
-
-    socketRef.current.on("connect", () => {
-      console.log("✅ Socket connected");
-      setStatus("connected");
-    });
-
-    socketRef.current.on("disconnect", () => {
-      console.log("❌ Socket disconnected");
-      setStatus("disconnected");
-    });
-
-    socketRef.current.on("new-message", (data) => {
-      console.log("📨 New message received:", data);
-      setMessages((prev) => [...prev, data.message]);
-      if (data.message.senderId !== user.id) {
-        onNewMessage?.();
-      }
-      scrollToBottom();
-    });
-
-    socketRef.current.on("typing", (data) => {
-      if (data.userId !== user.id) {
-        setIsTyping(true);
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => {
-          setIsTyping(false);
-        }, 3000);
-      }
-    });
-
-    socketRef.current.on("stop-typing", () => {
-      setIsTyping(false);
-    });
-
-    socketRef.current.on("error", (error) => {
-      console.error("❌ Socket error:", error);
-      setStatus("error");
-    });
 
     return () => {
       if (socketRef.current) {
+        console.log("🔌 Disconnecting socket");
         socketRef.current.disconnect();
       }
       clearTimeout(typingTimeoutRef.current);
     };
-  }, [user, token, SOCKET_URL]);
+  }, [user, token]);
 
   useEffect(() => {
     scrollToBottom();
@@ -92,27 +51,20 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
 
   const initializeChat = async () => {
     try {
-      console.log("📞 Fetching chat from:", `${API_BASE}/chat/my-chat`);
+      console.log("📱 Fetching chat...");
+      setStatus("connecting");
 
-      const response = await fetch(`${API_BASE}/chat/my-chat`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await chatAPI.getMyChat();
+      console.log("✅ Chat fetched:", response.data);
 
-      console.log("Response status:", response.status);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Chat data:", data);
-
-      if (data.success) {
-        setChatId(data.data._id);
-        setMessages(data.data.messages || []);
+      if (response.data.success) {
+        const chat = response.data.data;
+        setChatId(chat._id);
+        setMessages(chat.messages || []);
         setStatus("active");
+
+        // Initialize Socket.IO after getting chat
+        initializeSocket(chat._id);
       }
     } catch (error) {
       console.error("❌ Failed to initialize chat:", error);
@@ -120,42 +72,120 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
     }
   };
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !chatId) return;
-
+  const initializeSocket = (chatId) => {
     try {
-      const response = await fetch(`${API_BASE}/chat/send-message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          chatId,
-          message: newMessage.trim(),
-        }),
+      const socketURL = getSocketURL();
+      console.log("🔌 Connecting to Socket.IO:", socketURL);
+      console.log("   Chat ID:", chatId);
+      console.log("   Has token:", !!token);
+
+      socketRef.current = io(socketURL, {
+        auth: { token },
+        transports: ["websocket", "polling"],
       });
 
-      const data = await response.json();
+      socketRef.current.on("connect", () => {
+        console.log("✅ Socket connected:", socketRef.current.id);
+        setStatus("active");
+      });
 
-      if (data.success) {
-        // Emit to socket
-        socketRef.current?.emit("send-message", {
-          chatId,
-          message: newMessage.trim(),
-        });
+      socketRef.current.on("disconnect", () => {
+        console.log("❌ Socket disconnected");
+        setStatus("disconnected");
+      });
+
+      socketRef.current.on("connect_error", (error) => {
+        console.error("❌ Socket connection error:", error.message);
+        setStatus("error");
+      });
+
+      socketRef.current.on("connected", (data) => {
+        console.log("✅ Server confirmed connection:", data);
+      });
+
+      socketRef.current.on("new-message", (data) => {
+        console.log("📨 New message received:", data);
+        if (data.chatId === chatId) {
+          setMessages((prev) => {
+            // Avoid duplicates
+            const exists = prev.some(
+              (m) =>
+                m.timestamp === data.message.timestamp &&
+                m.senderId === data.message.senderId &&
+                m.message === data.message.message
+            );
+            if (exists) return prev;
+            return [...prev, data.message];
+          });
+          if (data.message.senderId !== user.id) {
+            onNewMessage?.();
+          }
+          scrollToBottom();
+        }
+      });
+
+      socketRef.current.on("typing", (data) => {
+        if (data.chatId === chatId && data.userId !== user.id) {
+          setIsTyping(true);
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+          }, 3000);
+        }
+      });
+
+      socketRef.current.on("stop-typing", (data) => {
+        if (data.chatId === chatId) {
+          setIsTyping(false);
+        }
+      });
+
+      socketRef.current.on("error", (error) => {
+        console.error("❌ Socket error:", error);
+      });
+    } catch (error) {
+      console.error("❌ Socket initialization error:", error);
+      setStatus("error");
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !chatId || status !== "active") return;
+
+    const messageText = newMessage.trim();
+
+    try {
+      console.log("📤 Sending message...");
+
+      const response = await chatAPI.sendMessage({
+        chatId,
+        message: messageText,
+      });
+
+      if (response.data.success) {
+        console.log("✅ Message sent via API");
+
+        // Emit to socket for real-time broadcast
+        if (socketRef.current?.connected) {
+          socketRef.current.emit("send-message", {
+            chatId,
+            message: messageText,
+          });
+          console.log("✅ Message emitted via socket");
+        }
 
         setNewMessage("");
         socketRef.current?.emit("stop-typing", { chatId });
       }
     } catch (error) {
       console.error("❌ Failed to send message:", error);
+      alert("Failed to send message. Please try again.");
     }
   };
 
   const handleTyping = () => {
-    if (chatId && socketRef.current) {
+    if (chatId && socketRef.current?.connected) {
       socketRef.current.emit("typing", { chatId, userId: user.id });
     }
   };
@@ -171,14 +201,9 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
   const handleCloseChat = async () => {
     if (chatId) {
       try {
-        await fetch(`${API_BASE}/chat/${chatId}/close`, {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await chatAPI.closeChat(chatId);
       } catch (error) {
-        console.error("❌ Failed to close chat:", error);
+        console.error("Failed to close chat:", error);
       }
     }
     onClose();
@@ -191,9 +216,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         <div className={styles.headerInfo}>
           <div className={styles.avatarGroup}>
             <span className={styles.avatar}>👨‍💼</span>
-            {status === "connected" && (
-              <span className={styles.statusDot}></span>
-            )}
+            {status === "active" && <span className={styles.statusDot}></span>}
           </div>
           <div>
             <h3 className={styles.title}>Live Support</h3>
@@ -204,7 +227,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
                 ? "Connecting..."
                 : status === "error"
                 ? "Connection error"
-                : "Offline"}
+                : "Disconnected"}
             </p>
           </div>
         </div>
@@ -224,10 +247,24 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         {status === "error" ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>⚠️</span>
-            <p>Unable to connect to chat</p>
+            <p>Connection error</p>
             <p className={styles.emptySubtext}>
-              Please try again later or contact support
+              Please try refreshing the page
             </p>
+            <button
+              onClick={initializeChat}
+              style={{
+                marginTop: "16px",
+                padding: "8px 16px",
+                backgroundColor: "#667eea",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Retry Connection
+            </button>
           </div>
         ) : messages.length === 0 ? (
           <div className={styles.emptyState}>
@@ -251,7 +288,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
                 <div className={styles.messageContent}>
                   {msg.senderId !== user?.id && (
                     <div className={styles.senderName}>
-                      {msg.senderName || "Support"}
+                      {msg.senderName}
                       <span className={styles.senderRole}>
                         {msg.senderRole === "admin" ? "Admin" : "Support"}
                       </span>
@@ -288,7 +325,11 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={handleTyping}
           placeholder={
-            status === "active" ? "Type your message..." : "Connecting..."
+            status === "active"
+              ? "Type your message..."
+              : status === "connecting"
+              ? "Connecting..."
+              : "Reconnecting..."
           }
           className={styles.input}
           disabled={status !== "active"}
