@@ -401,6 +401,12 @@ const VendorDashboard = () => {
               </Link>
             )}
 
+            {(user?.role === "admin" || user?.role === "vendor") && (
+              <Link to="/admin/support-tickets" className={styles.adminLink}>
+                🎫 Support Tickets
+              </Link>
+            )}
+
             <button
               onClick={() => {
                 setEditingProduct(null);

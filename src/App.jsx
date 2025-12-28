@@ -22,6 +22,7 @@ import AdminCartDashboard from "./components/admin/AdminCartDashboard";
 import PrivacyPolicy from "./components/Policy/PrivacyPolicy";
 import TermsOfService from "./components/Policy/TermsOfService";
 import CookiesPolicy from "./components/Policy/CookiesPolicy";
+import SupportTickets from "./components/SupportTickets/SupportTickets";
 // import { useState } from "react";
 
 function App() {
@@ -74,6 +75,10 @@ function App() {
                 />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/support" element={<Support />} />
+                <Route
+                  path="/admin/support-tickets"
+                  element={<SupportTickets />}
+                />
                 <Route path="/my-tickets" element={<MyTickets />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
