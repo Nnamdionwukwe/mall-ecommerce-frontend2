@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./TrackOrder.module.css";
 import axios from "axios";
 
@@ -9,6 +10,7 @@ const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 const TrackOrder = () => {
   const { orderId } = useParams();
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -230,7 +232,7 @@ const TrackOrder = () => {
                           <p>Qty: {item.quantity}</p>
                         </div>
                         <span className={styles.itemPrice}>
-                          ${(item.price * item.quantity).toFixed(2)}
+                          {formatPrice(item.price * item.quantity)}
                         </span>
                       </div>
                     ))}
@@ -290,19 +292,19 @@ const TrackOrder = () => {
                   <>
                     <div className={styles.summaryRow}>
                       <span>Subtotal:</span>
-                      <span>${order.pricing.subtotal.toFixed(2)}</span>
+                      <span>{formatPrice(order.pricing.subtotal)}</span>
                     </div>
                     <div className={styles.summaryRow}>
                       <span>Shipping:</span>
-                      <span>${order.pricing.shipping.toFixed(2)}</span>
+                      <span>{formatPrice(order.pricing.shipping)}</span>
                     </div>
                     <div className={styles.summaryRow}>
                       <span>Tax:</span>
-                      <span>${order.pricing.tax.toFixed(2)}</span>
+                      <span>{formatPrice(order.pricing.tax)}</span>
                     </div>
                     <div className={styles.summaryTotal}>
                       <span>Total:</span>
-                      <span>${order.pricing.total.toFixed(2)}</span>
+                      <span>{formatPrice(order.pricing.total)}</span>
                     </div>
                   </>
                 )}
