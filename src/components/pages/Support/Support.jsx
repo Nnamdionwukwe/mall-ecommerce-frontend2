@@ -203,6 +203,14 @@ const Support = () => {
         <div className={styles.header}>
           <h1>Support Center</h1>
           <p className={styles.subtitle}>How can we help you today?</p>
+          {user && (
+            <button
+              onClick={() => navigate("/my-tickets")}
+              className={styles.myTicketsBtn}
+            >
+              🎫 View My Tickets
+            </button>
+          )}
         </div>
 
         <div className={styles.grid}>

@@ -13,7 +13,6 @@ import Checkout from "./components/pages/Checkout/Checkout";
 import OrderSuccess from "./components/pages/OrderSuccess/OrderSuccess";
 import BottomNav from "./components/BottomNav/BottomNav";
 import Support from "./components/pages/Support/Support";
-import MyTickets from "./components/pages/MyTickets/MyTickets";
 import Homepage from "./components/pages/Homepage/Homepage";
 import { CartProvider } from "./components/context/CartContext";
 import { CurrencyProvider } from "./components/context/CurrencyContext";
@@ -23,6 +22,7 @@ import PrivacyPolicy from "./components/Policy/PrivacyPolicy";
 import TermsOfService from "./components/Policy/TermsOfService";
 import CookiesPolicy from "./components/Policy/CookiesPolicy";
 import SupportTickets from "./components/SupportTickets/SupportTickets";
+import MyTickets from "./components/MyTickets/MyTickets";
 // import { useState } from "react";
 
 function App() {
