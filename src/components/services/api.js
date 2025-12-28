@@ -227,16 +227,41 @@ export const supportAPI = {
 };
 
 // Chat APIs
+// export const chatAPI = {
+//   getMyChat: () => api.get("/chat/my-chat"),
+//   sendMessage: (data) => api.post("/chat/send-message", data),
+//   markAsRead: (chatId) => api.patch(`/chat/${chatId}/read`),
+//   closeChat: (chatId) => api.patch(`/chat/${chatId}/close`),
+
+//   // Admin
+//   getAllChats: (params) => api.get("/chat/admin/all", { params }),
+//   getChat: (chatId) => api.get(`/chat/${chatId}`),
+//   assignChat: (chatId) => api.patch(`/chat/${chatId}/assign`),
+// };
+
+// Chat APIs
 export const chatAPI = {
+  // User endpoints
   getMyChat: () => api.get("/chat/my-chat"),
+
   sendMessage: (data) => api.post("/chat/send-message", data),
+
   markAsRead: (chatId) => api.patch(`/chat/${chatId}/read`),
+
   closeChat: (chatId) => api.patch(`/chat/${chatId}/close`),
 
-  // Admin
+  getMyChatHistory: (params) => api.get("/chat/my-chats/history", { params }),
+
+  // Admin/Vendor endpoints
   getAllChats: (params) => api.get("/chat/admin/all", { params }),
+
   getChat: (chatId) => api.get(`/chat/${chatId}`),
+
   assignChat: (chatId) => api.patch(`/chat/${chatId}/assign`),
+
+  deleteChat: (chatId) => api.delete(`/chat/${chatId}`),
+
+  getChatStats: () => api.get("/chat/admin/stats"),
 };
 
 // Checkout APIs
