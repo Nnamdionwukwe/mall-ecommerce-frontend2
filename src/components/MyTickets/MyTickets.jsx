@@ -15,7 +15,7 @@ const MyTickets = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+      navigate("/my-tickets");
       return;
     }
     fetchMyTickets();
