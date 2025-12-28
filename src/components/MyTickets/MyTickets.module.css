@@ -2,9 +2,13 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem;
+  padding-bottom: 6rem;
 }
 
-/* Header */
+/* ================================================
+   HEADER
+   ================================================ */
+
 .header {
   max-width: 1200px;
   margin: 0 auto 2rem;
@@ -12,22 +16,26 @@
   justify-content: space-between;
   align-items: center;
   color: white;
+  gap: 1rem;
 }
 
 .header h1 {
   margin: 0 0 0.5rem 0;
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.2;
 }
 
 .subtitle {
   margin: 0;
   opacity: 0.9;
+  font-size: clamp(0.875rem, 2.5vw, 1.125rem);
 }
 
 .headerActions {
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .autoRefreshToggle {
@@ -39,10 +47,19 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.autoRefreshToggle:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .autoRefreshToggle input {
   cursor: pointer;
+  width: 16px;
+  height: 16px;
 }
 
 .newTicketBtn {
@@ -54,6 +71,8 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  white-space: nowrap;
 }
 
 .newTicketBtn:hover {
@@ -61,7 +80,10 @@
   box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
 }
 
-/* Loading */
+/* ================================================
+   LOADING STATE
+   ================================================ */
+
 .loading {
   text-align: center;
   padding: 4rem 2rem;
@@ -84,30 +106,35 @@
   }
 }
 
-/* Empty State */
+/* ================================================
+   EMPTY STATE
+   ================================================ */
+
 .empty {
   max-width: 500px;
   margin: 4rem auto;
   text-align: center;
   background: white;
-  padding: 4rem 2rem;
+  padding: clamp(2rem, 6vw, 4rem);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .emptyIcon {
-  font-size: 4rem;
+  font-size: clamp(3rem, 8vw, 4rem);
   margin-bottom: 1rem;
 }
 
 .empty h2 {
   margin: 0 0 0.5rem 0;
   color: #1f2937;
+  font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
 .empty p {
   margin: 0 0 2rem 0;
   color: #6b7280;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
 }
 
 .emptyBtn {
@@ -119,6 +146,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
 }
 
 .emptyBtn:hover {
@@ -126,18 +154,21 @@
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* Tickets List */
+/* ================================================
+   TICKETS LIST
+   ================================================ */
+
 .ticketsList {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  gap: 1.5rem;
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 .ticketCard {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -153,6 +184,7 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
+  gap: 1rem;
 }
 
 .ticketTitle {
@@ -160,39 +192,47 @@
   align-items: center;
   gap: 0.75rem;
   flex: 1;
+  min-width: 0;
 }
 
 .ticketIcon {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  flex-shrink: 0;
 }
 
 .ticketTitle h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: #1f2937;
+  word-break: break-word;
 }
 
 .ticketBadges {
   display: flex;
   gap: 0.5rem;
   flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .statusBadge,
 .priorityBadge {
   padding: 0.375rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   font-weight: 700;
   color: white;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .ticketMessage {
   color: #4b5563;
   line-height: 1.6;
   margin-bottom: 1rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  word-break: break-word;
 }
 
 .ticketFooter {
@@ -200,7 +240,7 @@
   gap: 1rem;
   flex-wrap: wrap;
   align-items: center;
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
   color: #6b7280;
 }
 
@@ -224,7 +264,7 @@
   color: white;
   padding: 0.125rem 0.5rem;
   border-radius: 10px;
-  font-size: 0.625rem;
+  font-size: clamp(0.5rem, 1.5vw, 0.625rem);
   font-weight: 700;
   animation: pulse 2s infinite;
 }
@@ -239,7 +279,10 @@
   }
 }
 
-/* Modal */
+/* ================================================
+   MODAL
+   ================================================ */
+
 .modal {
   position: fixed;
   top: 0;
@@ -314,12 +357,13 @@
 }
 
 .modalHeader {
-  padding: 2rem 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 16px 16px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 1rem;
 }
 
 .modalTitle {
@@ -327,31 +371,36 @@
   gap: 1rem;
   align-items: flex-start;
   flex: 1;
+  min-width: 0;
 }
 
 .modalIcon {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  flex-shrink: 0;
 }
 
 .modalTitle h2 {
   margin: 0 0 0.25rem 0;
   color: white;
-  font-size: 1.75rem;
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+  word-break: break-word;
 }
 
 .ticketId {
   margin: 0;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
 }
 
 .modalBadges {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .modalBody {
-  padding: 2rem 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
 }
 
 .section {
@@ -368,14 +417,15 @@
 .section h3 {
   margin: 0 0 1rem 0;
   color: #1f2937;
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .liveIndicator {
-  font-size: 0.75rem;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   padding: 0.25rem 0.75rem;
   background: #10b981;
   color: white;
@@ -385,7 +435,7 @@
 
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: 1.5rem;
 }
 
@@ -396,7 +446,7 @@
 }
 
 .infoLabel {
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
   color: #6b7280;
   font-weight: 600;
   text-transform: uppercase;
@@ -406,11 +456,13 @@
 .infoValue {
   color: #1f2937;
   font-weight: 600;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  word-break: break-word;
 }
 
 .originalMessage {
   background: #f9fafb;
-  padding: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
   border-radius: 8px;
   border-left: 4px solid #7c3aed;
 }
@@ -419,12 +471,17 @@
   margin: 0;
   color: #4b5563;
   line-height: 1.6;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  word-break: break-word;
 }
 
-/* Attachments */
+/* ================================================
+   ATTACHMENTS
+   ================================================ */
+
 .attachments {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
   gap: 1rem;
 }
 
@@ -443,12 +500,15 @@
 
 .attachmentName {
   margin: 0.5rem 0 0 0;
-  font-size: 0.75rem;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   color: #6b7280;
   word-break: break-word;
 }
 
-/* Timeline */
+/* ================================================
+   RESPONSE TIMELINE
+   ================================================ */
+
 .timeline {
   display: flex;
   flex-direction: column;
@@ -457,7 +517,7 @@
 
 .responseItem {
   background: #f9fafb;
-  padding: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
   border-radius: 12px;
   border-left: 4px solid #10b981;
 }
@@ -466,17 +526,18 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
+  align-items: center;
 }
 
 .responseAvatar {
-  width: 48px;
-  height: 48px;
+  width: clamp(40px, 10vw, 48px);
+  height: clamp(40px, 10vw, 48px);
   border-radius: 50%;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   flex-shrink: 0;
 }
 
@@ -484,15 +545,17 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .responseInfo strong {
   color: #1f2937;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
 }
 
 .responseTime {
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 1.8vw, 0.875rem);
   color: #6b7280;
 }
 
@@ -500,6 +563,8 @@
   margin: 0 0 1rem 0;
   color: #4b5563;
   line-height: 1.6;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  word-break: break-word;
 }
 
 .responseAttachments {
@@ -513,10 +578,11 @@
   background: white;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 1.8vw, 0.875rem);
   color: #4b5563;
   text-decoration: none;
   transition: all 0.2s;
+  word-break: break-word;
 }
 
 .responseAttachment:hover {
@@ -524,14 +590,17 @@
   color: #10b981;
 }
 
-/* No Responses */
+/* ================================================
+   NO RESPONSES STATE
+   ================================================ */
+
 .noResponses {
   text-align: center;
-  padding: 3rem 2rem;
+  padding: clamp(2rem, 5vw, 3rem);
 }
 
 .noResponsesIcon {
-  font-size: 4rem;
+  font-size: clamp(3rem, 8vw, 4rem);
   display: block;
   margin-bottom: 1rem;
 }
@@ -539,12 +608,13 @@
 .noResponses h4 {
   margin: 0 0 0.5rem 0;
   color: #1f2937;
-  font-size: 1.25rem;
+  font-size: clamp(1.125rem, 3vw, 1.25rem);
 }
 
 .noResponses p {
   margin: 0;
   color: #6b7280;
+  font-size: clamp(0.875rem, 2vw, 1rem);
 }
 
 .autoRefreshNote {
@@ -553,11 +623,14 @@
   font-weight: 600;
 }
 
-/* Admin Note */
+/* ================================================
+   ADMIN NOTE
+   ================================================ */
+
 .adminNote {
   background: #fffbeb;
   border: 2px solid #fbbf24;
-  padding: 1rem;
+  padding: clamp(0.875rem, 2.5vw, 1rem);
   border-radius: 8px;
 }
 
@@ -565,17 +638,25 @@
   display: block;
   margin-bottom: 0.5rem;
   color: #92400e;
+  font-size: clamp(0.875rem, 2vw, 1rem);
 }
 
 .adminNote p {
   margin: 0;
   color: #78350f;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  word-break: break-word;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================ */
+
+/* Tablet (≤968px) */
+@media (max-width: 968px) {
   .container {
-    padding: 1rem;
+    padding: 1.5rem;
+    padding-bottom: 5rem;
   }
 
   .header {
@@ -584,19 +665,8 @@
     gap: 1rem;
   }
 
-  .header h1 {
-    font-size: 2rem;
-  }
-
   .headerActions {
     width: 100%;
-    flex-direction: column;
-  }
-
-  .newTicketBtn,
-  .autoRefreshToggle {
-    width: 100%;
-    justify-content: center;
   }
 
   .ticketHeader {
@@ -606,19 +676,11 @@
 
   .ticketBadges {
     align-self: flex-start;
+    justify-content: flex-start;
   }
 
   .modalContent {
     margin: 0.5rem;
-  }
-
-  .modalHeader,
-  .modalBody {
-    padding: 1.5rem;
-  }
-
-  .modalTitle {
-    flex-direction: column;
   }
 
   .infoGrid {
@@ -627,5 +689,147 @@
 
   .attachments {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile (≤640px) */
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+    padding-bottom: 4rem;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .headerActions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .newTicketBtn,
+  .autoRefreshToggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ticketCard {
+    padding: 1rem;
+  }
+
+  .ticketTitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .ticketIcon {
+    align-self: flex-start;
+  }
+
+  .ticketFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .modalClose {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .modalHeader {
+    flex-direction: column;
+  }
+
+  .modalBadges {
+    align-self: flex-start;
+  }
+
+  .attachments {
+    grid-template-columns: 1fr;
+  }
+
+  .responseHeader {
+    flex-wrap: wrap;
+  }
+}
+
+/* Extra Small Mobile (≤380px) */
+@media (max-width: 380px) {
+  .container {
+    padding: 0.75rem;
+    padding-bottom: 3rem;
+  }
+
+  .empty {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .ticketCard {
+    padding: 0.875rem;
+    border-radius: 8px;
+  }
+
+  .modalContent {
+    border-radius: 12px;
+  }
+
+  .section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* ================================================
+   SCROLLBAR STYLING
+   ================================================ */
+
+.modalContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+  background: #f1f3f5;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* ================================================
+   ACCESSIBILITY
+   ================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .ticketCard,
+  .newTicketBtn,
+  .autoRefreshToggle {
+    min-height: 44px;
+  }
+
+  .responseAttachment {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }
