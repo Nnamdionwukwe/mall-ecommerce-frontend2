@@ -40,7 +40,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/");
+      navigate("/profile");
       return;
     }
     setFormData({

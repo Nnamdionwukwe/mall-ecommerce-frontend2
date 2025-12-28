@@ -18,7 +18,7 @@ const Orders = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/");
+      navigate("/orders");
       return;
     }
     loadOrders();
