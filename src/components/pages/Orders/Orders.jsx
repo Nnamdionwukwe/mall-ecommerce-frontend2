@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./Orders.module.css";
 import axios from "axios";
 
@@ -8,6 +9,7 @@ const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
 const Orders = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("all");
@@ -228,7 +230,7 @@ const Orders = () => {
                             <h4>{item.name}</h4>
                             <p>Quantity: {item.quantity}</p>
                             <p className={styles.itemPrice}>
-                              ${item.price.toFixed(2)}
+                              {formatPrice(item.price)}
                             </p>
                           </div>
                         </div>
@@ -239,7 +241,7 @@ const Orders = () => {
                     <div className={styles.orderTotal}>
                       <span>Total:</span>
                       <span className={styles.totalAmount}>
-                        ${order.pricing?.total?.toFixed(2) || "0.00"}
+                        {formatPrice(order.pricing?.total || 0)}
                       </span>
                     </div>
                     <button
@@ -258,4 +260,5 @@ const Orders = () => {
     </div>
   );
 };
+
 export default Orders;
