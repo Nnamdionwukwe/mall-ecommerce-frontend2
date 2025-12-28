@@ -4,6 +4,7 @@ import styles from "./AdminOrders.module.css";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useCurrency } from "../context/CurrencyContext";
+import AlertModal from "../AlertModal/AlertModal";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
@@ -22,6 +23,18 @@ const AdminOrders = () => {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [estimatedDelivery, setEstimatedDelivery] = useState("");
   const [deliveredAt, setDeliveredAt] = useState("");
+
+  // Alert Modal State
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    primaryBtnText: "OK",
+    secondaryBtnText: null,
+    onPrimaryClick: null,
+    onSecondaryClick: null,
+  });
 
   useEffect(() => {
     if (!user || (user.role !== "admin" && user.role !== "vendor")) {
@@ -91,6 +104,21 @@ const AdminOrders = () => {
     setDeliveredAt("");
   };
 
+  const showAlert = (title, message, type = "info", onConfirm = null) => {
+    setAlertModal({
+      isOpen: true,
+      title,
+      message,
+      type,
+      primaryBtnText: "OK",
+      secondaryBtnText: null,
+      onPrimaryClick: () => {
+        setAlertModal((prev) => ({ ...prev, isOpen: false }));
+        if (onConfirm) onConfirm();
+      },
+    });
+  };
+
   const updateOrderStatus = async () => {
     if (!selectedOrder) return;
 
@@ -116,11 +144,20 @@ const AdminOrders = () => {
           )
         );
         closeModal();
-        await loadOrders();
+        showAlert(
+          "Success",
+          "Order status updated successfully!",
+          "success",
+          () => loadOrders()
+        );
       }
     } catch (err) {
       console.error("❌ Error updating order status:", err);
-      alert(err.response?.data?.message || "Failed to update order status");
+      showAlert(
+        "Error",
+        err.response?.data?.message || "Failed to update order status",
+        "error"
+      );
     }
   };
 
@@ -153,11 +190,20 @@ const AdminOrders = () => {
           )
         );
         closeModal();
-        await loadOrders();
+        showAlert(
+          "Success",
+          "Delivery information updated successfully!",
+          "success",
+          () => loadOrders()
+        );
       }
     } catch (err) {
       console.error("❌ Error updating delivery info:", err);
-      alert(err.response?.data?.message || "Failed to update delivery info");
+      showAlert(
+        "Error",
+        err.response?.data?.message || "Failed to update delivery info",
+        "error"
+      );
     }
   };
 
@@ -636,6 +682,19 @@ const AdminOrders = () => {
           </div>
         </div>
       )}
+
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
+        primaryBtnText={alertModal.primaryBtnText}
+        secondaryBtnText={alertModal.secondaryBtnText}
+        onPrimaryClick={alertModal.onPrimaryClick}
+        onSecondaryClick={alertModal.onSecondaryClick}
+        onClose={() => setAlertModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };

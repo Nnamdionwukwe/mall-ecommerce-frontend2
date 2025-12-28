@@ -1,0 +1,278 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  max-width: 500px;
+  width: 90%;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -55%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  border-top: 4px solid;
+}
+
+/* Type-specific colors */
+.modalContent.success {
+  border-top-color: #10b981;
+}
+
+.modalContent.error {
+  border-top-color: #ef4444;
+}
+
+.modalContent.warning {
+  border-top-color: #f59e0b;
+}
+
+.modalContent.info {
+  border-top-color: #3b82f6;
+}
+
+/* Icon Container */
+.iconContainer {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f0f9ff;
+}
+
+.iconContainer.success {
+  background: #ecfdf5;
+}
+
+.iconContainer.success .icon {
+  color: #10b981;
+}
+
+.iconContainer.error {
+  background: #fef2f2;
+}
+
+.iconContainer.error .icon {
+  color: #ef4444;
+}
+
+.iconContainer.warning {
+  background: #fffbeb;
+}
+
+.iconContainer.warning .icon {
+  color: #f59e0b;
+}
+
+.iconContainer.info {
+  background: #eff6ff;
+}
+
+.iconContainer.info .icon {
+  color: #3b82f6;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Title */
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.5px;
+}
+
+/* Message */
+.message {
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+}
+
+/* Button Container */
+.buttonContainer {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+/* Secondary Button */
+.secondaryBtn {
+  background: #e2e8f0;
+  color: #2d3748;
+  border: 2px solid #cbd5e0;
+}
+
+.secondaryBtn:hover {
+  background: #cbd5e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.secondaryBtn:active {
+  transform: translateY(0);
+}
+
+/* Primary Button - Type Specific */
+.primaryBtn {
+  color: white;
+  font-weight: 600;
+  border: none;
+}
+
+.primaryBtn.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.primaryBtn.success:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+}
+
+.primaryBtn.error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.primaryBtn.error:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  transform: translateY(-2px);
+}
+
+.primaryBtn.warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.primaryBtn.warning:hover {
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+  transform: translateY(-2px);
+}
+
+.primaryBtn.info {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.primaryBtn.info:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.primaryBtn:active {
+  transform: translateY(0);
+}
+
+/* ====================================
+   Responsive Design
+   ==================================== */
+
+@media (max-width: 480px) {
+  .modal {
+    width: 95%;
+  }
+
+  .modalContent {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .message {
+    font-size: 0.95rem;
+  }
+
+  .buttonContainer {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+    padding: 0.85rem 1rem;
+  }
+
+  .iconContainer {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1rem;
+  }
+
+  .icon {
+    width: 28px;
+    height: 28px;
+  }
+}
