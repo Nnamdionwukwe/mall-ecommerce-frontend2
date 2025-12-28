@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import styles from "./AdminOrders.module.css";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useCurrency } from "../context/CurrencyContext";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
 const AdminOrders = () => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -291,7 +293,7 @@ const AdminOrders = () => {
                       {order.items?.length || 0} item(s)
                     </td>
                     <td className={styles.total}>
-                      ${order.pricing?.total?.toFixed(2) || "0.00"}
+                      {formatPrice(order.pricing?.total || 0)}
                     </td>
                     <td>
                       <span
@@ -432,11 +434,11 @@ const AdminOrders = () => {
                       <div className={styles.itemDetails}>
                         <p className={styles.itemName}>{item.name}</p>
                         <p className={styles.itemMeta}>
-                          Qty: {item.quantity} × ${item.price.toFixed(2)}
+                          Qty: {item.quantity} × {formatPrice(item.price)}
                         </p>
                       </div>
                       <div className={styles.itemTotal}>
-                        ${(item.quantity * item.price).toFixed(2)}
+                        {formatPrice(item.quantity * item.price)}
                       </div>
                     </div>
                   ))}
@@ -449,19 +451,19 @@ const AdminOrders = () => {
                 <div className={styles.pricingDetails}>
                   <div className={styles.priceRow}>
                     <span>Subtotal:</span>
-                    <span>${selectedOrder.pricing?.subtotal?.toFixed(2)}</span>
+                    <span>{formatPrice(selectedOrder.pricing?.subtotal)}</span>
                   </div>
                   <div className={styles.priceRow}>
                     <span>Shipping:</span>
-                    <span>${selectedOrder.pricing?.shipping?.toFixed(2)}</span>
+                    <span>{formatPrice(selectedOrder.pricing?.shipping)}</span>
                   </div>
                   <div className={styles.priceRow}>
                     <span>Tax:</span>
-                    <span>${selectedOrder.pricing?.tax?.toFixed(2)}</span>
+                    <span>{formatPrice(selectedOrder.pricing?.tax)}</span>
                   </div>
                   <div className={styles.priceRowTotal}>
                     <strong>Total:</strong>
-                    <strong>${selectedOrder.pricing?.total?.toFixed(2)}</strong>
+                    <strong>{formatPrice(selectedOrder.pricing?.total)}</strong>
                   </div>
                 </div>
               </div>
