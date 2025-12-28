@@ -5,7 +5,8 @@ import { productAPI } from "../../services/api";
 import styles from "./VendorDashboard.module.css";
 import ProductForm from "../../ProductForm/ProductForm";
 import ProductCard from "../../ProductCard/ProductCard";
-import Modal from "../../components/Modal/Modal";
+import Modal from "../../Modal/Modal";
+// import Modal from "../../components/Modal/Modal";
 
 const VendorDashboard = () => {
   const { user, token } = useAuth();
