@@ -407,6 +407,12 @@ const VendorDashboard = () => {
               </Link>
             )}
 
+            {(user?.role === "admin" || user?.role === "vendor") && (
+              <Link to="/admin/chats" className={styles.adminLink}>
+                Admin Chat Management
+              </Link>
+            )}
+
             <button
               onClick={() => {
                 setEditingProduct(null);
