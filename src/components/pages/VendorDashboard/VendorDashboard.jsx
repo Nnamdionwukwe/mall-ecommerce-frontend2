@@ -5,6 +5,7 @@ import { productAPI } from "../../services/api";
 import styles from "./VendorDashboard.module.css";
 import ProductForm from "../../ProductForm/ProductForm";
 import ProductCard from "../../ProductCard/ProductCard";
+import Modal from "../../components/Modal/Modal";
 
 const VendorDashboard = () => {
   const { user, token } = useAuth();
@@ -13,6 +14,18 @@ const VendorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  // Modal states
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "info",
+    title: "",
+    message: "",
+    onConfirm: null,
+    showCancel: false,
+    confirmText: "OK",
+    cancelText: "Cancel",
+  });
 
   useEffect(() => {
     if (!user || (user.role !== "vendor" && user.role !== "admin")) {
@@ -34,6 +47,26 @@ const VendorDashboard = () => {
     }
   };
 
+  const showModal = (config) => {
+    setModal({
+      isOpen: true,
+      type: config.type || "info",
+      title: config.title || "",
+      message: config.message || "",
+      onConfirm: config.onConfirm || null,
+      showCancel: config.showCancel || false,
+      confirmText: config.confirmText || "OK",
+      cancelText: config.cancelText || "Cancel",
+    });
+  };
+
+  const closeModal = () => {
+    setModal({
+      ...modal,
+      isOpen: false,
+    });
+  };
+
   const handleEdit = (product) => {
     setEditingProduct(product);
     setShowForm(true);
@@ -50,42 +83,57 @@ const VendorDashboard = () => {
     console.log("Token exists:", !!token);
     console.log("========================================\n");
 
-    if (!window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      console.log("❌ Delete cancelled by user");
-      return;
-    }
+    // Show confirmation modal
+    showModal({
+      type: "confirm",
+      title: "Delete Product",
+      message: `Are you sure you want to delete "${product.name}"?\n\nThis action cannot be undone.`,
+      showCancel: true,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          console.log("🔄 Calling productAPI.delete...");
+          await productAPI.delete(product._id);
 
-    try {
-      console.log("🔄 Calling productAPI.delete...");
-      await productAPI.delete(product._id);
+          console.log("✅ Delete successful, refreshing products...");
+          await fetchProducts();
 
-      console.log("✅ Delete successful, refreshing products...");
-      await fetchProducts();
+          // Show success modal
+          showModal({
+            type: "success",
+            title: "Success",
+            message: `"${product.name}" has been deleted successfully!`,
+            confirmText: "OK",
+          });
+        } catch (error) {
+          console.error("\n========================================");
+          console.error("❌ DELETE FAILED IN HANDLER");
+          console.error("========================================");
+          console.error("Error:", error);
+          console.error("Response:", error.response);
+          console.error("Status:", error.response?.status);
+          console.error("Data:", error.response?.data);
+          console.error("========================================\n");
 
-      alert(`"${product.name}" has been deleted successfully!`);
-    } catch (error) {
-      console.error("\n========================================");
-      console.error("❌ DELETE FAILED IN HANDLER");
-      console.error("========================================");
-      console.error("Error:", error);
-      console.error("Response:", error.response);
-      console.error("Status:", error.response?.status);
-      console.error("Data:", error.response?.data);
-      console.error("========================================\n");
+          // Show error modal with details
+          const errorMessage =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "Failed to delete product";
 
-      // Show detailed error to user
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Failed to delete product";
-
-      alert(
-        `Failed to delete product:\n${errorMessage}\n\nStatus: ${
-          error.response?.status || "Unknown"
-        }`
-      );
-    }
+          showModal({
+            type: "error",
+            title: "Delete Failed",
+            message: `Failed to delete product:\n\n${errorMessage}\n\nStatus: ${
+              error.response?.status || "Unknown"
+            }`,
+            confirmText: "OK",
+          });
+        }
+      },
+    });
   };
 
   const handleFormSuccess = () => {
@@ -209,6 +257,19 @@ const VendorDashboard = () => {
           />
         </div>
       )}
+
+      {/* Modal Component */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        onConfirm={modal.onConfirm}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        showCancel={modal.showCancel}
+        confirmText={modal.confirmText}
+        cancelText={modal.cancelText}
+      />
     </div>
   );
 };
