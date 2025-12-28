@@ -226,6 +226,19 @@ export const supportAPI = {
   },
 };
 
+// Chat APIs
+export const chatAPI = {
+  getMyChat: () => api.get("/chat/my-chat"),
+  sendMessage: (data) => api.post("/chat/send-message", data),
+  markAsRead: (chatId) => api.patch(`/chat/${chatId}/read`),
+  closeChat: (chatId) => api.patch(`/chat/${chatId}/close`),
+
+  // Admin
+  getAllChats: (params) => api.get("/chat/admin/all", { params }),
+  getChat: (chatId) => api.get(`/chat/${chatId}`),
+  assignChat: (chatId) => api.patch(`/chat/${chatId}/assign`),
+};
+
 // Checkout APIs
 export const checkoutAPI = {
   processCheckout: (data) => api.post("/checkout", data),

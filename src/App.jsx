@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import "./App.css";
-import { AuthProvider } from "./components/context/AuthContext";
+import { AuthProvider, useAuth } from "./components/context/AuthContext";
 import Home from "./components/pages/Home/Home";
 import ProductDetails from "./components/pages/ProductDetails/ProductDetails";
 import CartPage from "./components/pages/Cart/CartPage";
@@ -23,69 +23,57 @@ import TermsOfService from "./components/Policy/TermsOfService";
 import CookiesPolicy from "./components/Policy/CookiesPolicy";
 import SupportTickets from "./components/SupportTickets/SupportTickets";
 import MyTickets from "./components/MyTickets/MyTickets";
-// import { useState } from "react";
+import AdminChatManagement from "./components/AdminChatManagement/AdminChatManagement";
+import LiveChatButton from "./components/LiveChatButton/LiveChatButton";
+
+// Component to conditionally show LiveChatButton
+const AppContent = () => {
+  const { user } = useAuth();
+
+  return (
+    <>
+      <div className="app">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/shop" element={<Home />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/track-order/:orderId" element={<TrackOrder />} />
+          <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/user-cart" element={<AdminCartDashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/admin/support-tickets" element={<SupportTickets />} />
+          <Route path="/admin/chats" element={<AdminChatManagement />} />
+          <Route path="/my-tickets" element={<MyTickets />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies-policy" element={<CookiesPolicy />} />
+        </Routes>
+      </div>
+
+      <BottomNav />
+
+      {/* Show LiveChatButton only for regular users (not admin/vendor) */}
+      {user && user.role !== "admin" && user.role !== "vendor" && (
+        <LiveChatButton />
+      )}
+    </>
+  );
+};
 
 function App() {
-  // const [cart, setCart] = useState([]);
-
-  // const addToCart = (product) => {
-  //   const existingItem = cart.find((item) => item._id === product._id);
-  //   if (existingItem) {
-  //     setCart(
-  //       cart.map((item) =>
-  //         item._id === product._id
-  //           ? { ...item, quantity: item.quantity + 1 }
-  //           : item
-  //       )
-  //     );
-  //   } else {
-  //     setCart([...cart, { ...product, quantity: 1 }]);
-  //   }
-  //   // Store in localStorage
-  //   localStorage.setItem(
-  //     "cart",
-  //     JSON.stringify([...cart, { ...product, quantity: 1 }])
-  //   );
-  // };
-
   return (
     <CurrencyProvider>
       <CartProvider>
         <AuthProvider>
           <BrowserRouter>
-            <div className="app">
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path="/shop" element={<Home />} />
-                <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route
-                  path="/order-success/:orderId"
-                  element={<OrderSuccess />}
-                />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/track-order/:orderId" element={<TrackOrder />} />
-                <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-                <Route path="/admin/orders" element={<AdminOrders />} />
-                <Route
-                  path="/admin/user-cart"
-                  element={<AdminCartDashboard />}
-                />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/support" element={<Support />} />
-                <Route
-                  path="/admin/support-tickets"
-                  element={<SupportTickets />}
-                />
-                <Route path="/my-tickets" element={<MyTickets />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/cookies-policy" element={<CookiesPolicy />} />
-              </Routes>
-            </div>
-            <BottomNav />
+            <AppContent />
           </BrowserRouter>
         </AuthProvider>
       </CartProvider>
