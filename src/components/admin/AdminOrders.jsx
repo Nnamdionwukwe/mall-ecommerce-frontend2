@@ -38,7 +38,7 @@ const AdminOrders = () => {
 
   useEffect(() => {
     if (!user || (user.role !== "admin" && user.role !== "vendor")) {
-      navigate("/");
+      navigate("/admin/orders");
       return;
     }
     loadOrders();
