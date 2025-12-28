@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 const Support = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -13,12 +15,13 @@ const Support = () => {
     category: "general",
     message: "",
   });
+
+  const [files, setFiles] = useState([]);
+  const [filePreviews, setFilePreviews] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
-
-  const navigate = useNavigate();
 
   const faqs = [
     {
@@ -53,15 +56,112 @@ const Support = () => {
     },
   ];
 
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+
+    // Validate file count (max 5)
+    if (files.length + selectedFiles.length > 5) {
+      setMessage({
+        text: "You can only upload up to 5 files",
+        type: "error",
+      });
+      return;
+    }
+
+    // Validate file size (max 10MB per file)
+    const invalidFiles = selectedFiles.filter(
+      (file) => file.size > 10 * 1024 * 1024
+    );
+    if (invalidFiles.length > 0) {
+      setMessage({
+        text: "Each file must be less than 10MB",
+        type: "error",
+      });
+      return;
+    }
+
+    // Validate file types
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+      "video/quicktime",
+      "video/x-msvideo",
+    ];
+
+    const invalidTypes = selectedFiles.filter(
+      (file) => !validTypes.includes(file.type)
+    );
+    if (invalidTypes.length > 0) {
+      setMessage({
+        text: "Only images (JPG, PNG, GIF, WebP) and videos (MP4, MOV) are allowed",
+        type: "error",
+      });
+      return;
+    }
+
+    // Add files
+    setFiles((prev) => [...prev, ...selectedFiles]);
+
+    // Generate previews
+    selectedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreviews((prev) => [
+          ...prev,
+          {
+            url: reader.result,
+            name: file.name,
+            type: file.type.startsWith("image/") ? "image" : "video",
+            size: file.size,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setFilePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage({ text: "", type: "" });
 
     try {
-      console.log("Sending support ticket:", formData); // ADD THIS
-      const response = await supportAPI.createTicket(formData);
-      console.log("Response:", response.data); // ADD THIS
+      console.log("📤 Submitting support ticket with media...");
+      console.log("Form data:", formData);
+      console.log("Files:", files.length);
+
+      // Create FormData for multipart upload
+      const submitData = new FormData();
+      submitData.append("name", formData.name);
+      submitData.append("email", formData.email);
+      submitData.append("category", formData.category);
+      submitData.append("subject", formData.subject);
+      submitData.append("message", formData.message);
+
+      // Add files
+      files.forEach((file) => {
+        submitData.append("files", file);
+      });
+
+      const response = await supportAPI.createTicketWithMedia(submitData);
+      console.log("✅ Response:", response.data);
 
       setMessage({
         text: `Ticket created! Reference: ${response.data.data.ticketId}`,
@@ -78,10 +178,13 @@ const Support = () => {
           category: "general",
           message: "",
         });
+        setFiles([]);
+        setFilePreviews([]);
       }, 5000);
     } catch (error) {
-      console.error("Full error:", error); // ADD THIS
-      console.error("Error response:", error.response); // ADD THIS
+      console.error("❌ Full error:", error);
+      console.error("❌ Error response:", error.response);
+
       setMessage({
         text:
           error.response?.data?.error ||
@@ -93,59 +196,6 @@ const Support = () => {
       setLoading(false);
     }
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setMessage({ text: "", type: "" });
-
-  //   try {
-  //     const response = await supportAPI.createTicket(formData);
-
-  //     setMessage({
-  //       text: `Ticket created! Reference: ${response.data.data.ticketId}`,
-  //       type: "success",
-  //     });
-  //     setSubmitted(true);
-
-  //     setTimeout(() => {
-  //       setSubmitted(false);
-  //       setFormData({
-  //         name: user?.name || "",
-  //         email: user?.email || "",
-  //         subject: "",
-  //         category: "general",
-  //         message: "",
-  //       });
-  //     }, 5000);
-  //   } catch (error) {
-  //     setMessage({
-  //       text:
-  //         error.response?.data?.error ||
-  //         "Failed to submit ticket. Please try again.",
-  //       type: "error",
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   // In production, send to backend
-  //   console.log("Support ticket:", formData);
-  //   setSubmitted(true);
-  //   setTimeout(() => {
-  //     setSubmitted(false);
-  //     setFormData({
-  //       name: user?.name || "",
-  //       email: user?.email || "",
-  //       subject: "",
-  //       category: "general",
-  //       message: "",
-  //     });
-  //   }, 3000);
-  // };
 
   return (
     <div className={styles.container}>
@@ -166,6 +216,7 @@ const Support = () => {
                   {message.text}
                 </div>
               )}
+
               {submitted ? (
                 <div className={styles.successMessage}>
                   <div className={styles.successIcon}>✓</div>
@@ -243,6 +294,69 @@ const Support = () => {
                     />
                   </div>
 
+                  {/* File Upload Section */}
+                  <div className={styles.formGroup}>
+                    <label>
+                      Attachments (Optional)
+                      <span className={styles.fileInfo}>
+                        {" "}
+                        - Max 5 files, 10MB each
+                      </span>
+                    </label>
+
+                    <div className={styles.fileUploadArea}>
+                      <input
+                        type="file"
+                        id="fileInput"
+                        multiple
+                        accept="image/*,video/*"
+                        onChange={handleFileChange}
+                        className={styles.fileInput}
+                        disabled={files.length >= 5}
+                      />
+
+                      <label htmlFor="fileInput" className={styles.fileLabel}>
+                        <span className={styles.uploadIcon}>📎</span>
+                        <span>
+                          {files.length === 0
+                            ? "Click to upload images or videos"
+                            : `${files.length}/5 files selected`}
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* File Previews */}
+                    {filePreviews.length > 0 && (
+                      <div className={styles.filePreviews}>
+                        {filePreviews.map((preview, index) => (
+                          <div key={index} className={styles.filePreview}>
+                            {preview.type === "image" ? (
+                              <img src={preview.url} alt={preview.name} />
+                            ) : (
+                              <video src={preview.url} />
+                            )}
+                            <div className={styles.fileInfo}>
+                              <span className={styles.fileName}>
+                                {preview.name}
+                              </span>
+                              <span className={styles.fileSize}>
+                                {formatFileSize(preview.size)}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(index)}
+                              className={styles.removeFileBtn}
+                              title="Remove file"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   <button
                     type="submit"
                     disabled={loading}
@@ -250,10 +364,6 @@ const Support = () => {
                   >
                     {loading ? "Sending..." : "Send Message"}
                   </button>
-
-                  {/* <button type="submit" className={styles.submitBtn}>
-                    Send Message
-                  </button> */}
                 </form>
               )}
             </div>
@@ -264,7 +374,7 @@ const Support = () => {
 
               <div className={styles.contactMethods}>
                 <a
-                  href="https://ochachopharmacysupermarket@gmail.com"
+                  href="mailto:ochachopharmacysupermarket@gmail.com"
                   className={styles.contactMethod}
                 >
                   <span className={styles.contactIcon}>📧</span>

@@ -8,7 +8,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000, // 10 seconds timeout
+  timeout: 30000, // 30 seconds timeout (increased for file uploads)
 });
 
 // Add token to requests
@@ -22,6 +22,7 @@ api.interceptors.request.use(
       fullURL: `${config.baseURL}${config.url}`,
       hasToken: !!token,
       tokenPreview: token ? `${token.substring(0, 30)}...` : "No token",
+      contentType: config.headers["Content-Type"],
     });
 
     if (token) {
@@ -136,14 +137,93 @@ export const orderAPI = {
 
 // Support APIs
 export const supportAPI = {
-  createTicket: (data) => api.post("/support", data),
-  getMyTickets: () => api.get("/support/my-tickets"),
-  getTicket: (id) => api.get(`/support/${id}`),
-  // Admin only
-  getAllTickets: (params) => api.get("/support/admin/all", { params }),
-  updateTicketStatus: (id, data) => api.put(`/support/${id}/status`, data),
-  addResponse: (id, data) => api.post(`/support/${id}/response`, data),
-  deleteTicket: (id) => api.delete(`/support/${id}`),
+  // Create ticket without media
+  createTicket: (data) => {
+    console.log("📧 Creating support ticket:", data);
+    return api.post("/support", data);
+  },
+
+  // ✅ NEW: Create ticket with media (FormData)
+  createTicketWithMedia: (formData) => {
+    console.log("📧📎 Creating support ticket with media");
+    return axios.post(`${API_URL}/support/with-media`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "multipart/form-data",
+      },
+      timeout: 60000, // 60 seconds for file upload
+    });
+  },
+
+  // ✅ NEW: Upload files only
+  uploadFiles: (files) => {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    console.log("📎 Uploading files:", files.length);
+    return axios.post(`${API_URL}/support/upload`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "multipart/form-data",
+      },
+      timeout: 60000,
+    });
+  },
+
+  // Get user's tickets
+  getMyTickets: () => {
+    console.log("📋 Fetching my support tickets");
+    return api.get("/support/my-tickets");
+  },
+
+  // Get single ticket
+  getTicket: (id) => {
+    console.log("📋 Fetching support ticket:", id);
+    return api.get(`/support/${id}`);
+  },
+
+  // ============================================
+  // ADMIN ONLY METHODS
+  // ============================================
+
+  // Get all tickets (admin)
+  getAllTickets: (params) => {
+    console.log("📋 Admin: Fetching all tickets with params:", params);
+    return api.get("/support/admin/all", { params });
+  },
+
+  // Update ticket status (admin)
+  updateTicketStatus: (id, data) => {
+    console.log("✏️ Admin: Updating ticket status:", { id, data });
+    return api.patch(`/support/admin/${id}/status`, data);
+  },
+
+  // Add response to ticket (admin)
+  addResponse: (id, message, files = []) => {
+    const formData = new FormData();
+    formData.append("message", message);
+
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    console.log("💬 Admin: Adding response to ticket:", id);
+    return axios.post(`${API_URL}/support/admin/${id}/response`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "multipart/form-data",
+      },
+      timeout: 60000,
+    });
+  },
+
+  // Delete ticket (admin)
+  deleteTicket: (id) => {
+    console.log("🗑️ Admin: Deleting ticket:", id);
+    return api.delete(`/support/admin/${id}`);
+  },
 };
 
 // Checkout APIs
