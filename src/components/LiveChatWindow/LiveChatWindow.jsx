@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../../context/AuthContext";
 import io from "socket.io-client";
 import styles from "./LiveChatWindow.module.css";
+import { useAuth } from "../context/AuthContext";
 
 const LiveChatWindow = ({ onClose, onNewMessage }) => {
   const { user, token } = useAuth();
@@ -14,16 +14,24 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // ✅ FIXED: Correct API URL without double /api
+  const API_BASE =
+    import.meta.env.VITE_API_URL ||
+    "https://mall-ecommerce-api-production.up.railway.app/api";
+  const SOCKET_URL = API_BASE.replace("/api", ""); // Remove /api for socket connection
 
   useEffect(() => {
     if (!user || !token) return;
+
+    console.log("🔌 Initializing chat...");
+    console.log("API Base:", API_BASE);
+    console.log("Socket URL:", SOCKET_URL);
 
     // Initialize chat
     initializeChat();
 
     // Connect to Socket.IO
-    socketRef.current = io(API_URL, {
+    socketRef.current = io(SOCKET_URL, {
       auth: { token },
       transports: ["websocket", "polling"],
     });
@@ -61,13 +69,18 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
       setIsTyping(false);
     });
 
+    socketRef.current.on("error", (error) => {
+      console.error("❌ Socket error:", error);
+      setStatus("error");
+    });
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
       clearTimeout(typingTimeoutRef.current);
     };
-  }, [user, token]);
+  }, [user, token, SOCKET_URL]);
 
   useEffect(() => {
     scrollToBottom();
@@ -79,12 +92,22 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
 
   const initializeChat = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/chat/my-chat`, {
+      console.log("📞 Fetching chat from:", `${API_BASE}/chat/my-chat`);
+
+      const response = await fetch(`${API_BASE}/chat/my-chat`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log("Chat data:", data);
 
       if (data.success) {
         setChatId(data.data._id);
@@ -92,7 +115,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         setStatus("active");
       }
     } catch (error) {
-      console.error("Failed to initialize chat:", error);
+      console.error("❌ Failed to initialize chat:", error);
       setStatus("error");
     }
   };
@@ -102,7 +125,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
     if (!newMessage.trim() || !chatId) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/chat/send-message`, {
+      const response = await fetch(`${API_BASE}/chat/send-message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +150,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         socketRef.current?.emit("stop-typing", { chatId });
       }
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.error("❌ Failed to send message:", error);
     }
   };
 
@@ -148,14 +171,14 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
   const handleCloseChat = async () => {
     if (chatId) {
       try {
-        await fetch(`${API_URL}/api/chat/${chatId}/close`, {
+        await fetch(`${API_BASE}/chat/${chatId}/close`, {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
       } catch (error) {
-        console.error("Failed to close chat:", error);
+        console.error("❌ Failed to close chat:", error);
       }
     }
     onClose();
@@ -168,12 +191,20 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         <div className={styles.headerInfo}>
           <div className={styles.avatarGroup}>
             <span className={styles.avatar}>👨‍💼</span>
-            <span className={styles.statusDot}></span>
+            {status === "connected" && (
+              <span className={styles.statusDot}></span>
+            )}
           </div>
           <div>
             <h3 className={styles.title}>Live Support</h3>
             <p className={styles.subtitle}>
-              {status === "active" ? "We're here to help!" : "Connecting..."}
+              {status === "active"
+                ? "We're here to help!"
+                : status === "connecting"
+                ? "Connecting..."
+                : status === "error"
+                ? "Connection error"
+                : "Offline"}
             </p>
           </div>
         </div>
@@ -190,7 +221,15 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
 
       {/* Messages */}
       <div className={styles.messages}>
-        {messages.length === 0 ? (
+        {status === "error" ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>⚠️</span>
+            <p>Unable to connect to chat</p>
+            <p className={styles.emptySubtext}>
+              Please try again later or contact support
+            </p>
+          </div>
+        ) : messages.length === 0 ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>💬</span>
             <p>Start a conversation with our support team!</p>
@@ -212,7 +251,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
                 <div className={styles.messageContent}>
                   {msg.senderId !== user?.id && (
                     <div className={styles.senderName}>
-                      {msg.senderName}
+                      {msg.senderName || "Support"}
                       <span className={styles.senderRole}>
                         {msg.senderRole === "admin" ? "Admin" : "Support"}
                       </span>
@@ -248,7 +287,9 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={handleTyping}
-          placeholder="Type your message..."
+          placeholder={
+            status === "active" ? "Type your message..." : "Connecting..."
+          }
           className={styles.input}
           disabled={status !== "active"}
         />
@@ -261,7 +302,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         </button>
       </form>
 
-      {/* Powered by */}
+      {/* Footer */}
       <div className={styles.footer}>
         <span>🔒 Secure conversation</span>
       </div>
