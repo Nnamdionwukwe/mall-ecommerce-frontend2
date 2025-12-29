@@ -352,7 +352,7 @@ const Checkout = () => {
                   <div className={styles.formGroup}>
                     <label>Zip Code (Optional)</label>
                     <input
-                      type="text"
+                      type="tel"
                       value={formData.zipCode}
                       onChange={(e) =>
                         setFormData({ ...formData, zipCode: e.target.value })
