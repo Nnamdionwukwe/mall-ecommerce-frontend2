@@ -237,7 +237,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
             className={styles.closeBtn}
             aria-label="Close chat"
           >
-            ✕
+            🔚
           </button>
         </div>
       </div>
