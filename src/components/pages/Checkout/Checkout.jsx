@@ -244,7 +244,6 @@ const Checkout = () => {
       formData.address &&
       formData.city &&
       formData.state &&
-      formData.zipCode &&
       cardDetails.cardNumber &&
       cardDetails.cardName &&
       cardDetails.expiryDate &&
@@ -333,7 +332,7 @@ const Checkout = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, city: e.target.value })
                       }
-                      placeholder="Lagos"
+                      placeholder="Lagos State"
                     />
                   </div>
 
@@ -346,15 +345,14 @@ const Checkout = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, state: e.target.value })
                       }
-                      placeholder="Lagos"
+                      placeholder="Lagos State"
                     />
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label>Zip Code *</label>
+                    <label>Zip Code (Optional)</label>
                     <input
                       type="text"
-                      required
                       value={formData.zipCode}
                       onChange={(e) =>
                         setFormData({ ...formData, zipCode: e.target.value })
@@ -403,7 +401,7 @@ const Checkout = () => {
                 <div className={styles.formGroup}>
                   <label>Card Number *</label>
                   <input
-                    type="text"
+                    type="tel"
                     required
                     value={cardDetails.cardNumber}
                     onChange={(e) => {
