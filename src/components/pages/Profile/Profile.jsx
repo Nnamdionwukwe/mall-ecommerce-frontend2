@@ -4,7 +4,6 @@ import { useAuth } from "../../context/AuthContext";
 import { authAPI } from "../../services/api";
 import styles from "./Profile.module.css";
 import LogoutModal from "../../LogoutModal/LogoutModal";
-// import LogoutModal from "../../LogoutModal/LogoutModal";
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -40,7 +39,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/profile");
+      navigate("/");
       return;
     }
     setFormData({
