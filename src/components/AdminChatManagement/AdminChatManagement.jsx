@@ -10,13 +10,15 @@ const AdminChatManagement = () => {
   const [newMessage, setNewMessage] = useState("");
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const autoRefreshRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-  const AUTO_REFRESH_INTERVAL = 3000; // 3 seconds
 
+  // Initial setup and socket connection
   useEffect(() => {
     if (!user || !token) return;
 
@@ -62,6 +64,22 @@ const AdminChatManagement = () => {
       fetchChats();
     });
 
+    socketRef.current.on("typing", (data) => {
+      if (selectedChat && data.chatId === selectedChat._id) {
+        setIsTyping(true);
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsTyping(false);
+        }, 3000);
+      }
+    });
+
+    socketRef.current.on("stop-typing", (data) => {
+      if (selectedChat && data.chatId === selectedChat._id) {
+        setIsTyping(false);
+      }
+    });
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -69,6 +87,7 @@ const AdminChatManagement = () => {
       if (autoRefreshRef.current) {
         clearInterval(autoRefreshRef.current);
       }
+      clearTimeout(typingTimeoutRef.current);
     };
   }, [user, token]);
 
@@ -100,10 +119,7 @@ const AdminChatManagement = () => {
     refreshMessages();
 
     // Set up auto-refresh interval
-    autoRefreshRef.current = setInterval(
-      refreshMessages,
-      AUTO_REFRESH_INTERVAL
-    );
+    autoRefreshRef.current = setInterval(refreshMessages, 3000);
 
     return () => {
       if (autoRefreshRef.current) {
@@ -112,6 +128,7 @@ const AdminChatManagement = () => {
     };
   }, [selectedChat?._id, token]);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [selectedChat?.messages]);
@@ -205,9 +222,16 @@ const AdminChatManagement = () => {
         });
 
         setNewMessage("");
+        socketRef.current?.emit("stop-typing", { chatId: selectedChat._id });
       }
     } catch (error) {
       console.error("Failed to send message:", error);
+    }
+  };
+
+  const handleTyping = () => {
+    if (selectedChat && socketRef.current?.connected) {
+      socketRef.current.emit("typing", { chatId: selectedChat._id });
     }
   };
 
@@ -405,6 +429,23 @@ const AdminChatManagement = () => {
                     </div>
                   </div>
                 ))}
+                {isTyping && (
+                  <div
+                    className={`${styles.message} ${styles.messageReceived}`}
+                  >
+                    <div className={styles.messageContent}>
+                      <div className={styles.messageSender}>
+                        {selectedChat.userName}
+                        <span className={styles.messageRole}>user</span>
+                      </div>
+                      <div className={styles.typingIndicator}>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
@@ -415,6 +456,7 @@ const AdminChatManagement = () => {
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={handleTyping}
                     placeholder="Type your reply..."
                     className={styles.input}
                   />
