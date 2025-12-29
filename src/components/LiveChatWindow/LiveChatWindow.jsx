@@ -14,6 +14,9 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  const autoRefreshRef = useRef(null);
+
+  const AUTO_REFRESH_INTERVAL = 4000; // 4 seconds
 
   // Get base URL without /api
   const getSocketURL = () => {
@@ -38,12 +41,65 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         socketRef.current.disconnect();
       }
       clearTimeout(typingTimeoutRef.current);
+      if (autoRefreshRef.current) {
+        clearInterval(autoRefreshRef.current);
+      }
     };
   }, [user, token]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-refresh messages
+  useEffect(() => {
+    if (!chatId || status !== "active") return;
+
+    const refreshMessages = async () => {
+      try {
+        const response = await chatAPI.getMyChat();
+        if (response.data.success) {
+          const fetchedMessages = response.data.data.messages || [];
+          setMessages((prevMessages) => {
+            // Only update if messages have changed
+            if (
+              JSON.stringify(prevMessages) !== JSON.stringify(fetchedMessages)
+            ) {
+              // Check if there are new messages from others
+              if (fetchedMessages.length > prevMessages.length) {
+                const newMsgs = fetchedMessages.slice(prevMessages.length);
+                const hasNewFromOther = newMsgs.some(
+                  (m) => m.senderId !== user.id
+                );
+                if (hasNewFromOther) {
+                  onNewMessage?.();
+                }
+              }
+              return fetchedMessages;
+            }
+            return prevMessages;
+          });
+        }
+      } catch (error) {
+        console.error("❌ Failed to refresh messages:", error);
+      }
+    };
+
+    // Initial refresh
+    refreshMessages();
+
+    // Set up auto-refresh interval
+    autoRefreshRef.current = setInterval(
+      refreshMessages,
+      AUTO_REFRESH_INTERVAL
+    );
+
+    return () => {
+      if (autoRefreshRef.current) {
+        clearInterval(autoRefreshRef.current);
+      }
+    };
+  }, [chatId, status, user?.id]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
