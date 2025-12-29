@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import styles from "./AdminChatManagement.module.css";
 import { useAuth } from "../context/AuthContext";
-// import { chatAPI } from "../services/api";
 
 const AdminChatManagement = () => {
   const { user, token } = useAuth();
@@ -13,8 +12,10 @@ const AdminChatManagement = () => {
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
+  const autoRefreshRef = useRef(null);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const AUTO_REFRESH_INTERVAL = 3000; // 3 seconds
 
   useEffect(() => {
     if (!user || !token) return;
@@ -65,8 +66,51 @@ const AdminChatManagement = () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
+      if (autoRefreshRef.current) {
+        clearInterval(autoRefreshRef.current);
+      }
     };
   }, [user, token]);
+
+  // Auto-refresh messages for selected chat
+  useEffect(() => {
+    if (!selectedChat || !token) return;
+
+    const refreshMessages = async () => {
+      try {
+        const { chatAPI } = await import("../services/api");
+        const response = await chatAPI.getChat(selectedChat._id);
+
+        if (response.data.success) {
+          setSelectedChat(response.data.data);
+
+          // Also update in chats list
+          setChats((prevChats) =>
+            prevChats.map((chat) =>
+              chat._id === selectedChat._id ? response.data.data : chat
+            )
+          );
+        }
+      } catch (error) {
+        console.error("❌ Failed to refresh messages:", error);
+      }
+    };
+
+    // Initial refresh
+    refreshMessages();
+
+    // Set up auto-refresh interval
+    autoRefreshRef.current = setInterval(
+      refreshMessages,
+      AUTO_REFRESH_INTERVAL
+    );
+
+    return () => {
+      if (autoRefreshRef.current) {
+        clearInterval(autoRefreshRef.current);
+      }
+    };
+  }, [selectedChat?._id, token]);
 
   useEffect(() => {
     scrollToBottom();
@@ -80,7 +124,6 @@ const AdminChatManagement = () => {
     try {
       setLoading(true);
 
-      // Import chatAPI
       const { chatAPI } = await import("../services/api");
 
       const params = {};
