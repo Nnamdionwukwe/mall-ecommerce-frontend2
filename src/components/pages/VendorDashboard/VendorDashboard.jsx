@@ -37,7 +37,7 @@ const VendorDashboard = () => {
 
     if (!user || (user.role !== "vendor" && user.role !== "admin")) {
       console.warn("❌ User not authorized, redirecting to home");
-      navigate("/vendor/dashboard");
+      navigate("/");
       return;
     }
     fetchProducts();
