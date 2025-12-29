@@ -514,7 +514,7 @@ const Checkout = () => {
                 <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
               </div>
               <div className={styles.summaryRow}>
-                <span>Tax (10%):</span>
+                <span>Vat (10%):</span>
                 <span>{formatPrice(tax)}</span>
               </div>
 

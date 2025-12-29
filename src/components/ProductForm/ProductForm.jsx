@@ -121,7 +121,7 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
 
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
-            <label>Price ($) *</label>
+            <label>Price (₦) *</label>
             <input
               type="number"
               step="0.01"

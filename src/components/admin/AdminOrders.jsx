@@ -504,7 +504,7 @@ const AdminOrders = () => {
                     <span>{formatPrice(selectedOrder.pricing?.shipping)}</span>
                   </div>
                   <div className={styles.priceRow}>
-                    <span>Tax:</span>
+                    <span>Vat:</span>
                     <span>{formatPrice(selectedOrder.pricing?.tax)}</span>
                   </div>
                   <div className={styles.priceRowTotal}>

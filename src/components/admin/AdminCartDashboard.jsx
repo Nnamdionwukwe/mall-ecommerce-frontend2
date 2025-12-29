@@ -206,7 +206,7 @@ export default function AdminCartDashboard() {
                       <div className={styles.summaryGrid}>
                         <div>Subtotal: ₦{cart.cartSummary.subtotal}</div>
                         <div>Shipping: ₦{cart.cartSummary.shipping || "0"}</div>
-                        <div>Tax: ₦{cart.cartSummary.tax || "0"}</div>
+                        <div>Vat: ₦{cart.cartSummary.tax || "0"}</div>
                         <div>Total: ₦{cart.cartSummary.total}</div>
                       </div>
                     </div>
@@ -403,7 +403,7 @@ export default function AdminCartDashboard() {
                     </span>
                   </div>
                   <div className={styles.totalRow}>
-                    <span>Tax:</span>
+                    <span>Vat:</span>
                     <span>
                       ₦{selectedUserCart.cartSummary.tax.toLocaleString()}
                     </span>

@@ -299,7 +299,7 @@ const TrackOrder = () => {
                       <span>{formatPrice(order.pricing.shipping)}</span>
                     </div>
                     <div className={styles.summaryRow}>
-                      <span>Tax:</span>
+                      <span>Vat:</span>
                       <span>{formatPrice(order.pricing.tax)}</span>
                     </div>
                     <div className={styles.summaryTotal}>
