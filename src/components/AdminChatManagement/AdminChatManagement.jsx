@@ -16,7 +16,13 @@ const AdminChatManagement = () => {
   const autoRefreshRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // Remove /api from the end if it exists
+  const getBaseURL = () => {
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    return apiUrl.replace(/\/api$/, "");
+  };
+
+  const API_BASE_URL = getBaseURL();
 
   // Initial setup and socket connection
   useEffect(() => {
@@ -167,7 +173,7 @@ const AdminChatManagement = () => {
 
     // Mark as read
     try {
-      await fetch(`${API_URL}/api/chat/${chat._id}/read`, {
+      await fetch(`${API_BASE_URL}/api/chat/${chat._id}/read`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -185,12 +191,15 @@ const AdminChatManagement = () => {
 
   const handleAssignChat = async (chatId) => {
     try {
-      const response = await fetch(`${API_URL}/api/chat/${chatId}/assign`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/chat/${chatId}/assign`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -238,7 +247,7 @@ const AdminChatManagement = () => {
 
   const handleCloseChat = async (chatId) => {
     try {
-      await fetch(`${API_URL}/api/chat/${chatId}/close`, {
+      await fetch(`${API_BASE_URL}/api/chat/${chatId}/close`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
