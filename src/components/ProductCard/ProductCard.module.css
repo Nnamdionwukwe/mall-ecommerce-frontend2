@@ -1,24 +1,28 @@
 .card {
   background: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
 .imageLink {
   display: block;
   text-decoration: none;
+  position: relative;
 }
 
 .imageContainer {
-  height: 12rem;
-  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  height: 200px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,32 +40,41 @@
 }
 
 .emojiPlaceholder {
-  font-size: 4rem;
-  color: white;
+  font-size: 3.5rem;
+  opacity: 0.6;
 }
 
 .content {
-  padding: 1.25rem;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .titleLink {
   text-decoration: none;
   color: inherit;
+  flex: 1;
 }
 
 .title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
   color: #1f2937;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .description {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
+  color: #9ca3af;
+  font-size: 0.8125rem;
+  margin-bottom: 0.625rem;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -69,78 +82,108 @@
 .meta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.625rem;
+  gap: 0.5rem;
 }
 
 .price {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #7c3aed;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #f97316;
 }
 
 .stock {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #6b7280;
+  padding: 0.25rem 0.5rem;
+  background: #f3f4f6;
+  border-radius: 0.25rem;
 }
 
 .lowStock {
   color: #ef4444;
-  font-weight: bold;
+  background: #fee2e2;
+  font-weight: 600;
 }
 
 .footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
-  margin-bottom: 0.75rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid #f0f0f0;
+  margin-bottom: 0.625rem;
+  gap: 0.5rem;
 }
 
 .category {
   background: #f3f4f6;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
   color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }
 
 .vendor {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }
 
 .addToCartBtn {
   width: 100%;
-  background: #7c3aed;
-  color: white;
-  padding: 0.75rem;
-  border: none;
+  background: white;
+  color: #7c3aed;
+  padding: 0.625rem;
+  border: 2px solid #e5e7eb;
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
 }
 
-.addToCartBtn:hover {
-  background: #6d28d9;
+.addToCartBtn:hover:not(:disabled) {
+  background: #7c3aed;
+  color: white;
+  border-color: #7c3aed;
+}
+
+.addToCartBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  color: #9ca3af;
 }
 
 .actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .editBtn,
 .deleteBtn {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.625rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.3s;
+  transition: all 0.3s ease;
+  font-size: 0.8125rem;
 }
 
 .editBtn {
@@ -153,7 +196,148 @@
   color: white;
 }
 
-.editBtn:hover,
+.editBtn:hover {
+  background: #6d28d9;
+}
+
 .deleteBtn:hover {
-  opacity: 0.8;
+  background: #dc2626;
+}
+
+/* Badge overlay styles for special badges */
+.badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 10;
+}
+
+/* Star rating styles */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.375rem;
+}
+
+.stars {
+  color: #f97316;
+}
+
+.ratingCount {
+  color: #6b7280;
+}
+
+/* Tags/Labels */
+.tag {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-right: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.saleTag {
+  background: #fef08a;
+  color: #b45309;
+}
+
+.bestSellerTag {
+  background: #ddd6fe;
+  color: #6d28d9;
+}
+
+.brandTag {
+  background: #d1fae5;
+  color: #047857;
+}
+
+/* Responsive Grid */
+@media (max-width: 768px) {
+  .card {
+    border-radius: 0.625rem;
+  }
+
+  .imageContainer {
+    height: 180px;
+  }
+
+  .title {
+    font-size: 0.875rem;
+  }
+
+  .price {
+    font-size: 1rem;
+  }
+
+  .content {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageContainer {
+    height: 160px;
+  }
+
+  .content {
+    padding: 0.625rem;
+  }
+
+  .title {
+    font-size: 0.8125rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .price {
+    font-size: 0.9375rem;
+  }
+
+  .addToCartBtn {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Grid Container for product layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.875rem;
+    padding: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+    padding: 0.625rem;
+  }
 }
