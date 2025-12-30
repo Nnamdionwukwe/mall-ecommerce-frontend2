@@ -336,7 +336,7 @@
 
 @media (max-width: 480px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr 1fr);
     gap: 0.625rem;
     padding: 0.625rem;
   }
