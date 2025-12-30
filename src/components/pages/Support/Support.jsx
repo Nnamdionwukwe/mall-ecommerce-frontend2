@@ -106,14 +106,14 @@ const Support = () => {
     // Add files
     setFiles((prev) => [...prev, ...selectedFiles]);
 
-    // Generate previews
+    // Generate previews for local display
     selectedFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setFilePreviews((prev) => [
           ...prev,
           {
-            url: reader.result,
+            url: reader.result, // Local preview URL
             name: file.name,
             type: file.type.startsWith("image/") ? "image" : "video",
             size: file.size,
@@ -155,13 +155,18 @@ const Support = () => {
       submitData.append("subject", formData.subject);
       submitData.append("message", formData.message);
 
-      // Add files
+      // Add files - backend will handle Cloudinary upload
       files.forEach((file) => {
         submitData.append("files", file);
       });
 
       const response = await supportAPI.createTicketWithMedia(submitData);
       console.log("✅ Response:", response.data);
+
+      // Response should contain Cloudinary URLs
+      if (response.data.data.attachments) {
+        console.log("📸 Cloudinary URLs:", response.data.data.attachments);
+      }
 
       setMessage({
         text: `Ticket created! Reference: ${response.data.data.ticketId}`,
@@ -333,15 +338,34 @@ const Support = () => {
                       </label>
                     </div>
 
-                    {/* File Previews */}
+                    {/* File Previews - Local data URLs before upload */}
                     {filePreviews.length > 0 && (
                       <div className={styles.filePreviews}>
                         {filePreviews.map((preview, index) => (
                           <div key={index} className={styles.filePreview}>
                             {preview.type === "image" ? (
-                              <img src={preview.url} alt={preview.name} />
+                              <img
+                                src={preview.url}
+                                alt={preview.name}
+                                onError={(e) => {
+                                  console.error(
+                                    "Failed to load image preview:",
+                                    preview.name
+                                  );
+                                  e.target.style.display = "none";
+                                }}
+                              />
                             ) : (
-                              <video src={preview.url} />
+                              <video
+                                src={preview.url}
+                                onError={(e) => {
+                                  console.error(
+                                    "Failed to load video preview:",
+                                    preview.name
+                                  );
+                                  e.target.style.display = "none";
+                                }}
+                              />
                             )}
                             <div className={styles.fileInfo}>
                               <span className={styles.fileName}>
