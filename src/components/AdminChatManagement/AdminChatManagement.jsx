@@ -31,7 +31,7 @@ const AdminChatManagement = () => {
     fetchChats();
 
     // Connect to Socket.IO
-    socketRef.current = io(API_URL, {
+    socketRef.current = io(API_BASE_URL, {
       auth: { token },
       transports: ["websocket", "polling"],
     });
