@@ -15,6 +15,8 @@
   justify-content: center;
   z-index: 999;
   transition: all 0.3s ease;
+  color: white;
+  position: relative;
 }
 
 .chatButton:hover {
@@ -26,11 +28,31 @@
   transform: scale(0.95);
 }
 
+.chatButton.active {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
 .chatIcon {
   font-size: 28px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease;
 }
 
+.chatButton.active .chatIcon {
+  animation: rotate 0.3s ease;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}
+
+/* Unread Badge */
 .badge {
   position: absolute;
   top: -5px;
@@ -47,23 +69,153 @@
   font-weight: bold;
   border: 2px solid white;
   animation: pulse 2s infinite;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7), 0 2px 8px rgba(239, 68, 68, 0.5);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0),
+      0 2px 8px rgba(239, 68, 68, 0.5);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 2px 8px rgba(239, 68, 68, 0.5);
   }
 }
 
+/* Message Counter */
+.messageCounter {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 8px;
+  padding: 4px 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 50px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.counterText {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 12px;
+}
+
+.counterLabel {
+  font-size: 10px;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Active Indicator */
+.activeIndicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 12px;
+  height: 12px;
+  background-color: #10b981;
+  border: 2px solid white;
+  border-radius: 50%;
+  animation: indicatorPulse 2s infinite;
+}
+
+@keyframes indicatorPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Notification Toast */
+.notificationToast {
+  position: fixed;
+  bottom: calc(24px + 9rem + 80px);
+  right: 24px;
+  background: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  animation: toastSlide 0.3s ease, toastFade 0.3s ease 2.7s;
+}
+
+@keyframes toastSlide {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastFade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.notificationIcon {
+  font-size: 20px;
+  animation: notificationBounce 0.5s ease;
+  flex-shrink: 0;
+}
+
+@keyframes notificationBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.notificationText {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .chatButton {
     bottom: 16px;
+    margin-bottom: 9rem;
     right: 16px;
     width: 56px;
     height: 56px;
@@ -72,10 +224,94 @@
   .chatIcon {
     font-size: 24px;
   }
+
+  .badge {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .messageCounter {
+    bottom: -18px;
+    padding: 3px 6px;
+    min-width: 45px;
+  }
+
+  .counterText {
+    font-size: 11px;
+  }
+
+  .counterLabel {
+    font-size: 9px;
+  }
+
+  .notificationToast {
+    bottom: calc(16px + 9rem + 70px);
+    right: 16px;
+    padding: 10px 14px;
+  }
+
+  .notificationIcon {
+    font-size: 18px;
+  }
+
+  .notificationText {
+    font-size: 13px;
+  }
 }
 
-.chatButton {
-  bottom: 24px; /* Distance from bottom */
-  right: 24px; /* Distance from right */
-  /* Change to left: 24px; for left side */
+@media (max-width: 480px) {
+  .chatButton {
+    bottom: 12px;
+    margin-bottom: 9rem;
+    right: 12px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .chatIcon {
+    font-size: 22px;
+  }
+
+  .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+
+  .messageCounter {
+    bottom: -16px;
+    padding: 2px 5px;
+  }
+
+  .notificationToast {
+    bottom: calc(12px + 9rem + 65px);
+    right: 12px;
+    width: calc(100% - 24px);
+    max-width: 260px;
+    padding: 10px 12px;
+  }
+
+  .notificationIcon {
+    font-size: 16px;
+  }
+
+  .notificationText {
+    font-size: 12px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .chatButton,
+  .badge,
+  .messageCounter,
+  .activeIndicator,
+  .notificationToast {
+    animation: none;
+  }
+
+  .chatButton:hover {
+    transform: none;
+  }
 }
