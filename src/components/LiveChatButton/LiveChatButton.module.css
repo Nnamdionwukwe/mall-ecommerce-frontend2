@@ -1,3 +1,15 @@
+.buttonWrapper {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.buttonWrapper > button {
+  pointer-events: all;
+}
+
 .chatButton {
   position: fixed;
   bottom: 24px;

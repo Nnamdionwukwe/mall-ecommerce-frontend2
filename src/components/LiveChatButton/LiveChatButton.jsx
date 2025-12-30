@@ -57,33 +57,35 @@ const LiveChatButton = () => {
       )}
 
       {/* Floating Chat Button */}
-      <button
-        onClick={handleToggle}
-        className={`${styles.chatButton} ${isOpen ? styles.active : ""}`}
-        aria-label={isOpen ? "Close live chat" : "Open live chat"}
-      >
-        <span className={styles.chatIcon}>{isOpen ? "✕" : "💬"}</span>
+      <div className={styles.buttonWrapper}>
+        <button
+          onClick={handleToggle}
+          className={`${styles.chatButton} ${isOpen ? styles.active : ""}`}
+          aria-label={isOpen ? "Close live chat" : "Open live chat"}
+        >
+          <span className={styles.chatIcon}>{isOpen ? "✕" : "💬"}</span>
 
-        {/* Unread Badge */}
-        {unreadCount > 0 && !isOpen && (
-          <span className={styles.badge}>
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
-
-        {/* Message Counter (always visible when button is not active) */}
-        {totalMessages > 0 && !isOpen && (
-          <div className={styles.messageCounter}>
-            <span className={styles.counterText}>
-              {totalMessages > 99 ? "99+" : totalMessages}
+          {/* Unread Badge */}
+          {unreadCount > 0 && !isOpen && (
+            <span className={styles.badge}>
+              {unreadCount > 99 ? "99+" : unreadCount}
             </span>
-            <span className={styles.counterLabel}>messages</span>
-          </div>
-        )}
+          )}
 
-        {/* Active indicator */}
-        {isOpen && <span className={styles.activeIndicator}></span>}
-      </button>
+          {/* Message Counter (always visible when button is not active) */}
+          {totalMessages > 0 && !isOpen && (
+            <div className={styles.messageCounter}>
+              <span className={styles.counterText}>
+                {totalMessages > 99 ? "99+" : totalMessages}
+              </span>
+              <span className={styles.counterLabel}>messages</span>
+            </div>
+          )}
+
+          {/* Active indicator */}
+          {isOpen && <span className={styles.activeIndicator}></span>}
+        </button>
+      </div>
     </>
   );
 };
