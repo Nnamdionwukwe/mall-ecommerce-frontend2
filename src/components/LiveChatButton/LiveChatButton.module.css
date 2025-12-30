@@ -97,49 +97,6 @@
   }
 }
 
-/* Message Counter */
-.messageCounter {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  border-radius: 8px;
-  padding: 4px 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  min-width: 50px;
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.counterText {
-  font-weight: 700;
-  color: #667eea;
-  font-size: 12px;
-}
-
-.counterLabel {
-  font-size: 10px;
-  color: #6b7280;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 /* Active Indicator */
 .activeIndicator {
   position: absolute;
@@ -243,20 +200,6 @@
     font-size: 11px;
   }
 
-  .messageCounter {
-    bottom: -18px;
-    padding: 3px 6px;
-    min-width: 45px;
-  }
-
-  .counterText {
-    font-size: 11px;
-  }
-
-  .counterLabel {
-    font-size: 9px;
-  }
-
   .notificationToast {
     bottom: calc(16px + 9rem + 70px);
     right: 16px;
@@ -291,11 +234,6 @@
     font-size: 10px;
   }
 
-  .messageCounter {
-    bottom: -16px;
-    padding: 2px 5px;
-  }
-
   .notificationToast {
     bottom: calc(12px + 9rem + 65px);
     right: 12px;
@@ -317,7 +255,6 @@
 @media (prefers-reduced-motion: reduce) {
   .chatButton,
   .badge,
-  .messageCounter,
   .activeIndicator,
   .notificationToast {
     animation: none;

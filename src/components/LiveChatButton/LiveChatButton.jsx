@@ -1,17 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./LiveChatButton.module.css";
 import LiveChatWindow from "../LiveChatWindow/LiveChatWindow";
 
 const LiveChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [totalMessages, setTotalMessages] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
-      // Clear unread count when opening chat
+      // Clear unread count when opening chat (messages are now read)
       setUnreadCount(0);
       setShowNotification(false);
     }
@@ -21,14 +20,10 @@ const LiveChatButton = () => {
     // Increment unread count if chat is closed
     if (!isOpen) {
       setUnreadCount((prev) => prev + 1);
-      setTotalMessages((prev) => prev + 1);
 
       // Show notification toast
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 3000);
-    } else {
-      // Still increment total messages even if chat is open
-      setTotalMessages((prev) => prev + 1);
     }
   };
 
@@ -65,21 +60,11 @@ const LiveChatButton = () => {
         >
           <span className={styles.chatIcon}>{isOpen ? "✕" : "💬"}</span>
 
-          {/* Unread Badge */}
+          {/* Unread Badge - Only shown when chat is closed AND there are unread messages */}
           {unreadCount > 0 && !isOpen && (
             <span className={styles.badge}>
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
-          )}
-
-          {/* Message Counter (always visible when button is not active) */}
-          {totalMessages > 0 && !isOpen && (
-            <div className={styles.messageCounter}>
-              <span className={styles.counterText}>
-                {totalMessages > 99 ? "99+" : totalMessages}
-              </span>
-              <span className={styles.counterLabel}>messages</span>
-            </div>
           )}
 
           {/* Active indicator */}
