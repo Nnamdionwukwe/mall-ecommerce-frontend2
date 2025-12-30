@@ -21,7 +21,6 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
   // Get base URL without /api
   const getSocketURL = () => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-    // Remove /api from the end if it exists
     return apiUrl.replace(/\/api$/, "");
   };
 
@@ -49,7 +48,7 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
   // Auto-refresh messages
   useEffect(() => {
@@ -61,11 +60,9 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         if (response.data.success) {
           const fetchedMessages = response.data.data.messages || [];
           setMessages((prevMessages) => {
-            // Only update if messages have changed
             if (
               JSON.stringify(prevMessages) !== JSON.stringify(fetchedMessages)
             ) {
-              // Check if there are new messages from others
               if (fetchedMessages.length > prevMessages.length) {
                 const newMsgs = fetchedMessages.slice(prevMessages.length);
                 const hasNewFromOther = newMsgs.some(
@@ -85,10 +82,8 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
       }
     };
 
-    // Initial refresh
     refreshMessages();
 
-    // Set up auto-refresh interval
     autoRefreshRef.current = setInterval(
       refreshMessages,
       AUTO_REFRESH_INTERVAL
@@ -119,7 +114,6 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         setMessages(chat.messages || []);
         setStatus("active");
 
-        // Initialize Socket.IO after getting chat
         initializeSocket(chat._id);
       }
     } catch (error) {
@@ -163,7 +157,6 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
         console.log("📨 New message received:", data);
         if (data.chatId === chatId) {
           setMessages((prev) => {
-            // Avoid duplicates
             const exists = prev.some(
               (m) =>
                 m.timestamp === data.message.timestamp &&
@@ -222,7 +215,6 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
       if (response.data.success) {
         console.log("✅ Message sent via API");
 
-        // Emit to socket for real-time broadcast
         if (socketRef.current?.connected) {
           socketRef.current.emit("send-message", {
             chatId,

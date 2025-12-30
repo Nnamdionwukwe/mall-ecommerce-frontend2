@@ -131,7 +131,7 @@ const AdminChatManagement = () => {
   // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
-  }, [selectedChat?.messages]);
+  }, [selectedChat?.messages, isTyping]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -163,6 +163,7 @@ const AdminChatManagement = () => {
 
   const handleSelectChat = async (chat) => {
     setSelectedChat(chat);
+    setIsTyping(false);
 
     // Mark as read
     try {
@@ -438,10 +439,12 @@ const AdminChatManagement = () => {
                         {selectedChat.userName}
                         <span className={styles.messageRole}>user</span>
                       </div>
-                      <div className={styles.typingIndicator}>
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                      <div className={styles.typingBubble}>
+                        <div className={styles.typingIndicator}>
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -3,9 +3,7 @@
   bottom: 100px;
   right: 24px;
   width: 380px;
-  height: calc(
-    100vh - 200px
-  ); /* Account for header (80px) + bottom nav (60px) + margin (60px) */
+  height: calc(100vh - 200px);
   max-height: 600px;
   background: white;
   border-radius: 16px;
@@ -24,41 +22,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-.typingIndicator {
-  display: flex;
-  gap: 4px;
-  padding: 8px 0;
-}
-
-.typingIndicator span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #999;
-  animation: typing 1.4s infinite;
-}
-
-.typingIndicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typingIndicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%,
-  60%,
-  100% {
-    opacity: 0.5;
-    transform: translateY(0);
-  }
-  30% {
-    opacity: 1;
-    transform: translateY(-10px);
   }
 }
 
@@ -160,7 +123,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  min-height: 0; /* Important for flex scrolling */
+  min-height: 0;
 }
 
 .messages::-webkit-scrollbar {
@@ -297,23 +260,34 @@
   padding: 0 0.25rem;
 }
 
-/* Typing Indicator */
-.typingIndicator {
-  display: flex;
-  gap: 0.3125rem;
-  padding: 0.625rem 0.875rem;
+/* Typing Indicator Bubble */
+.typingBubble {
+  display: inline-block;
   background: white;
   border-radius: 14px;
   border-bottom-left-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0.625rem 0.875rem;
+}
+
+/* Typing Indicator Dots */
+.typingIndicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
 .typingIndicator span {
-  width: 7px;
-  height: 7px;
-  background: #9ca3af;
+  width: 8px;
+  height: 8px;
+  background-color: #9ca3af;
   border-radius: 50%;
-  animation: typing 1.4s infinite;
+  display: inline-block;
+  animation: typingAnimation 1.4s infinite;
+}
+
+.typingIndicator span:nth-child(1) {
+  animation-delay: 0s;
 }
 
 .typingIndicator span:nth-child(2) {
@@ -324,13 +298,15 @@
   animation-delay: 0.4s;
 }
 
-@keyframes typing {
+@keyframes typingAnimation {
   0%,
   60%,
   100% {
+    opacity: 0.5;
     transform: translateY(0);
   }
   30% {
+    opacity: 1;
     transform: translateY(-6px);
   }
 }
@@ -445,12 +421,10 @@
 @media (max-width: 480px) {
   .chatWindow {
     right: 0;
-    bottom: 60px; /* Above bottom nav */
+    bottom: 60px;
     left: 0;
     width: 100%;
-    height: calc(
-      100vh - 140px
-    ); /* Account for header (60px) + bottom nav (60px) + margin (20px) */
+    height: calc(100vh - 140px);
     max-height: none;
     border-radius: 16px 16px 0 0;
   }
@@ -555,34 +529,6 @@
   }
 }
 
-/* iPhone SE (375x667) */
-@media (max-width: 375px) and (max-height: 667px) {
-  .chatWindow {
-    height: calc(100vh - 120px);
-  }
-}
-
-/* iPhone 12/13/14 Pro (390x844) */
-@media (max-width: 390px) and (max-height: 844px) {
-  .chatWindow {
-    height: calc(100vh - 130px);
-  }
-}
-
-/* iPhone 12/13/14 Pro Max (428x926) */
-@media (max-width: 428px) and (max-height: 926px) {
-  .chatWindow {
-    height: calc(100vh - 140px);
-  }
-}
-
-/* Samsung Galaxy S20/S21 (360x800) */
-@media (max-width: 360px) and (max-height: 800px) {
-  .chatWindow {
-    height: calc(100vh - 120px);
-  }
-}
-
 /* Accessibility - Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .chatWindow,
@@ -606,92 +552,5 @@
 
   .input {
     border-width: 3px;
-  }
-}
-
-/* Dark Mode Support (Optional) */
-@media (prefers-color-scheme: dark) {
-  /* Uncomment if you want to support dark mode
-  .chatWindow {
-    background: #1f2937;
-  }
-
-  .messages {
-    background: #111827;
-  }
-
-  .messageReceived .messageText {
-    background: #374151;
-    color: #f9fafb;
-  }
-
-  .input {
-    background: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-
-  .footer {
-    background: #111827;
-    color: #9ca3af;
-  }
-  */
-}
-
-/* Print Styles */
-@media print {
-  .chatWindow {
-    display: none;
-  }
-}
-
-/* Typing Indicator Bubble */
-.typingBubble {
-  display: inline-block;
-  background: white;
-  border-radius: 14px;
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 0.625rem 0.875rem;
-}
-
-/* Typing Indicator Dots */
-.typingIndicator {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-.typingIndicator span {
-  width: 8px;
-  height: 8px;
-  background-color: #9ca3af;
-  border-radius: 50%;
-  display: inline-block;
-  animation: typingAnimation 1.4s infinite;
-}
-
-.typingIndicator span:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.typingIndicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typingIndicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typingAnimation {
-  0%,
-  60%,
-  100% {
-    opacity: 0.5;
-    transform: translateY(0);
-  }
-  30% {
-    opacity: 1;
-    transform: translateY(-6px);
   }
 }
