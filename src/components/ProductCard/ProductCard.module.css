@@ -328,16 +328,24 @@
 
 @media (max-width: 768px) {
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
     padding: 0.75rem;
   }
 }
 
-@media (max-width: 80px) {
+@media (max-width: 480px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.625rem;
     padding: 0.625rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0.5rem;
   }
 }
