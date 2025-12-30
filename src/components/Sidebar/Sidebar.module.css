@@ -79,7 +79,7 @@
   transform: translateY(0);
 } /* Hamburger Menu Button */
 .hamburger {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 6px;
   background: none;
@@ -100,12 +100,6 @@
   transition: all 0.3s ease;
 }
 
-@media (max-width: 768px) {
-  .hamburger {
-    display: flex;
-  }
-}
-
 /* Overlay */
 .overlay {
   display: none;
@@ -119,10 +113,8 @@
   animation: fadeIn 0.3s ease;
 }
 
-@media (max-width: 768px) {
-  .overlay {
-    display: block;
-  }
+.overlay.show {
+  display: block;
 }
 
 @keyframes fadeIn {
@@ -398,25 +390,17 @@
   }
 }
 
-/* Desktop View (Hide hamburger and always show sidebar) */
+/* Desktop View - Hide sidebar, only show hamburger */
 @media (min-width: 769px) {
   .hamburger {
-    display: none;
-  }
-
-  .overlay {
-    display: none !important;
+    display: flex;
   }
 
   .sidebar {
-    transform: translateX(0) !important;
-    width: 280px;
-    position: relative;
-    height: auto;
-    min-height: 100vh;
+    transform: translateX(-100%);
   }
 
-  .closeBtn {
-    display: none;
+  .sidebar.open {
+    transform: translateX(0);
   }
 }

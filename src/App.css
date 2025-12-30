@@ -45,14 +45,14 @@ body {
   }
 }
 
-/* Desktop - Sidebar takes 280px on the left */
+/* Desktop - Full width content (sidebar is modal overlay) */
 @media (min-width: 769px) {
   .appContainer {
-    margin-left: 280px;
+    margin-left: 0;
   }
 
   .appMain {
-    width: calc(100% - 280px);
+    width: 100%;
     margin-left: 0;
   }
 }

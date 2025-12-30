@@ -44,7 +44,7 @@ const Sidebar = () => {
       {/* Overlay */}
       {isSidebarOpen && (
         <div
-          className={styles.overlay}
+          className={`${styles.overlay} ${isSidebarOpen ? styles.show : ""}`}
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -54,13 +54,13 @@ const Sidebar = () => {
         className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ""}`}
       >
         {/* Close Button */}
-        <button
+        {/* <button
           className={styles.closeBtn}
           onClick={() => setIsSidebarOpen(false)}
           aria-label="Close menu"
         >
           ✕
-        </button>
+        </button> */}
 
         {/* Logo */}
         <Link to="/" className={styles.logoContainer} onClick={handleNavClick}>
@@ -71,8 +71,8 @@ const Sidebar = () => {
         <div className={styles.topAuthSection}>
           {user ? (
             <div className={styles.userInfoTop}>
-              {/* <span className={styles.userNameTop}>👤 {user.name}</span> */}
-              {/* <span className={styles.badgeTop}>{user.role}</span> */}
+              <span className={styles.userNameTop}>👤 {user.name}</span>
+              <span className={styles.badgeTop}>{user.role}</span>
               <button
                 onClick={handleLogoutClick}
                 className={styles.logoutBtnTop}
@@ -141,8 +141,8 @@ const Sidebar = () => {
           {user ? (
             <>
               <div className={styles.userInfo}>
-                <span className={styles.userName}>{user.name}</span>
-                <span className={styles.badge}>{user.role}</span>
+                {/* <span className={styles.userName}>{user.name}</span> */}
+                {/* <span className={styles.badge}>{user.role}</span> */}
               </div>
               <button onClick={handleLogoutClick} className={styles.logoutBtn}>
                 Logout
