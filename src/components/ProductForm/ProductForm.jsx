@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./ProductForm.module.css";
 import { productAPI } from "../services/api";
+import { PRODUCT_CATEGORIES } from "../constants/categories";
 
 const ProductForm = ({ product, token, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -16,16 +17,8 @@ const ProductForm = ({ product, token, onSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const categories = [
-    "Electronics",
-    "Sports",
-    "Home & Kitchen",
-    "Clothing",
-    "Books",
-    "Toys",
-    "Beauty",
-    "Food",
-  ];
+  // Use shared categories constant
+  const categories = PRODUCT_CATEGORIES;
 
   useEffect(() => {
     if (product) {

@@ -4,6 +4,7 @@ import styles from "./Home.module.css";
 import ProductCard from "../../ProductCard/ProductCard";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { getCategoriesWithProducts } from "../../constants/categories";
 
 const Home = () => {
   const { user } = useAuth();
@@ -78,7 +79,9 @@ const Home = () => {
     setFilteredProducts(filtered);
   };
 
-  const categories = [...new Set(products.map((p) => p.category))];
+  // Get only categories that have products
+  const categories = getCategoriesWithProducts(products);
+
   const stats = {
     total: products.length,
     categories: categories.length,
@@ -121,33 +124,6 @@ const Home = () => {
         </p>
       </div>
 
-      {/* Stats */}
-      {/* {user.role === "vendor" && (
-        <div className={styles.stats}>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>📦</div>
-            <div className={styles.statContent}>
-              <h3>Total Products</h3>
-              <p className={styles.statValue}>{stats.total}</p>
-            </div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>🏷️</div>
-            <div className={styles.statContent}>
-              <h3>Categories</h3>
-              <p className={styles.statValue}>{stats.categories}</p>
-            </div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>🏪</div>
-            <div className={styles.statContent}>
-              <h3>Vendors</h3>
-              <p className={styles.statValue}>{stats.vendors}</p>
-            </div>
-          </div>
-        </div>
-      )} */}
-
       {/* Filters */}
       <div className={styles.filters}>
         <input
@@ -163,7 +139,7 @@ const Home = () => {
           onChange={(e) => setCategoryFilter(e.target.value)}
           className={styles.select}
         >
-          <option value="">All Categories</option>
+          <option value="">All Categories ({categories.length})</option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
