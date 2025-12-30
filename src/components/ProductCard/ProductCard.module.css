@@ -342,7 +342,7 @@
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 60px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;

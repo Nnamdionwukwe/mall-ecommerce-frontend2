@@ -135,6 +135,22 @@
   margin: 0 auto;
 }
 
+@media (max-width: 480px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.375rem;
+    padding: 0.375rem;
+  }
+}
+
 .noProducts {
   text-align: center;
   color: white;
