@@ -17,10 +17,11 @@ const Sidebar = () => {
     setLogoutOpen(true);
   };
 
-  const logout1 = () => {
+  const handleLogout = () => {
     logout();
     localStorage.removeItem("authToken");
     setIsSidebarOpen(false);
+    setLogoutOpen(false);
   };
 
   const handleNavClick = () => {
@@ -65,6 +66,37 @@ const Sidebar = () => {
         <Link to="/" className={styles.logoContainer} onClick={handleNavClick}>
           <img src={logo} alt="Mall Logo" className={styles.logoImage} />
         </Link>
+
+        {/* Auth Buttons - Top Section */}
+        <div className={styles.topAuthSection}>
+          {user ? (
+            <div className={styles.userInfoTop}>
+              <span className={styles.userNameTop}>👤 {user.name}</span>
+              <span className={styles.badgeTop}>{user.role}</span>
+              <button
+                onClick={handleLogoutClick}
+                className={styles.logoutBtnTop}
+              >
+                🚪 Logout
+              </button>
+              <LogoutModal
+                isOpen={logoutOpen}
+                onCancel={() => setLogoutOpen(false)}
+                logout={handleLogout}
+              />
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setShowAuth(true);
+                setIsSidebarOpen(false);
+              }}
+              className={styles.loginBtnTop}
+            >
+              🔐 Login
+            </button>
+          )}
+        </div>
 
         {/* Navigation Links */}
         <nav className={styles.navLinks}>
@@ -119,7 +151,7 @@ const Sidebar = () => {
               <LogoutModal
                 isOpen={logoutOpen}
                 onCancel={() => setLogoutOpen(false)}
-                logout={logout1}
+                logout={handleLogout}
               />
             </>
           ) : (

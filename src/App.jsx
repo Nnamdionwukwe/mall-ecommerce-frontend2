@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Sidebar/Sidebar";
+import Sidebar from "./components/Sidebar/Sidebar";
 import "./App.css";
 import { AuthProvider, useAuth } from "./components/context/AuthContext";
 import Home from "./components/pages/Home/Home";
@@ -32,29 +32,31 @@ const AppContent = () => {
 
   return (
     <>
-      <div className="app">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/shop" element={<Home />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order-success/:orderId" element={<OrderSuccess />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/track-order/:orderId" element={<TrackOrder />} />
-          <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
-          <Route path="/admin/user-cart" element={<AdminCartDashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/admin/support-tickets" element={<SupportTickets />} />
-          <Route path="/admin/chats" element={<AdminChatManagement />} />
-          <Route path="/my-tickets" element={<MyTickets />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/cookies-policy" element={<CookiesPolicy />} />
-        </Routes>
+      <div className="appContainer">
+        <Sidebar />
+        <div className="appMain">
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/shop" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/track-order/:orderId" element={<TrackOrder />} />
+            <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/user-cart" element={<AdminCartDashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/admin/support-tickets" element={<SupportTickets />} />
+            <Route path="/admin/chats" element={<AdminChatManagement />} />
+            <Route path="/my-tickets" element={<MyTickets />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/cookies-policy" element={<CookiesPolicy />} />
+          </Routes>
+        </div>
       </div>
 
       <BottomNav />
