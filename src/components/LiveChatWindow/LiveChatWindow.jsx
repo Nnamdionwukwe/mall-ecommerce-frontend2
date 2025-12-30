@@ -360,10 +360,12 @@ const LiveChatWindow = ({ onClose, onNewMessage }) => {
             {isTyping && (
               <div className={`${styles.message} ${styles.messageReceived}`}>
                 <div className={styles.messageContent}>
-                  <div className={styles.typingIndicator}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                  <div className={styles.typingBubble}>
+                    <div className={styles.typingIndicator}>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
                   </div>
                 </div>
               </div>
