@@ -1,414 +1,81 @@
-/* Chat Button Container */
 .chatButton {
   position: fixed;
   bottom: 24px;
+  margin-bottom: 9rem;
   right: 24px;
   width: 60px;
   height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
-  color: white;
-  font-size: 1.5rem;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  z-index: 999;
   transition: all 0.3s ease;
-  z-index: 997;
-  position: relative;
 }
 
 .chatButton:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
 }
 
 .chatButton:active {
   transform: scale(0.95);
 }
 
-.chatButton.active {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
-}
-
-/* Chat Icon */
 .chatIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  font-size: 1.5rem;
-  transition: transform 0.3s ease;
+  font-size: 28px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-.chatButton.active .chatIcon {
-  animation: rotate 0.3s ease;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(90deg);
-  }
-}
-
-/* Unread Badge */
 .badge {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -5px;
+  right: -5px;
   background-color: #ef4444;
   color: white;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
-  animation: badgePulse 2s infinite;
-}
-
-@keyframes badgePulse {
-  0% {
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5), 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-  70% {
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5),
-      0 0 0 10px rgba(239, 68, 68, 0);
-  }
-  100% {
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5), 0 0 0 0 rgba(239, 68, 68, 0);
-  }
-}
-
-/* Message Counter */
-.messageCounter {
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  border-radius: 12px;
-  padding: 4px 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  min-width: 50px;
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.counterText {
-  font-weight: 700;
-  color: #667eea;
-  font-size: 0.875rem;
-}
-
-.counterLabel {
-  font-size: 0.65rem;
-  color: #6b7280;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Active Indicator */
-.activeIndicator {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 12px;
-  height: 12px;
-  background-color: #10b981;
+  font-size: 12px;
+  font-weight: bold;
   border: 2px solid white;
-  border-radius: 50%;
-  animation: indicatorPulse 2s infinite;
+  animation: pulse 2s infinite;
 }
 
-@keyframes indicatorPulse {
+@keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
   }
 }
 
-/* Notification Toast */
-.notificationToast {
-  position: fixed;
-  bottom: 100px;
-  right: 24px;
-  background: white;
-  border-radius: 12px;
-  padding: 12px 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 999;
-  animation: toastSlide 0.3s ease, toastFade 0.3s ease 2.7s;
-}
-
-@keyframes toastSlide {
-  from {
-    opacity: 0;
-    transform: translateX(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes toastFade {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.notificationIcon {
-  font-size: 1.25rem;
-  animation: notificationBounce 0.5s ease;
-}
-
-@keyframes notificationBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-.notificationText {
-  font-size: 0.875rem;
-  color: #1f2937;
-  font-weight: 500;
-}
-
-/* Tablet (768px - 1024px) */
-@media (max-width: 1024px) and (min-width: 769px) {
+@media (max-width: 768px) {
   .chatButton {
-    bottom: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    font-size: 1.375rem;
-  }
-
-  .badge {
-    width: 26px;
-    height: 26px;
-    font-size: 0.7rem;
-  }
-
-  .notificationToast {
-    bottom: 90px;
-    right: 20px;
-  }
-}
-
-/* Mobile Landscape (481px - 768px) */
-@media (max-width: 768px) and (min-width: 481px) {
-  .chatButton {
-    bottom: 80px;
+    bottom: 16px;
     right: 16px;
     width: 56px;
     height: 56px;
-    font-size: 1.375rem;
-  }
-
-  .badge {
-    width: 26px;
-    height: 26px;
-    font-size: 0.7rem;
-  }
-
-  .messageCounter {
-    bottom: -14px;
-    padding: 3px 6px;
-  }
-
-  .counterText {
-    font-size: 0.8125rem;
-  }
-
-  .counterLabel {
-    font-size: 0.6rem;
-  }
-
-  .notificationToast {
-    bottom: 90px;
-    right: 16px;
-    padding: 10px 14px;
-  }
-
-  .notificationIcon {
-    font-size: 1.125rem;
-  }
-
-  .notificationText {
-    font-size: 0.8125rem;
-  }
-}
-
-/* Mobile Portrait (Max 480px) */
-@media (max-width: 480px) {
-  .chatButton {
-    bottom: 70px;
-    right: 12px;
-    width: 52px;
-    height: 52px;
-    font-size: 1.25rem;
-  }
-
-  .badge {
-    width: 24px;
-    height: 24px;
-    font-size: 0.65rem;
-    top: -6px;
-    right: -6px;
-  }
-
-  .messageCounter {
-    bottom: -16px;
-    padding: 2px 5px;
-    min-width: 45px;
-  }
-
-  .counterText {
-    font-size: 0.75rem;
-  }
-
-  .counterLabel {
-    font-size: 0.55rem;
-  }
-
-  .notificationToast {
-    bottom: 80px;
-    right: 12px;
-    left: auto;
-    width: calc(100% - 24px);
-    max-width: 280px;
-    padding: 10px 12px;
-  }
-
-  .notificationIcon {
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-
-  .notificationText {
-    font-size: 0.8125rem;
-  }
-}
-
-/* Very Small Screens (Max 360px) */
-@media (max-width: 360px) {
-  .chatButton {
-    bottom: 65px;
-    right: 8px;
-    width: 48px;
-    height: 48px;
-    font-size: 1.125rem;
-  }
-
-  .badge {
-    width: 22px;
-    height: 22px;
-    font-size: 0.6rem;
-  }
-
-  .messageCounter {
-    font-size: 0.7rem;
-  }
-
-  .notificationToast {
-    bottom: 75px;
-    right: 8px;
-    width: calc(100% - 16px);
-    font-size: 0.8rem;
-  }
-}
-
-/* Landscape Mobile (Max Height 500px) */
-@media (max-height: 500px) {
-  .chatButton {
-    bottom: 10px;
-    right: 12px;
-    width: 50px;
-    height: 50px;
-  }
-
-  .notificationToast {
-    bottom: 65px;
-  }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .chatButton,
-  .badge,
-  .messageCounter,
-  .activeIndicator,
-  .notificationToast {
-    animation: none;
-  }
-
-  .chatButton:hover {
-    transform: none;
   }
 
   .chatIcon {
-    transition: none;
+    font-size: 24px;
   }
 }
 
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  .chatButton {
-    border: 2px solid currentColor;
-  }
-
-  .badge {
-    border-width: 2px;
-  }
-
-  .messageCounter {
-    border: 1px solid #667eea;
-  }
-
-  .notificationToast {
-    border: 1px solid #1f2937;
-  }
+.chatButton {
+  bottom: 24px; /* Distance from bottom */
+  right: 24px; /* Distance from right */
+  /* Change to left: 24px; for left side */
 }
