@@ -124,29 +124,50 @@ const Home = () => {
         </p>
       </div>
 
-      {/* Filters */}
+      {/* Modern Search Bar */}
       <div className={styles.filters}>
-        <input
-          type="text"
-          placeholder="🔍 Search products..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={styles.searchInput}
-        />
+        <div className={styles.searchContainer}>
+          <input
+            type="text"
+            placeholder="🔍 Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={styles.searchInput}
+          />
+          <button className={styles.cameraIconBtn} title="Search by image">
+            📷
+          </button>
+          <button className={styles.searchIconBtn} title="Search">
+            🔍
+          </button>
+        </div>
 
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className={styles.select}
-        >
-          <option value="">All Categories ({categories.length})</option>
+        {/* Category Tabs */}
+        <div className={styles.categoryTabs}>
+          <button
+            className={`${styles.categoryTab} ${
+              categoryFilter === "" ? styles.active : ""
+            }`}
+            onClick={() => setCategoryFilter("")}
+          >
+            All
+          </button>
           {categories.map((cat) => (
-            <option key={cat} value={cat}>
+            <button
+              key={cat}
+              className={`${styles.categoryTab} ${
+                categoryFilter === cat ? styles.active : ""
+              }`}
+              onClick={() => setCategoryFilter(cat)}
+            >
               {cat}
-            </option>
+            </button>
           ))}
-        </select>
+        </div>
+      </div>
 
+      {/* Sort Dropdown */}
+      <div className={styles.sortContainer}>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
