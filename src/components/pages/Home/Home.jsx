@@ -134,12 +134,12 @@ const Home = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className={styles.searchInput}
           />
-          <button className={styles.cameraIconBtn} title="Search by image">
+          {/* <button className={styles.cameraIconBtn} title="Search by image">
             📷
           </button>
           <button className={styles.searchIconBtn} title="Search">
             🔍
-          </button>
+          </button> */}
         </div>
 
         {/* Category Tabs */}
