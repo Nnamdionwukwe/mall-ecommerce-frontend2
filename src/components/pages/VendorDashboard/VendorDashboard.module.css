@@ -185,6 +185,12 @@
   gap: 1.5rem;
 }
 
+/* @media (max-width: 360px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+} */
+
 .modal {
   position: fixed;
   inset: 0;
