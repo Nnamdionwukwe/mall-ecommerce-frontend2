@@ -199,7 +199,7 @@
 }
 
 .categoryTabs::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: blue;
   border-radius: 10px;
 }
 
@@ -207,9 +207,9 @@
   padding: 0.5rem 0;
   border: none;
   background: transparent;
-  color: white;
+  color: rgb(46, 45, 45);
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: bold;
   cursor: pointer;
   position: relative;
   transition: all 0.3s ease;
@@ -223,7 +223,7 @@
 
 .categoryTab.active {
   opacity: 1;
-  color: white;
+  color: blue;
   font-weight: 600;
 }
 
@@ -234,7 +234,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: white;
+  background: blue;
   border-radius: 2px;
 }
 
