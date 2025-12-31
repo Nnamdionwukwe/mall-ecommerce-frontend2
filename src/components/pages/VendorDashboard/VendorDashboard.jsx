@@ -6,16 +6,22 @@ import styles from "./VendorDashboard.module.css";
 import ProductForm from "../../ProductForm/ProductForm";
 import ProductCard from "../../ProductCard/ProductCard";
 import Modal from "../../Modal/Modal";
-// import Modal from "../../components/Modal/Modal";
+import { getCategoriesWithProducts } from "../../constants/categories";
 
 const VendorDashboard = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showDebugInfo, setShowDebugInfo] = useState(false);
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt-desc");
 
   // Modal states
   const [modal, setModal] = useState({
@@ -43,6 +49,11 @@ const VendorDashboard = () => {
     fetchProducts();
   }, [user, navigate]);
 
+  // Apply filters and sorting
+  useEffect(() => {
+    filterAndSortProducts();
+  }, [products, searchTerm, categoryFilter, sortBy]);
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -65,6 +76,48 @@ const VendorDashboard = () => {
       setLoading(false);
     }
   };
+
+  const filterAndSortProducts = () => {
+    let filtered = [...products];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (p.description &&
+            p.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    // Category filter
+    if (categoryFilter) {
+      filtered = filtered.filter((p) => p.category === categoryFilter);
+    }
+
+    // Sort
+    const [sortField, sortOrder] = sortBy.split("-");
+    filtered.sort((a, b) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+
+      if (sortField === "name") {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      }
+
+      if (sortOrder === "asc") {
+        return aVal > bVal ? 1 : -1;
+      } else {
+        return aVal < bVal ? 1 : -1;
+      }
+    });
+
+    setFilteredProducts(filtered);
+  };
+
+  // Get only categories that have products
+  const categories = getCategoriesWithProducts(products);
 
   const showModal = (config) => {
     setModal({
@@ -456,14 +509,65 @@ const VendorDashboard = () => {
           </div>
         </div>
 
-        {products.length === 0 ? (
+        {/* Search & Filter Section */}
+        <div className={styles.filters}>
+          <div className={styles.searchContainer}>
+            <input
+              type="text"
+              placeholder="🔍 Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+
+          {/* Category Tabs */}
+          <div className={styles.categoryTabs}>
+            <button
+              className={`${styles.categoryTab} ${
+                categoryFilter === "" ? styles.active : ""
+              }`}
+              onClick={() => setCategoryFilter("")}
+            >
+              All
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`${styles.categoryTab} ${
+                  categoryFilter === cat ? styles.active : ""
+                }`}
+                onClick={() => setCategoryFilter(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sort Dropdown */}
+        <div className={styles.sortContainer}>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className={styles.select}
+          >
+            <option value="createdAt-desc">Newest First</option>
+            <option value="createdAt-asc">Oldest First</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+          </select>
+        </div>
+
+        {filteredProducts.length === 0 ? (
           <div className={styles.empty}>
-            <h2>No products yet</h2>
-            <p>Add your first product to get started!</p>
+            <h2>No products found</h2>
+            <p>Try adjusting your filters or add a new product</p>
           </div>
         ) : (
           <div className={styles.productsGrid}>
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <ProductCard
                 key={product._id}
                 product={product}
