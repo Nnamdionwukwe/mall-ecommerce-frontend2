@@ -15,7 +15,7 @@
 .spinner {
   width: 50px;
   height: 50px;
-  border: 5px solid rgba(255, 255, 255, 0.3);
+  border: 5px solid rgba(28, 26, 26, 0.3);
   border-top-color: #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
