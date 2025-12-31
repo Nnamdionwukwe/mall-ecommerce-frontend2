@@ -8,7 +8,7 @@
 .loading,
 .error {
   text-align: center;
-  color: white;
+  color: #414143;
   padding: 4rem 2rem;
 }
 
@@ -16,7 +16,7 @@
   width: 50px;
   height: 50px;
   border: 5px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -33,7 +33,7 @@
 }
 
 .retryBtn {
-  background: white;
+  background: #667eea;
   color: #7c3aed;
   padding: 0.75rem 1.5rem;
   border: none;
@@ -488,7 +488,7 @@
 
 .noProducts {
   text-align: center;
-  color: white;
+  color: rgb(50, 49, 49);
   padding: 4rem 2rem;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
