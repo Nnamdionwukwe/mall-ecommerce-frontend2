@@ -231,7 +231,7 @@
   .productsGrid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 0.375rem;
-    padding: 0.375rem;
+    /* padding: 0.375rem; */
   }
 }
 
