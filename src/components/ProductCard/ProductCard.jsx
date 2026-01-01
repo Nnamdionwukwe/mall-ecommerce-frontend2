@@ -101,7 +101,7 @@ const ProductCard = ({
 
           {/* Title */}
           <Link to={`/product/${product._id}`} className={styles.titleLink}>
-            <h3 className={styles.title}>{product.name.toLowerCase()}</h3>
+            <h3 className={styles.title}>{product.name}</h3>
           </Link>
 
           {/* Description */}
