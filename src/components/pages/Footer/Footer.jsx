@@ -122,6 +122,7 @@ const Footer = () => {
             <a href="privacy-policy">Privacy Policy</a>
             <a href="terms">Terms of Service</a>
             <a href="cookies-policy">Cookie Policy</a>
+            <p>created by GesTech</p>
           </div>
         </div>
       </div>
