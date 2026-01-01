@@ -31,6 +31,7 @@ body {
   width: 100%;
   overflow-x: hidden;
   background-color: #ffffff;
+  margin-bottom: 50px;
 }
 
 /* Responsive Layout */
