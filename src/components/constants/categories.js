@@ -5,6 +5,7 @@ export const PRODUCT_CATEGORIES = [
   "Deodrant",
   "Beauty & wellness",
   "Lip Care",
+  "Body Care",
   "Sports",
   "Home & Kitchen",
   "Clothing",
