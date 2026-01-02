@@ -6,6 +6,7 @@ export const PRODUCT_CATEGORIES = [
   "Beauty & wellness",
   "Lip Care",
   "Body Care",
+  "Bath & Body",
   "Sports",
   "Home & Kitchen",
   "Clothing",
