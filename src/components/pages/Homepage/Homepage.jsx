@@ -260,7 +260,7 @@ const Homepage = () => {
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
             <h2>💬 What Our Customers Say</h2>
-            <p>Real reviews from real people</p>
+            {/* <p>Real reviews from real people</p> */}
           </div>
 
           <div className={styles.testimonialGrid}>
