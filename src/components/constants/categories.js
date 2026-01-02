@@ -4,6 +4,7 @@ export const PRODUCT_CATEGORIES = [
   "Body Spray",
   "Deodrant",
   "Beauty & wellness",
+  "Lip Care",
   "Sports",
   "Home & Kitchen",
   "Clothing",
