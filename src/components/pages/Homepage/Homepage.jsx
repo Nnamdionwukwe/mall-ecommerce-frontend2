@@ -142,16 +142,14 @@ const Homepage = () => {
               style={{ background: banner.bg }}
             >
               <div className={styles.slideContent}>
-                <div className={styles.slideText}>
+                <div
+                  onClick={() => navigate("/shop")}
+                  className={styles.slideText}
+                >
                   <span className={styles.discount}>{banner.discount}</span>
                   <h1 className={styles.slideTitle}>{banner.title}</h1>
                   <p className={styles.slideSubtitle}>{banner.subtitle}</p>
-                  <button
-                    onClick={() => navigate("/shop")}
-                    className={styles.shopNowBtn}
-                  >
-                    Shop Now →
-                  </button>
+                  <button className={styles.shopNowBtn}>Shop Now →</button>
                 </div>
                 <div className={styles.slideImage}>
                   <span className={styles.imageIcon}>{banner.image}</span>
