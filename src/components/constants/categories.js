@@ -1,6 +1,7 @@
 // constants/categories.js
 export const PRODUCT_CATEGORIES = [
   "Electronics",
+  "Body Spray",
   "Sports",
   "Home & Kitchen",
   "Clothing",
