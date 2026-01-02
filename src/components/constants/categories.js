@@ -2,6 +2,7 @@
 export const PRODUCT_CATEGORIES = [
   "Electronics",
   "Body Spray",
+  "Deodrant",
   "Sports",
   "Home & Kitchen",
   "Clothing",
