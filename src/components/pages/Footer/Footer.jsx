@@ -116,7 +116,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className={styles.bottomBar}>
           <p>
-            © {currentYear} Ochacho Pharmacy Supermarket. All rights reserved.
+            © {currentYear} Ochacho Pharmacy & Supermarket. All rights reserved.
           </p>
           <div className={styles.bottomLinks}>
             <a href="privacy-policy">Privacy Policy</a>
