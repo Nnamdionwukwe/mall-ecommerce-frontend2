@@ -23,8 +23,8 @@ body {
 .container {
   min-height: calc(100vh - 70px);
   background: #f9fafb;
-  padding: 2rem;
-  padding-top: calc(2rem + 200px);
+  padding: 0;
+  padding-top: 200px;
 }
 
 .loading,
@@ -69,7 +69,7 @@ body {
   text-align: center;
   color: rgb(51, 50, 50);
   margin-bottom: 2rem;
-  margin-top: 50px;
+  padding: 2rem;
 }
 
 .heroTitle {
@@ -154,8 +154,7 @@ body {
   margin-left: 0;
   margin-right: 0;
   position: fixed;
-  /* top: 70px; */
-  top: 0;
+  top: 70px;
   left: 0;
   right: 0;
   background: #f9fafb;
@@ -283,6 +282,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   margin-bottom: 1.5rem;
+  padding: 0 2rem;
 }
 
 .select {
