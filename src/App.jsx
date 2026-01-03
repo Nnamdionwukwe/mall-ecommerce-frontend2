@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
 import "./App.css";
 import { AuthProvider, useAuth } from "./components/context/AuthContext";
@@ -26,14 +26,18 @@ import MyTickets from "./components/MyTickets/MyTickets";
 import AdminChatManagement from "./components/AdminChatManagement/AdminChatManagement";
 import LiveChatButton from "./components/LiveChatButton/LiveChatButton";
 
-// Component to conditionally show LiveChatButton
+// Component to conditionally show LiveChatButton and Sidebar
 const AppContent = () => {
   const { user } = useAuth();
+  const location = useLocation();
+
+  // Show sidebar only on /shop route (Home component)
+  const showSidebar = location.pathname === "/shop";
 
   return (
     <>
       <div className="appContainer">
-        <Sidebar />
+        {showSidebar && <Sidebar />}
         <div className="appMain">
           <Routes>
             <Route path="/" element={<Homepage />} />
@@ -58,9 +62,7 @@ const AppContent = () => {
           </Routes>
         </div>
       </div>
-
       <BottomNav />
-
       {/* Show LiveChatButton only for regular users (not admin/vendor) */}
       {user && user.role !== "admin" && user.role !== "vendor" && (
         <LiveChatButton />
