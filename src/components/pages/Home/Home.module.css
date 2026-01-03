@@ -367,7 +367,7 @@ body {
   }
 
   .searchInput {
-    max-width: 100%;
+    max-width: 80%;
     padding: 0.75rem 1rem;
     border-radius: 25px;
     font-size: 0.9375rem;
