@@ -113,18 +113,8 @@ const Home = () => {
   }
 
   return (
-    <div className={styles.container}>
-      {/* Hero Section */}
-      {/* <div className={styles.hero}>
-        <h1 className={styles.heroTitle}>
-          Welcome to Ochacho Pharmacy/Supermarket
-        </h1>
-        <p className={styles.heroSubtitle}>
-          Discover your favorite amazing products from our stores
-        </p>
-      </div> */}
-
-      {/* Modern Search Bar */}
+    <>
+      {/* Modern Search Bar - Sticky Header Outside Container */}
       <div className={styles.filters}>
         <div className={styles.searchContainer}>
           <input
@@ -134,12 +124,6 @@ const Home = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className={styles.searchInput}
           />
-          {/* <button className={styles.cameraIconBtn} title="Search by image">
-            📷
-          </button>
-          <button className={styles.searchIconBtn} title="Search">
-            🔍
-          </button> */}
         </div>
 
         {/* Category Tabs */}
@@ -166,45 +150,47 @@ const Home = () => {
         </div>
       </div>
 
-      <div className={styles.hero}>
-        <p className={styles.heroSubtitle}>
-          Discover your favorite amazing products from our stores
-        </p>
-      </div>
-
-      {/* Sort Dropdown */}
-      <div className={styles.sortContainer}>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className={styles.select}
-        >
-          <option value="createdAt-desc">Newest First</option>
-          <option value="createdAt-asc">Oldest First</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="name-asc">Name: A to Z</option>
-        </select>
-      </div>
-
-      {/* Products Grid */}
-      {filteredProducts.length === 0 ? (
-        <div className={styles.noProducts}>
-          <h2>No products found</h2>
-          <p>Try adjusting your filters</p>
+      <div className={styles.container}>
+        <div className={styles.hero}>
+          <p className={styles.heroSubtitle}>
+            Discover your favorite amazing products from our stores
+          </p>
         </div>
-      ) : (
-        <div className={styles.productsGrid}>
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product._id}
-              product={product}
-              onAddToCart={addToCart}
-            />
-          ))}
+
+        {/* Sort Dropdown */}
+        <div className={styles.sortContainer}>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className={styles.select}
+          >
+            <option value="createdAt-desc">Newest First</option>
+            <option value="createdAt-asc">Oldest First</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+          </select>
         </div>
-      )}
-    </div>
+
+        {/* Products Grid */}
+        {filteredProducts.length === 0 ? (
+          <div className={styles.noProducts}>
+            <h2>No products found</h2>
+            <p>Try adjusting your filters</p>
+          </div>
+        ) : (
+          <div className={styles.productsGrid}>
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onAddToCart={addToCart}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
