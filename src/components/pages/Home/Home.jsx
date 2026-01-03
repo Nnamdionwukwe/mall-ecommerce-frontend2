@@ -115,14 +115,14 @@ const Home = () => {
   return (
     <div className={styles.container}>
       {/* Hero Section */}
-      <div className={styles.hero}>
+      {/* <div className={styles.hero}>
         <h1 className={styles.heroTitle}>
           Welcome to Ochacho Pharmacy/Supermarket
         </h1>
         <p className={styles.heroSubtitle}>
           Discover your favorite amazing products from our stores
         </p>
-      </div>
+      </div> */}
 
       {/* Modern Search Bar */}
       <div className={styles.filters}>
@@ -164,6 +164,12 @@ const Home = () => {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className={styles.hero}>
+        <p className={styles.heroSubtitle}>
+          Discover your favorite amazing products from our stores
+        </p>
       </div>
 
       {/* Sort Dropdown */}
