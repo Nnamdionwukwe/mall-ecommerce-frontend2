@@ -1,3 +1,25 @@
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  font-size: 16px;
+}
+
+@media (max-width: 480px) {
+  html,
+  body {
+    font-size: 16px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px !important;
+  }
+}
 .container {
   min-height: calc(100vh - 70px);
   background: #f9fafb;
@@ -134,7 +156,7 @@
   background: #f9fafb;
   padding: 1.5rem 2rem;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); */
 }
 
 .searchContainer {
@@ -439,7 +461,7 @@
   .searchContainer {
     width: 100%;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     padding: 0;
   }
 
@@ -447,7 +469,7 @@
     max-width: 70%;
     width: 70%;
     padding: 0.75rem 1rem;
-    font-size: 0.9375rem;
+    font-size: 16px;
   }
 
   .searchIconBtn {
