@@ -88,6 +88,71 @@ const Checkout = () => {
   };
 
   // ✅ FIXED: Verify payment with Paystack reference
+  // const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
+  //   try {
+  //     const token = localStorage.getItem("token") || user?.token;
+
+  //     console.log("🔄 Verifying payment with backend...");
+  //     console.log("Paystack Reference:", paystackReference);
+  //     console.log("Order ID:", orderId);
+
+  //     const response = await axios.post(
+  //       `${API_BASE}/orders/verify-payment`,
+  //       {
+  //         reference: paystackReference, // ✅ Send Paystack's actual transaction reference
+  //         orderId,
+  //         shippingInfo: formData,
+  //         items: cart,
+  //         subtotal,
+  //         shipping,
+  //         tax,
+  //         total,
+  //         orderNote,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     if (response.data.success) {
+  //       console.log("✅ Order created successfully!");
+
+  //       // Clear cart after successful order
+  //       if (clearCart) {
+  //         clearCart();
+  //       } else {
+  //         localStorage.removeItem("cart");
+  //       }
+
+  //       // Navigate to success page
+  //       navigate(`/order-success/${orderId}`, {
+  //         state: {
+  //           orderData: response.data.data,
+  //         },
+  //       });
+  //     } else {
+  //       throw new Error(response.data.message || "Order creation failed");
+  //     }
+  //   } catch (error) {
+  //     console.error("Order verification error:", error);
+
+  //     const errorMessage =
+  //       error.response?.data?.message ||
+  //       error.message ||
+  //       "Failed to create order";
+
+  //     alert(
+  //       `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${paystackReference}`
+  //     );
+
+  //     navigate("/orders");
+  //   }
+  // };
+
+  // ✅ FIXED: Verify payment with Paystack reference + Better error logging
   const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
     try {
       const token = localStorage.getItem("token") || user?.token;
@@ -95,20 +160,26 @@ const Checkout = () => {
       console.log("🔄 Verifying payment with backend...");
       console.log("Paystack Reference:", paystackReference);
       console.log("Order ID:", orderId);
+      console.log("Cart items:", cart);
+      console.log("Form data:", formData);
+
+      const payload = {
+        reference: paystackReference,
+        orderId,
+        shippingInfo: formData,
+        items: cart,
+        subtotal,
+        shipping,
+        tax,
+        total,
+        orderNote,
+      };
+
+      console.log("📤 Sending payload to backend:", payload);
 
       const response = await axios.post(
         `${API_BASE}/orders/verify-payment`,
-        {
-          reference: paystackReference, // ✅ Send Paystack's actual transaction reference
-          orderId,
-          shippingInfo: formData,
-          items: cart,
-          subtotal,
-          shipping,
-          tax,
-          total,
-          orderNote,
-        },
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -117,17 +188,17 @@ const Checkout = () => {
         }
       );
 
+      console.log("✅ Backend response:", response.data);
+
       if (response.data.success) {
         console.log("✅ Order created successfully!");
 
-        // Clear cart after successful order
         if (clearCart) {
           clearCart();
         } else {
           localStorage.removeItem("cart");
         }
 
-        // Navigate to success page
         navigate(`/order-success/${orderId}`, {
           state: {
             orderData: response.data.data,
@@ -137,15 +208,31 @@ const Checkout = () => {
         throw new Error(response.data.message || "Order creation failed");
       }
     } catch (error) {
-      console.error("Order verification error:", error);
+      console.error("❌ Order verification error:");
+      console.error("Error message:", error.message);
+      console.error("Error code:", error.code);
+      console.error("Full error object:", error);
+
+      // ✅ Log the backend response details
+      if (error.response) {
+        console.error("Backend status:", error.response.status);
+        console.error("Backend data:", error.response.data);
+        console.error("Backend message:", error.response.data?.message);
+        console.error("Backend errors:", error.response.data?.errors);
+      }
 
       const errorMessage =
         error.response?.data?.message ||
+        error.response?.data?.error ||
         error.message ||
         "Failed to create order";
 
+      const errorDetails = error.response?.data?.errors
+        ? "\n\nDetails: " + JSON.stringify(error.response.data.errors, null, 2)
+        : "";
+
       alert(
-        `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${paystackReference}`
+        `Order creation failed: ${errorMessage}${errorDetails}\n\nPlease contact support with reference: ${paystackReference}`
       );
 
       navigate("/orders");
