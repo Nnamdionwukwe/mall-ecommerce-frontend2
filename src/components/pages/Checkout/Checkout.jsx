@@ -87,71 +87,6 @@ const Checkout = () => {
     return `ORD-${timestamp}-${random}`;
   };
 
-  // ✅ FIXED: Verify payment with Paystack reference
-  // const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
-  //   try {
-  //     const token = localStorage.getItem("token") || user?.token;
-
-  //     console.log("🔄 Verifying payment with backend...");
-  //     console.log("Paystack Reference:", paystackReference);
-  //     console.log("Order ID:", orderId);
-
-  //     const response = await axios.post(
-  //       `${API_BASE}/orders/verify-payment`,
-  //       {
-  //         reference: paystackReference, // ✅ Send Paystack's actual transaction reference
-  //         orderId,
-  //         shippingInfo: formData,
-  //         items: cart,
-  //         subtotal,
-  //         shipping,
-  //         tax,
-  //         total,
-  //         orderNote,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.data.success) {
-  //       console.log("✅ Order created successfully!");
-
-  //       // Clear cart after successful order
-  //       if (clearCart) {
-  //         clearCart();
-  //       } else {
-  //         localStorage.removeItem("cart");
-  //       }
-
-  //       // Navigate to success page
-  //       navigate(`/order-success/${orderId}`, {
-  //         state: {
-  //           orderData: response.data.data,
-  //         },
-  //       });
-  //     } else {
-  //       throw new Error(response.data.message || "Order creation failed");
-  //     }
-  //   } catch (error) {
-  //     console.error("Order verification error:", error);
-
-  //     const errorMessage =
-  //       error.response?.data?.message ||
-  //       error.message ||
-  //       "Failed to create order";
-
-  //     alert(
-  //       `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${paystackReference}`
-  //     );
-
-  //     navigate("/orders");
-  //   }
-  // };
-
   // ✅ FIXED: Verify payment with Paystack reference + Better error logging
   const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
     try {
@@ -437,7 +372,7 @@ const Checkout = () => {
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label>Zip Code (Optional)</label>
+                    <label>Zip Code *</label>
                     <input
                       type="tel"
                       value={formData.zipCode}
