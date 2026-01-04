@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./Checkout.module.css";
 import { useCart } from "../../context/CartContext";
+import ErrorModal from "../../ErrorModal/ErrorModal";
 import axios from "axios";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
@@ -13,50 +14,6 @@ fetch("https://mall-ecommerce-api-production.up.railway.app/api/health")
   .then((r) => r.json())
   .then((data) => console.log("✅ Server health:", data))
   .catch((err) => console.error("❌ Server health check failed:", err));
-
-// Error Modal Component
-const ErrorModal = ({ isOpen, title, message, reference, onClose }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>⚠️ {title}</h2>
-          <button className={styles.modalClose} onClick={onClose}>
-            ✕
-          </button>
-        </div>
-
-        <div className={styles.modalBody}>
-          <p className={styles.modalMessage}>{message}</p>
-
-          {reference && (
-            <div className={styles.referenceBox}>
-              <p className={styles.referenceLabel}>Payment Reference:</p>
-              <p className={styles.referenceText}>{reference}</p>
-              <button
-                className={styles.copyBtn}
-                onClick={() => {
-                  navigator.clipboard.writeText(reference);
-                  alert("Reference copied to clipboard!");
-                }}
-              >
-                📋 Copy Reference
-              </button>
-            </div>
-          )}
-
-          <div className={styles.modalFooter}>
-            <button className={styles.modalBtn} onClick={onClose}>
-              OK
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const Checkout = () => {
   const { user } = useAuth();
