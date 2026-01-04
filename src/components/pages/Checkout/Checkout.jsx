@@ -700,7 +700,7 @@ const Checkout = () => {
                     <div className={styles.bankDetailItem}>
                       <span className={styles.bankDetailLabel}>Bank Name:</span>
                       <span className={styles.bankDetailValue}>
-                        Zenith Bank
+                        Monie Point
                       </span>
                     </div>
 
@@ -709,7 +709,8 @@ const Checkout = () => {
                         Account Name:
                       </span>
                       <span className={styles.bankDetailValue}>
-                        Ochacho Supermarket
+                        Providence Courts Integrated Services Nigeria Limited -
+                        SuperMarket 2
                       </span>
                     </div>
 
@@ -717,7 +718,7 @@ const Checkout = () => {
                       <span className={styles.bankDetailLabel}>
                         Account Number:
                       </span>
-                      <span className={styles.bankDetailValue}>1234567890</span>
+                      <span className={styles.bankDetailValue}>5165004578</span>
                     </div>
 
                     <div className={styles.bankDetailItem}>
@@ -740,7 +741,7 @@ const Checkout = () => {
                         as the transfer reference for tracking purposes.
                       </p>
                       <p>
-                        ⏰ Your order will be confirmed within 2-4 hours of
+                        ⏰ Your order will be confirmed within 5-10 minutes of
                         payment verification.
                       </p>
                     </div>
