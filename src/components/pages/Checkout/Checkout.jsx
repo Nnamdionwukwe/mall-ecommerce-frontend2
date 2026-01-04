@@ -26,7 +26,7 @@ const Checkout = () => {
     address: "",
     city: "",
     state: "",
-    zipCode: "",
+    zipCode: "", // ✅ OPTIONAL - can be empty
   });
 
   const [cardDetails, setCardDetails] = useState({
@@ -80,77 +80,12 @@ const Checkout = () => {
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
 
-  // Generate unique order ID (for internal use)
+  // Generate unique order ID
   const generateOrderId = () => {
     const timestamp = Date.now();
     const random = Math.floor(Math.random() * 10000);
     return `ORD-${timestamp}-${random}`;
   };
-
-  // ✅ FIXED: Verify payment with Paystack reference
-  // const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
-  //   try {
-  //     const token = localStorage.getItem("token") || user?.token;
-
-  //     console.log("🔄 Verifying payment with backend...");
-  //     console.log("Paystack Reference:", paystackReference);
-  //     console.log("Order ID:", orderId);
-
-  //     const response = await axios.post(
-  //       `${API_BASE}/orders/verify-payment`,
-  //       {
-  //         reference: paystackReference, // ✅ Send Paystack's actual transaction reference
-  //         orderId,
-  //         shippingInfo: formData,
-  //         items: cart,
-  //         subtotal,
-  //         shipping,
-  //         tax,
-  //         total,
-  //         orderNote,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.data.success) {
-  //       console.log("✅ Order created successfully!");
-
-  //       // Clear cart after successful order
-  //       if (clearCart) {
-  //         clearCart();
-  //       } else {
-  //         localStorage.removeItem("cart");
-  //       }
-
-  //       // Navigate to success page
-  //       navigate(`/order-success/${orderId}`, {
-  //         state: {
-  //           orderData: response.data.data,
-  //         },
-  //       });
-  //     } else {
-  //       throw new Error(response.data.message || "Order creation failed");
-  //     }
-  //   } catch (error) {
-  //     console.error("Order verification error:", error);
-
-  //     const errorMessage =
-  //       error.response?.data?.message ||
-  //       error.message ||
-  //       "Failed to create order";
-
-  //     alert(
-  //       `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${paystackReference}`
-  //     );
-
-  //     navigate("/orders");
-  //   }
-  // };
 
   // ✅ FIXED: Verify payment with Paystack reference + Better error logging
   const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
@@ -213,7 +148,6 @@ const Checkout = () => {
       console.error("Error code:", error.code);
       console.error("Full error object:", error);
 
-      // ✅ Log the backend response details
       if (error.response) {
         console.error("Backend status:", error.response.status);
         console.error("Backend data:", error.response.data);
@@ -239,7 +173,7 @@ const Checkout = () => {
     }
   };
 
-  // ✅ FIXED: Handle payment success with Paystack reference
+  // Handle payment success with Paystack reference
   const handlePaymentSuccess = async (paystackResponse, orderId) => {
     setLoading(true);
 
@@ -248,7 +182,6 @@ const Checkout = () => {
       console.log("Paystack Response:", paystackResponse);
       console.log("Paystack Reference:", paystackResponse.reference);
 
-      // ✅ IMPORTANT: Extract reference from Paystack response
       const paystackReference = paystackResponse.reference;
 
       await verifyPaymentAndCreateOrder(paystackReference, orderId);
@@ -263,7 +196,7 @@ const Checkout = () => {
     }
   };
 
-  // ✅ FIXED: Handle payment initiation
+  // Handle payment initiation
   const handlePayment = () => {
     if (!paystackLoaded) {
       alert("Payment system is loading. Please try again.");
@@ -283,9 +216,9 @@ const Checkout = () => {
         import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ||
         "pk_test_e9a3e6c5eee911c858998b544fa088369033ab65",
       email: formData.email,
-      amount: Math.round(total * 100), // Amount in kobo
+      amount: Math.round(total * 100),
       currency: "NGN",
-      ref: orderId, // Your internal order ID for reference
+      ref: orderId,
       metadata: {
         custom_fields: [
           {
@@ -306,7 +239,6 @@ const Checkout = () => {
         ],
       },
       callback: function (response) {
-        // ✅ IMPORTANT: response.reference is Paystack's transaction reference
         console.log("✅ Payment callback triggered");
         console.log("Response from Paystack:", response);
         console.log("Paystack Transaction Reference:", response.reference);
@@ -322,7 +254,7 @@ const Checkout = () => {
     handler.openIframe();
   };
 
-  // Validate form
+  // ✅ FIXED: Validate form - zipCode is OPTIONAL (NOT checked)
   const isFormValid = () => {
     return (
       formData.fullName &&
@@ -336,6 +268,7 @@ const Checkout = () => {
       cardDetails.expiryDate &&
       cardDetails.cvv &&
       cart.length > 0
+      // ✅ NO zipCode requirement - it's optional
     );
   };
 
@@ -419,7 +352,7 @@ const Checkout = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, city: e.target.value })
                       }
-                      placeholder="Lagos State"
+                      placeholder="Lagos"
                     />
                   </div>
 
@@ -437,9 +370,9 @@ const Checkout = () => {
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label>Zip Code (Optional)</label>
+                    <label>Zip Code</label>
                     <input
-                      type="tel"
+                      type="text"
                       value={formData.zipCode}
                       onChange={(e) =>
                         setFormData({ ...formData, zipCode: e.target.value })
@@ -450,7 +383,7 @@ const Checkout = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label>Order Note (Optional)</label>
+                  <label>Order Note</label>
                   <textarea
                     value={orderNote}
                     onChange={(e) => setOrderNote(e.target.value)}
