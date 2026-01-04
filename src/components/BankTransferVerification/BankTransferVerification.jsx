@@ -15,6 +15,9 @@ const BankTransferVerification = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [autoRefreshInterval, setAutoRefreshInterval] = useState(30); // seconds
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(true);
+  const [lastRefreshTime, setLastRefreshTime] = useState(null);
 
   // Verification form
   const [amountReceived, setAmountReceived] = useState("");
@@ -45,7 +48,20 @@ const BankTransferVerification = () => {
       return;
     }
     loadPendingBankTransfers();
-  }, [user]);
+
+    // Set up auto-refresh
+    let interval;
+    if (autoRefreshEnabled && autoRefreshInterval > 0) {
+      interval = setInterval(() => {
+        console.log("🔄 Auto-refreshing bank transfers...");
+        loadPendingBankTransfers();
+      }, autoRefreshInterval * 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [user, autoRefreshEnabled, autoRefreshInterval]);
 
   const loadPendingBankTransfers = async () => {
     try {
@@ -64,6 +80,7 @@ const BankTransferVerification = () => {
 
       if (response.data.success) {
         setPendingOrders(response.data.data || []);
+        setLastRefreshTime(new Date());
         console.log(`✅ Loaded ${response.data.count} pending bank transfers`);
       } else {
         setPendingOrders([]);
@@ -270,6 +287,61 @@ const BankTransferVerification = () => {
             <p className={styles.subtitle}>
               Verify and manage bank transfer payments
             </p>
+          </div>
+
+          {/* Auto-Refresh Controls */}
+          <div className={styles.autoRefreshControls}>
+            <div className={styles.refreshStatus}>
+              {autoRefreshEnabled && (
+                <>
+                  <span className={styles.refreshIndicator}>🔄</span>
+                  <span className={styles.refreshText}>
+                    Auto-refresh enabled • Every {autoRefreshInterval}s
+                  </span>
+                  {lastRefreshTime && (
+                    <span className={styles.lastRefresh}>
+                      Last refresh: {lastRefreshTime.toLocaleTimeString()}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className={styles.refreshControls}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={autoRefreshEnabled}
+                  onChange={(e) => setAutoRefreshEnabled(e.target.checked)}
+                />
+                <span>Auto Refresh</span>
+              </label>
+
+              {autoRefreshEnabled && (
+                <select
+                  value={autoRefreshInterval}
+                  onChange={(e) =>
+                    setAutoRefreshInterval(parseInt(e.target.value))
+                  }
+                  className={styles.intervalSelect}
+                >
+                  <option value={10}>Every 10s</option>
+                  <option value={20}>Every 20s</option>
+                  <option value={30}>Every 30s</option>
+                  <option value={60}>Every 1m</option>
+                  <option value={120}>Every 2m</option>
+                  <option value={300}>Every 5m</option>
+                </select>
+              )}
+
+              <button
+                onClick={loadPendingBankTransfers}
+                className={styles.refreshBtn}
+                title="Refresh now"
+              >
+                🔄 Refresh
+              </button>
+            </div>
           </div>
         </div>
 
