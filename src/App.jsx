@@ -25,6 +25,7 @@ import SupportTickets from "./components/SupportTickets/SupportTickets";
 import MyTickets from "./components/MyTickets/MyTickets";
 import AdminChatManagement from "./components/AdminChatManagement/AdminChatManagement";
 import LiveChatButton from "./components/LiveChatButton/LiveChatButton";
+import BankTransferVerification from "./components/BankTransferVerification/BankTransferVerification";
 
 // Component to conditionally show LiveChatButton and Sidebar
 const AppContent = () => {
@@ -50,6 +51,10 @@ const AppContent = () => {
             <Route path="/track-order/:orderId" element={<TrackOrder />} />
             <Route path="/vendor/dashboard" element={<VendorDashboard />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route
+              path="/admin/bank-transfers"
+              element={<BankTransferVerification />}
+            />
             <Route path="/admin/user-cart" element={<AdminCartDashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/support" element={<Support />} />

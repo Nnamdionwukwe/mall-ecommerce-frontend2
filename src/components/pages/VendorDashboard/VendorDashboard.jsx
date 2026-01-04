@@ -455,6 +455,12 @@ const VendorDashboard = () => {
             )}
 
             {(user?.role === "admin" || user?.role === "vendor") && (
+              <Link to="/admin/bank-transfers" className={styles.adminLink}>
+                💳 Bank Transfer Verification
+              </Link>
+            )}
+
+            {(user?.role === "admin" || user?.role === "vendor") && (
               <Link to="/admin/support-tickets" className={styles.adminLink}>
                 🎫 Support Tickets
               </Link>
