@@ -5,7 +5,6 @@ import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./Checkout.module.css";
 import { useCart } from "../../context/CartContext";
 import axios from "axios";
-import ErrorModal from "../../ErrorModal/ErrorModal";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
@@ -43,14 +42,6 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [paystackLoaded, setPaystackLoaded] = useState(false);
 
-  // Error Modal State
-  const [errorModal, setErrorModal] = useState({
-    isOpen: false,
-    title: "",
-    message: "",
-    reference: "",
-  });
-
   useEffect(() => {
     if (!user) {
       navigate("/");
@@ -75,13 +66,7 @@ const Checkout = () => {
     };
     script.onerror = () => {
       console.error("❌ Failed to load Paystack script");
-      setErrorModal({
-        isOpen: true,
-        title: "Payment System Error",
-        message:
-          "Failed to load the payment system. Please refresh the page and try again.",
-        reference: "",
-      });
+      alert("Failed to load payment system. Please refresh the page.");
     };
     document.body.appendChild(script);
   };
@@ -114,7 +99,7 @@ const Checkout = () => {
       const response = await axios.post(
         `${API_BASE}/orders/verify-payment`,
         {
-          reference: paystackReference,
+          reference: paystackReference, // ✅ Send Paystack's actual transaction reference
           orderId,
           shippingInfo: formData,
           items: cart,
@@ -135,12 +120,14 @@ const Checkout = () => {
       if (response.data.success) {
         console.log("✅ Order created successfully!");
 
+        // Clear cart after successful order
         if (clearCart) {
           clearCart();
         } else {
           localStorage.removeItem("cart");
         }
 
+        // Navigate to success page
         navigate(`/order-success/${orderId}`, {
           state: {
             orderData: response.data.data,
@@ -157,14 +144,9 @@ const Checkout = () => {
         error.message ||
         "Failed to create order";
 
-      // Show error modal instead of alert
-      setErrorModal({
-        isOpen: true,
-        title: "Order Creation Failed",
-        message: `${errorMessage}\n\nPlease contact support with the reference number below.`,
-        reference:
-          error.response?.data?.reference || paystackReference || "Unknown",
-      });
+      alert(
+        `Order creation failed: ${errorMessage}\n\nPlease contact support with reference: ${paystackReference}`
+      );
 
       navigate("/orders");
     }
@@ -179,20 +161,16 @@ const Checkout = () => {
       console.log("Paystack Response:", paystackResponse);
       console.log("Paystack Reference:", paystackResponse.reference);
 
+      // ✅ IMPORTANT: Extract reference from Paystack response
       const paystackReference = paystackResponse.reference;
 
       await verifyPaymentAndCreateOrder(paystackReference, orderId);
     } catch (error) {
       console.error("Error processing payment:", error);
-
-      // Show error modal for payment processing error
-      setErrorModal({
-        isOpen: true,
-        title: "Payment Processing Error",
-        message:
-          "Payment was successful, but we encountered an error while creating your order. Please contact support with the reference number below.",
-        reference: paystackResponse?.reference || "Unknown",
-      });
+      alert(
+        "Payment successful but order creation failed. Please contact support with reference: " +
+          paystackResponse.reference
+      );
     } finally {
       setLoading(false);
     }
@@ -201,23 +179,12 @@ const Checkout = () => {
   // ✅ FIXED: Handle payment initiation
   const handlePayment = () => {
     if (!paystackLoaded) {
-      setErrorModal({
-        isOpen: true,
-        title: "Payment System Not Ready",
-        message:
-          "The payment system is still loading. Please try again in a moment.",
-        reference: "",
-      });
+      alert("Payment system is loading. Please try again.");
       return;
     }
 
     if (!isFormValid()) {
-      setErrorModal({
-        isOpen: true,
-        title: "Form Validation Error",
-        message: "Please fill in all required fields before proceeding.",
-        reference: "",
-      });
+      alert("Please fill in all required fields");
       return;
     }
 
@@ -229,9 +196,9 @@ const Checkout = () => {
         process.env.REACT_APP_PAYSTACK_PUBLIC_KEY ||
         "pk_test_4e10038792017cd67e2aecf9233f68bd6fe07d6d",
       email: formData.email,
-      amount: Math.round(total * 100),
+      amount: Math.round(total * 100), // Amount in kobo
       currency: "NGN",
-      ref: orderId,
+      ref: orderId, // Your internal order ID for reference
       metadata: {
         custom_fields: [
           {
@@ -252,6 +219,7 @@ const Checkout = () => {
         ],
       },
       callback: function (response) {
+        // ✅ IMPORTANT: response.reference is Paystack's transaction reference
         console.log("✅ Payment callback triggered");
         console.log("Response from Paystack:", response);
         console.log("Paystack Transaction Reference:", response.reference);
@@ -260,13 +228,7 @@ const Checkout = () => {
       },
       onClose: function () {
         console.log("Payment modal closed by user");
-        setErrorModal({
-          isOpen: true,
-          title: "Payment Cancelled",
-          message:
-            "You have cancelled the payment. Your cart is still saved, and you can continue shopping.",
-          reference: "",
-        });
+        alert("Payment cancelled. Your cart is still saved.");
       },
     });
 
@@ -292,22 +254,6 @@ const Checkout = () => {
 
   return (
     <div className={styles.container}>
-      {/* Error Modal */}
-      <ErrorModal
-        isOpen={errorModal.isOpen}
-        title={errorModal.title}
-        message={errorModal.message}
-        reference={errorModal.reference}
-        onClose={() =>
-          setErrorModal({
-            isOpen: false,
-            title: "",
-            message: "",
-            reference: "",
-          })
-        }
-      />
-
       <div className={styles.content}>
         <h1 className={styles.title}>Checkout</h1>
 
