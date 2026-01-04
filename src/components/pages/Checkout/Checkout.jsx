@@ -4,7 +4,10 @@ import { useAuth } from "../../context/AuthContext";
 import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./Checkout.module.css";
 import { useCart } from "../../context/CartContext";
+// import AlertModal from "../../components/AlertModal/AlertModal";
+
 import axios from "axios";
+import AlertModal from "../../AlertModal/AlertModal";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
@@ -41,6 +44,19 @@ const Checkout = () => {
   const [orderNote, setOrderNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [paystackLoaded, setPaystackLoaded] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("paystack"); // "paystack" or "bank"
+
+  // Alert Modal State
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    primaryBtnText: "OK",
+    secondaryBtnText: null,
+    onPrimaryClick: null,
+    onSecondaryClick: null,
+  });
 
   useEffect(() => {
     if (!user) {
@@ -66,9 +82,38 @@ const Checkout = () => {
     };
     script.onerror = () => {
       console.error("❌ Failed to load Paystack script");
-      alert("Failed to load payment system. Please refresh the page.");
+      showAlert(
+        "Payment System Error",
+        "Failed to load the payment system. Please refresh the page and try again.",
+        "error",
+        "Refresh"
+      );
     };
     document.body.appendChild(script);
+  };
+
+  // Show Alert Helper
+  const showAlert = (
+    title,
+    message,
+    type = "info",
+    primaryBtnText = "OK",
+    onPrimaryClick = null,
+    secondaryBtnText = null,
+    onSecondaryClick = null
+  ) => {
+    setAlert({
+      isOpen: true,
+      title,
+      message,
+      type,
+      primaryBtnText,
+      secondaryBtnText,
+      onPrimaryClick:
+        onPrimaryClick || (() => setAlert({ ...alert, isOpen: false })),
+      onSecondaryClick:
+        onSecondaryClick || (() => setAlert({ ...alert, isOpen: false })),
+    });
   };
 
   // Calculate totals
@@ -80,14 +125,14 @@ const Checkout = () => {
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
 
-  // Generate unique order ID (for internal use)
+  // Generate unique order ID
   const generateOrderId = () => {
     const timestamp = Date.now();
     const random = Math.floor(Math.random() * 10000);
     return `ORD-${timestamp}-${random}`;
   };
 
-  // ✅ FIXED: Verify payment with Paystack reference + Better error logging
+  // Verify payment and create order
   const verifyPaymentAndCreateOrder = async (paystackReference, orderId) => {
     try {
       const token = localStorage.getItem("token") || user?.token;
@@ -134,21 +179,24 @@ const Checkout = () => {
           localStorage.removeItem("cart");
         }
 
-        navigate(`/order-success/${orderId}`, {
-          state: {
-            orderData: response.data.data,
-          },
-        });
+        showAlert(
+          "Order Successful! 🎉",
+          "Your order has been created successfully. You will be redirected to view your order details.",
+          "success",
+          "View Order",
+          () =>
+            navigate(`/order-success/${orderId}`, {
+              state: { orderData: response.data.data },
+            })
+        );
       } else {
         throw new Error(response.data.message || "Order creation failed");
       }
     } catch (error) {
       console.error("❌ Order verification error:");
       console.error("Error message:", error.message);
-      console.error("Error code:", error.code);
       console.error("Full error object:", error);
 
-      // ✅ Log the backend response details
       if (error.response) {
         console.error("Backend status:", error.response.status);
         console.error("Backend data:", error.response.data);
@@ -162,51 +210,149 @@ const Checkout = () => {
         error.message ||
         "Failed to create order";
 
-      const errorDetails = error.response?.data?.errors
-        ? "\n\nDetails: " + JSON.stringify(error.response.data.errors, null, 2)
-        : "";
-
-      alert(
-        `Order creation failed: ${errorMessage}${errorDetails}\n\nPlease contact support with reference: ${paystackReference}`
+      showAlert(
+        "Order Creation Failed",
+        `${errorMessage}\n\nReference: ${paystackReference}\n\nPlease contact support with this reference.`,
+        "error",
+        "Go to Orders",
+        () => navigate("/orders")
       );
-
-      navigate("/orders");
     }
   };
 
-  // ✅ FIXED: Handle payment success with Paystack reference
+  // Handle payment success
   const handlePaymentSuccess = async (paystackResponse, orderId) => {
     setLoading(true);
 
     try {
       console.log("💳 Payment successful from Paystack");
       console.log("Paystack Response:", paystackResponse);
-      console.log("Paystack Reference:", paystackResponse.reference);
 
-      // ✅ IMPORTANT: Extract reference from Paystack response
       const paystackReference = paystackResponse.reference;
 
       await verifyPaymentAndCreateOrder(paystackReference, orderId);
     } catch (error) {
       console.error("Error processing payment:", error);
-      alert(
-        "Payment successful but order creation failed. Please contact support with reference: " +
-          paystackResponse.reference
+
+      showAlert(
+        "Payment Processing Error",
+        `Payment was successful, but we encountered an error creating your order.\n\nReference: ${
+          paystackResponse?.reference || "Unknown"
+        }\n\nPlease contact support.`,
+        "error"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ FIXED: Handle payment initiation
+  // Handle bank transfer submission
+  const handleBankTransfer = async () => {
+    if (!isFormValid()) {
+      showAlert(
+        "Form Validation Error",
+        "Please fill in all required fields before proceeding.",
+        "error"
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const orderId = generateOrderId();
+      const token = localStorage.getItem("token") || user?.token;
+
+      console.log("🏦 Creating order for bank transfer:", orderId);
+
+      const payload = {
+        orderId,
+        shippingInfo: formData,
+        items: cart,
+        subtotal,
+        shipping,
+        tax,
+        total,
+        orderNote,
+      };
+
+      const response = await axios.post(
+        `${API_BASE}/orders/create-bank-transfer`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        console.log("✅ Bank transfer order created successfully!");
+
+        if (clearCart) {
+          clearCart();
+        } else {
+          localStorage.removeItem("cart");
+        }
+
+        showAlert(
+          "Order Created Successfully! 🎉",
+          `Your order has been created.\n\nPlease transfer ₦${total.toLocaleString()} to the bank account details shown in your order confirmation within 24 hours.\n\nOrder Reference: ${orderId}`,
+          "success",
+          "View Bank Details",
+          () =>
+            navigate(`/order-success/${orderId}`, {
+              state: { orderData: response.data.data },
+            })
+        );
+      } else {
+        throw new Error(response.data.message || "Order creation failed");
+      }
+    } catch (error) {
+      console.error("Bank transfer order error:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to create order";
+
+      showAlert("Order Creation Failed", errorMessage, "error", "Try Again");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle payment method change
+  const handlePaymentMethodChange = (method) => {
+    setPaymentMethod(method);
+    if (method === "bank") {
+      setCardDetails({
+        cardNumber: "",
+        cardName: "",
+        expiryDate: "",
+        cvv: "",
+      });
+    }
+  };
+
+  // Handle Paystack payment initiation
   const handlePayment = () => {
     if (!paystackLoaded) {
-      alert("Payment system is loading. Please try again.");
+      showAlert(
+        "Payment System Not Ready",
+        "The payment system is still loading. Please try again in a moment.",
+        "warning"
+      );
       return;
     }
 
     if (!isFormValid()) {
-      alert("Please fill in all required fields");
+      showAlert(
+        "Form Validation Error",
+        "Please fill in all required fields before proceeding.",
+        "error"
+      );
       return;
     }
 
@@ -218,9 +364,9 @@ const Checkout = () => {
         import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ||
         "pk_test_e9a3e6c5eee911c858998b544fa088369033ab65",
       email: formData.email,
-      amount: Math.round(total * 100), // Amount in kobo
+      amount: Math.round(total * 100),
       currency: "NGN",
-      ref: orderId, // Your internal order ID for reference
+      ref: orderId,
       metadata: {
         custom_fields: [
           {
@@ -241,16 +387,18 @@ const Checkout = () => {
         ],
       },
       callback: function (response) {
-        // ✅ IMPORTANT: response.reference is Paystack's transaction reference
         console.log("✅ Payment callback triggered");
-        console.log("Response from Paystack:", response);
         console.log("Paystack Transaction Reference:", response.reference);
 
         handlePaymentSuccess(response, orderId);
       },
       onClose: function () {
         console.log("Payment modal closed by user");
-        alert("Payment cancelled. Your cart is still saved.");
+        showAlert(
+          "Payment Cancelled",
+          "You have cancelled the payment. Your cart is still saved, and you can continue shopping.",
+          "warning"
+        );
       },
     });
 
@@ -266,16 +414,31 @@ const Checkout = () => {
       formData.address &&
       formData.city &&
       formData.state &&
-      cardDetails.cardNumber &&
-      cardDetails.cardName &&
-      cardDetails.expiryDate &&
-      cardDetails.cvv &&
+      formData.zipCode &&
+      (paymentMethod === "bank" ||
+        (cardDetails.cardNumber &&
+          cardDetails.cardName &&
+          cardDetails.expiryDate &&
+          cardDetails.cvv)) &&
       cart.length > 0
     );
   };
 
   return (
     <div className={styles.container}>
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alert.isOpen}
+        title={alert.title}
+        message={alert.message}
+        type={alert.type}
+        primaryBtnText={alert.primaryBtnText}
+        secondaryBtnText={alert.secondaryBtnText}
+        onPrimaryClick={alert.onPrimaryClick}
+        onSecondaryClick={alert.onSecondaryClick}
+        onClose={() => setAlert({ ...alert, isOpen: false })}
+      />
+
       <div className={styles.content}>
         <h1 className={styles.title}>Checkout</h1>
 
@@ -375,6 +538,7 @@ const Checkout = () => {
                     <label>Zip Code *</label>
                     <input
                       type="tel"
+                      required
                       value={formData.zipCode}
                       onChange={(e) =>
                         setFormData({ ...formData, zipCode: e.target.value })
@@ -398,95 +562,191 @@ const Checkout = () => {
 
             {/* Payment Details */}
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>💳 Payment Details</h2>
+              <h2 className={styles.cardTitle}>💳 Payment Method</h2>
 
-              <form
-                className={styles.form}
-                onSubmit={(e) => e.preventDefault()}
-              >
-                <div className={styles.formGroup}>
-                  <label>Cardholder Name *</label>
+              {/* Payment Method Selector */}
+              <div className={styles.paymentMethodContainer}>
+                <label className={styles.paymentMethodLabel}>
                   <input
-                    type="text"
-                    required
-                    value={cardDetails.cardName}
-                    onChange={(e) =>
-                      setCardDetails({
-                        ...cardDetails,
-                        cardName: e.target.value,
-                      })
-                    }
-                    placeholder="John Doe"
+                    type="radio"
+                    name="paymentMethod"
+                    value="paystack"
+                    checked={paymentMethod === "paystack"}
+                    onChange={(e) => handlePaymentMethodChange(e.target.value)}
+                    className={styles.radioInput}
                   />
-                </div>
+                  <span className={styles.radioText}>
+                    💳 Pay with Card (Paystack)
+                  </span>
+                </label>
 
-                <div className={styles.formGroup}>
-                  <label>Card Number *</label>
+                <label className={styles.paymentMethodLabel}>
                   <input
-                    type="tel"
-                    required
-                    value={cardDetails.cardNumber}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\s/g, "");
-                      const formatted = value.replace(/(\d{4})/g, "$1 ").trim();
-                      setCardDetails({
-                        ...cardDetails,
-                        cardNumber: formatted.slice(0, 19),
-                      });
-                    }}
-                    placeholder="1234 5678 9012 3456"
-                    maxLength="19"
+                    type="radio"
+                    name="paymentMethod"
+                    value="bank"
+                    checked={paymentMethod === "bank"}
+                    onChange={(e) => handlePaymentMethodChange(e.target.value)}
+                    className={styles.radioInput}
                   />
-                </div>
+                  <span className={styles.radioText}>🏦 Bank Transfer</span>
+                </label>
+              </div>
 
-                <div className={styles.formRow}>
+              {/* Card Payment Details */}
+              {paymentMethod === "paystack" && (
+                <form
+                  className={styles.form}
+                  onSubmit={(e) => e.preventDefault()}
+                >
                   <div className={styles.formGroup}>
-                    <label>Expiry Date (MM/YY) *</label>
+                    <label>Cardholder Name *</label>
                     <input
                       type="text"
                       required
-                      value={cardDetails.expiryDate}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, "");
-                        if (value.length <= 4) {
-                          const formatted =
-                            value.length > 2
-                              ? `${value.slice(0, 2)}/${value.slice(2)}`
-                              : value;
-                          setCardDetails({
-                            ...cardDetails,
-                            expiryDate: formatted,
-                          });
-                        }
-                      }}
-                      placeholder="MM/YY"
-                      maxLength="5"
+                      value={cardDetails.cardName}
+                      onChange={(e) =>
+                        setCardDetails({
+                          ...cardDetails,
+                          cardName: e.target.value,
+                        })
+                      }
+                      placeholder="John Doe"
                     />
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label>CVV *</label>
+                    <label>Card Number *</label>
                     <input
-                      type="password"
+                      type="tel"
                       required
-                      value={cardDetails.cvv}
+                      value={cardDetails.cardNumber}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, "");
+                        const value = e.target.value.replace(/\s/g, "");
+                        const formatted = value
+                          .replace(/(\d{4})/g, "$1 ")
+                          .trim();
                         setCardDetails({
                           ...cardDetails,
-                          cvv: value.slice(0, 3),
+                          cardNumber: formatted.slice(0, 19),
                         });
                       }}
-                      placeholder="123"
-                      maxLength="3"
+                      placeholder="1234 5678 9012 3456"
+                      maxLength="19"
                     />
                   </div>
-                </div>
 
-                <p className={styles.cardNote}>
-                  💳 Your card information is securely processed by Paystack
-                </p>
-              </form>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label>Expiry Date (MM/YY) *</label>
+                      <input
+                        type="text"
+                        required
+                        value={cardDetails.expiryDate}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          if (value.length <= 4) {
+                            const formatted =
+                              value.length > 2
+                                ? `${value.slice(0, 2)}/${value.slice(2)}`
+                                : value;
+                            setCardDetails({
+                              ...cardDetails,
+                              expiryDate: formatted,
+                            });
+                          }
+                        }}
+                        placeholder="MM/YY"
+                        maxLength="5"
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label>CVV *</label>
+                      <input
+                        type="password"
+                        required
+                        value={cardDetails.cvv}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          setCardDetails({
+                            ...cardDetails,
+                            cvv: value.slice(0, 3),
+                          });
+                        }}
+                        placeholder="123"
+                        maxLength="3"
+                      />
+                    </div>
+                  </div>
+
+                  <p className={styles.cardNote}>
+                    💳 Your card information is securely processed by Paystack
+                  </p>
+                </form>
+              )}
+
+              {/* Bank Transfer Details */}
+              {paymentMethod === "bank" && (
+                <div className={styles.bankTransferSection}>
+                  <div className={styles.bankInfoBox}>
+                    <h3 className={styles.bankInfoTitle}>
+                      Bank Transfer Details
+                    </h3>
+                    <p className={styles.bankInfoSubtitle}>
+                      Transfer the order amount to the account below:
+                    </p>
+
+                    <div className={styles.bankDetailItem}>
+                      <span className={styles.bankDetailLabel}>Bank Name:</span>
+                      <span className={styles.bankDetailValue}>
+                        Zenith Bank
+                      </span>
+                    </div>
+
+                    <div className={styles.bankDetailItem}>
+                      <span className={styles.bankDetailLabel}>
+                        Account Name:
+                      </span>
+                      <span className={styles.bankDetailValue}>
+                        Ochacho Supermarket
+                      </span>
+                    </div>
+
+                    <div className={styles.bankDetailItem}>
+                      <span className={styles.bankDetailLabel}>
+                        Account Number:
+                      </span>
+                      <span className={styles.bankDetailValue}>1234567890</span>
+                    </div>
+
+                    <div className={styles.bankDetailItem}>
+                      <span className={styles.bankDetailLabel}>Amount:</span>
+                      <span className={styles.bankDetailValue}>
+                        ₦{total.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className={styles.bankDetailItem}>
+                      <span className={styles.bankDetailLabel}>Reference:</span>
+                      <span className={styles.bankDetailValue}>
+                        Your Order ID (in order confirmation)
+                      </span>
+                    </div>
+
+                    <div className={styles.bankNote}>
+                      <p>
+                        📌 <strong>Important:</strong> Please use your Order ID
+                        as the transfer reference for tracking purposes.
+                      </p>
+                      <p>
+                        ⏰ Your order will be confirmed within 2-4 hours of
+                        payment verification.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -550,19 +810,33 @@ const Checkout = () => {
 
               {/* Payment Button */}
               <button
-                onClick={handlePayment}
-                disabled={!isFormValid() || loading || !paystackLoaded}
+                onClick={() => {
+                  if (paymentMethod === "paystack") {
+                    handlePayment();
+                  } else {
+                    handleBankTransfer();
+                  }
+                }}
+                disabled={
+                  !isFormValid() ||
+                  loading ||
+                  (paymentMethod === "paystack" && !paystackLoaded)
+                }
                 className={
-                  isFormValid() && paystackLoaded && !loading
+                  isFormValid() &&
+                  !loading &&
+                  (paymentMethod === "bank" || paystackLoaded)
                     ? styles.paystackBtn
                     : styles.paystackBtnDisabled
                 }
               >
                 {loading
                   ? "⏳ Processing..."
-                  : !paystackLoaded
-                  ? "⏳ Loading payment..."
-                  : "💳 Pay with Paystack"}
+                  : paymentMethod === "paystack"
+                  ? !paystackLoaded
+                    ? "⏳ Loading payment..."
+                    : "💳 Pay with Card"
+                  : "🏦 Confirm Bank Transfer"}
               </button>
 
               {/* Payment Info */}

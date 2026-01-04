@@ -403,3 +403,154 @@
     padding: 1.5rem;
   }
 }
+
+/* Payment Method Container */
+.paymentMethodContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.paymentMethodLabel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f9fafb;
+}
+
+.paymentMethodLabel:hover {
+  border-color: #7c3aed;
+  background: #f5f3ff;
+}
+
+.radioInput {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #7c3aed;
+}
+
+.radioText {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Bank Transfer Section */
+.bankTransferSection {
+  margin-top: 1.5rem;
+}
+
+.bankInfoBox {
+  background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%);
+  border: 2px solid #10b981;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.bankInfoTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.bankInfoSubtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.bankDetailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-left: 4px solid #7c3aed;
+}
+
+.bankDetailLabel {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.bankDetailValue {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 1rem;
+  font-family: "Courier New", monospace;
+}
+
+.bankNote {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+
+.bankNote p {
+  margin: 0.5rem 0;
+  color: #92400e;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.bankNote p:first-child {
+  margin-top: 0;
+}
+
+.bankNote p:last-child {
+  margin-bottom: 0;
+}
+
+.bankNote strong {
+  color: #d97706;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .bankDetailItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .bankDetailLabel {
+    font-size: 0.85rem;
+  }
+
+  .bankDetailValue {
+    font-size: 0.95rem;
+    width: 100%;
+    word-break: break-all;
+  }
+
+  .bankInfoBox {
+    padding: 1rem;
+  }
+
+  .paymentMethodContainer {
+    gap: 0.75rem;
+  }
+
+  .paymentMethodLabel {
+    padding: 0.85rem;
+  }
+
+  .radioText {
+    font-size: 0.95rem;
+  }
+}
