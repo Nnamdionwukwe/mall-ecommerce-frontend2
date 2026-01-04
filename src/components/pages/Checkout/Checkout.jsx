@@ -193,7 +193,7 @@ const Checkout = () => {
 
     const handler = window.PaystackPop.setup({
       key:
-        process.env.REACT_APP_PAYSTACK_PUBLIC_KEY ||
+        import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ||
         "pk_test_e9a3e6c5eee911c858998b544fa088369033ab65",
       email: formData.email,
       amount: Math.round(total * 100), // Amount in kobo
