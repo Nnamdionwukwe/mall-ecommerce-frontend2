@@ -4,8 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useCurrency } from "../../context/CurrencyContext";
 import styles from "./Checkout.module.css";
 import { useCart } from "../../context/CartContext";
-import ErrorModal from "../../ErrorModal/ErrorModal";
 import axios from "axios";
+import ErrorModal from "../../ErrorModal/ErrorModal";
 
 const API_BASE = "https://mall-ecommerce-api-production.up.railway.app/api";
 
