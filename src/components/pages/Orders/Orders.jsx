@@ -16,13 +16,32 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Auto-update states
+  const [autoUpdateEnabled, setAutoUpdateEnabled] = useState(true);
+  const [autoUpdateInterval, setAutoUpdateInterval] = useState(30); // seconds
+  const [lastUpdateTime, setLastUpdateTime] = useState(null);
+  const [showAutoUpdateControls, setShowAutoUpdateControls] = useState(false);
+
   useEffect(() => {
     if (!user) {
       navigate("/");
       return;
     }
     loadOrders();
-  }, [user, navigate]);
+
+    // Set up auto-update
+    let interval;
+    if (autoUpdateEnabled && autoUpdateInterval > 0) {
+      interval = setInterval(() => {
+        console.log("🔄 Auto-updating orders...");
+        loadOrders();
+      }, autoUpdateInterval * 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [user, navigate, autoUpdateEnabled, autoUpdateInterval]);
 
   // ✅ FIXED: Fetch orders from API instead of localStorage
   const loadOrders = async () => {
@@ -51,6 +70,7 @@ const Orders = () => {
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         setOrders(sortedOrders);
+        setLastUpdateTime(new Date());
         console.log(`📋 Loaded ${sortedOrders.length} orders`);
       } else {
         console.warn("⚠️ No orders data in response");
@@ -83,6 +103,7 @@ const Orders = () => {
       delivered: "#10b981",
       cancelled: "#ef4444",
       returned: "#8b5cf6",
+      pending_payment: "#6b7280",
     };
     return colors[status] || "#6b7280";
   };
@@ -94,8 +115,21 @@ const Orders = () => {
       delivered: "✅",
       cancelled: "❌",
       returned: "↩️",
+      pending_payment: "💳",
     };
     return icons[status] || "📦";
+  };
+
+  const getStatusLabel = (status) => {
+    const labels = {
+      processing: "Processing",
+      shipped: "Shipped",
+      delivered: "Delivered",
+      cancelled: "Cancelled",
+      returned: "Returned",
+      pending_payment: "Pending Payment",
+    };
+    return labels[status] || status;
   };
 
   const filteredOrders =
@@ -104,11 +138,12 @@ const Orders = () => {
       : orders.filter((order) => order.status === filter);
 
   // ✅ Show loading state
-  if (loading) {
+  if (loading && orders.length === 0) {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.loadingState}>
+            <div className={styles.spinner}></div>
             <h2>Loading orders...</h2>
             <p>Please wait</p>
           </div>
@@ -118,7 +153,7 @@ const Orders = () => {
   }
 
   // ✅ Show error state
-  if (error) {
+  if (error && orders.length === 0) {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
@@ -138,16 +173,91 @@ const Orders = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>
-          <h1>My Orders</h1>
-          <p className={styles.subtitle}>Track and manage your orders</p>
+          <div>
+            <h1>My Orders</h1>
+            <p className={styles.subtitle}>Track and manage your orders</p>
+          </div>
+
+          {/* Auto-Update Toggle */}
+          <button
+            className={styles.autoUpdateToggle}
+            onClick={() => setShowAutoUpdateControls(!showAutoUpdateControls)}
+            title="Toggle auto-update settings"
+          >
+            🔄 Auto-Update {autoUpdateEnabled ? "On" : "Off"}
+          </button>
         </div>
+
+        {/* Auto-Update Controls */}
+        {showAutoUpdateControls && (
+          <div className={styles.autoUpdatePanel}>
+            <div className={styles.autoUpdateContent}>
+              <div className={styles.autoUpdateStatus}>
+                {autoUpdateEnabled && (
+                  <>
+                    <span className={styles.updateIndicator}>🔄</span>
+                    <div className={styles.updateInfo}>
+                      <p className={styles.updateText}>
+                        Auto-refresh every {autoUpdateInterval}s
+                      </p>
+                      {lastUpdateTime && (
+                        <p className={styles.lastUpdateTime}>
+                          Last updated: {lastUpdateTime.toLocaleTimeString()}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className={styles.autoUpdateControls}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={autoUpdateEnabled}
+                    onChange={(e) => setAutoUpdateEnabled(e.target.checked)}
+                  />
+                  <span>Enable Auto-Refresh</span>
+                </label>
+
+                {autoUpdateEnabled && (
+                  <select
+                    value={autoUpdateInterval}
+                    onChange={(e) =>
+                      setAutoUpdateInterval(parseInt(e.target.value))
+                    }
+                    className={styles.intervalSelect}
+                  >
+                    <option value={10}>Every 10 seconds</option>
+                    <option value={20}>Every 20 seconds</option>
+                    <option value={30}>Every 30 seconds</option>
+                    <option value={60}>Every 1 minute</option>
+                    <option value={120}>Every 2 minutes</option>
+                    <option value={300}>Every 5 minutes</option>
+                  </select>
+                )}
+
+                <button
+                  onClick={loadOrders}
+                  className={styles.refreshNowBtn}
+                  title="Refresh orders immediately"
+                >
+                  🔄 Refresh Now
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {orders.length === 0 ? (
           <div className={styles.empty}>
             <div className={styles.emptyIcon}>📦</div>
             <h2>No orders yet</h2>
             <p>Start shopping to see your orders here</p>
-            <button onClick={() => navigate("/")} className={styles.shopBtn}>
+            <button
+              onClick={() => navigate("/shop")}
+              className={styles.shopBtn}
+            >
               Start Shopping
             </button>
           </div>
@@ -188,6 +298,15 @@ const Orders = () => {
                 Delivered (
                 {orders.filter((o) => o.status === "delivered").length})
               </button>
+              <button
+                className={`${styles.filterBtn} ${
+                  filter === "pending_payment" ? styles.active : ""
+                }`}
+                onClick={() => setFilter("pending_payment")}
+              >
+                Pending Payment (
+                {orders.filter((o) => o.status === "pending_payment").length})
+              </button>
             </div>
 
             <div className={styles.ordersList}>
@@ -205,13 +324,38 @@ const Orders = () => {
                           minute: "2-digit",
                         })}
                       </p>
+                      {order.paymentInfo?.method && (
+                        <p className={styles.paymentMethod}>
+                          💳 Payment:{" "}
+                          {order.paymentInfo.method === "bank_transfer"
+                            ? "Bank Transfer"
+                            : "Paystack"}
+                        </p>
+                      )}
                     </div>
-                    <span
-                      className={styles.statusBadge}
-                      style={{ background: getStatusColor(order.status) }}
-                    >
-                      {getStatusIcon(order.status)} {order.status.toUpperCase()}
-                    </span>
+                    <div className={styles.statusSection}>
+                      <span
+                        className={styles.statusBadge}
+                        style={{ background: getStatusColor(order.status) }}
+                      >
+                        {getStatusIcon(order.status)}{" "}
+                        {getStatusLabel(order.status)}
+                      </span>
+                      {order.paymentInfo?.status && (
+                        <span
+                          className={styles.paymentBadge}
+                          style={{
+                            background:
+                              order.paymentInfo.status === "paid"
+                                ? "#10b981"
+                                : "#f59e0b",
+                          }}
+                        >
+                          {order.paymentInfo.status === "paid" ? "✅" : "⏳"}{" "}
+                          Payment {order.paymentInfo.status}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className={styles.orderItems}>
